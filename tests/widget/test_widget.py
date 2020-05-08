@@ -1,11 +1,8 @@
-from pytest import fixture
 from widark.widget import Widget
 
 
-@fixture
-def widget():
-    return Widget()
-
-
-def test_widget_instantiation(widget):
+def test_widget_instantiation_defaults():
+    widget = Widget()
     assert isinstance(widget, Widget)
+    assert widget.parent is None
+    assert widget.children == []

@@ -1,4 +1,7 @@
+from typing import List, Optional
 
 
 class Widget:
-    pass
+    def __init__(self, parent: 'Widget' = None) -> None:
+        self.parent: Optional['Widget'] = parent
+        self.children: List['Widget'] = []
