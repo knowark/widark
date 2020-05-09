@@ -86,3 +86,20 @@ def test_widget_update(root):
     window_text = widget.window.instr(0, 0, 11)
 
     assert window_text == b'Hello World'
+
+
+def test_widget_attach_children(root):
+    parent = Widget(root)
+
+    child_a = Widget(parent)
+    child_b = Widget(parent)
+    child_c = Widget(parent)
+
+    parent.attach()
+
+    curses.doupdate()
+
+    assert parent.window is not None
+    assert child_a.window is not None
+    assert child_b.window is not None
+    assert child_c.window is not None
