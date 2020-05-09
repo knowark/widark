@@ -30,6 +30,8 @@ def test_widget_instantiation_defaults():
     assert widget.content == ''
     assert widget.row_sequence == 0
     assert widget.column_sequence == 0
+    assert widget.row_weight == 1
+    assert widget.column_weight == 1
 
 
 def test_widget_window(root):
@@ -50,3 +52,11 @@ def test_widget_position(root):
     assert isinstance(widget, Widget)
     assert widget.row_sequence == 1
     assert widget.column_sequence == 2
+
+
+def test_widget_weight(root):
+    widget = Widget(root).weight(row=2, column=3)
+
+    assert isinstance(widget, Widget)
+    assert widget.row_weight == 2
+    assert widget.column_weight == 3

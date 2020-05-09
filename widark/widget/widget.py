@@ -9,6 +9,8 @@ class Widget:
         self.content = ''
         self.row_sequence = 0
         self.column_sequence = 0
+        self.row_weight = 1
+        self.column_weight = 1
 
         if self.parent:
             self.parent.children.append(self)
@@ -18,4 +20,9 @@ class Widget:
     def sequence(self, row=0, column=0) -> 'Widget':
         self.row_sequence = row
         self.column_sequence = column
+        return self
+
+    def weight(self, row=1, column=1) -> 'Widget':
+        self.row_weight = row
+        self.column_weight = column
         return self
