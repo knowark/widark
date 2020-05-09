@@ -12,10 +12,20 @@ class Widget:
         self.row_weight = 1
         self.column_weight = 1
 
-        if self.parent:
-            self.parent.children.append(self)
-            factory = parent.window.derwin  # type: ignore
-            self.window = factory(1, 1, 0, 0)
+    def attach(self, row=0, column=0, width=0, height=0) -> 'Widget':
+        if not self.parent:
+            return self
+        self.parent.children.append(self)
+        factory = self.parent.window.derwin  # type: ignore
+        self.window = factory(width, height, row, column)
+
+        return self
+
+    def update(self) -> 'Widget':
+        if self.window:
+            self.window.addstr(self.content)
+            self.window.noutrefresh()
+        return self
 
     def sequence(self, row=0, column=0) -> 'Widget':
         self.row_sequence = row
