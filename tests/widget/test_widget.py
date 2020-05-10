@@ -34,8 +34,8 @@ def test_widget_instantiation_defaults():
     assert widget.parent is None
     assert widget.children == []
     assert widget.content == ''
-    assert widget.row_sequence == 0
-    assert widget.column_sequence == 0
+    assert widget.row == 0
+    assert widget.column == 0
     assert widget.width_weight == 1
     assert widget.height_weight == 1
 
@@ -66,8 +66,8 @@ def test_widget_position(root):
     widget = Widget(root).sequence(row=1, column=2)
 
     assert isinstance(widget, Widget)
-    assert widget.row_sequence == 1
-    assert widget.column_sequence == 2
+    assert widget.row == 1
+    assert widget.column == 2
 
 
 def test_widget_weight(root):

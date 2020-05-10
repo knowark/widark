@@ -7,10 +7,10 @@ class Widget:
         self.children: List['Widget'] = []
         self.window = None
         self.content = ''
-        self.row_sequence = 0
-        self.column_sequence = 0
-        self.width_weight = 1
+        self.row = 0
+        self.column = 0
         self.height_weight = 1
+        self.width_weight = 1
 
         if self.parent:
             self.parent.children.append(self)
@@ -33,8 +33,8 @@ class Widget:
         return self
 
     def sequence(self, row=0, column=0) -> 'Widget':
-        self.row_sequence = row
-        self.column_sequence = column
+        self.row = row
+        self.column = column
         return self
 
     def weight(self, width=1, height=1) -> 'Widget':
@@ -53,16 +53,16 @@ class Widget:
         rows = {}
         for child in self.children:
             children.setdefault(
-                (child.row_sequence, child.column_sequence), [])
+                (child.row, child.column), [])
             children[
-                (child.row_sequence, child.column_sequence)].append(child)
+                (child.row, child.column)].append(child)
 
-            column_weight = columns.setdefault(child.column_sequence, 1)
-            columns[child.column_sequence] = max(
+            column_weight = columns.setdefault(child.column, 1)
+            columns[child.column] = max(
                 [column_weight, child.width_weight])
 
-            row_weight = rows.setdefault(child.row_sequence, 1)
-            rows[child.row_sequence] = max(
+            row_weight = rows.setdefault(child.row, 1)
+            rows[child.row] = max(
                 [row_weight, child.height_weight])
 
         width_split = int(width / sum(columns.values()))
