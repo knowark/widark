@@ -36,6 +36,8 @@ def test_widget_instantiation_defaults():
     assert widget.content == ''
     assert widget.row == 0
     assert widget.column == 0
+    assert widget.row_span == 1
+    assert widget.column_span == 1
     assert widget.width_weight == 1
     assert widget.height_weight == 1
 
@@ -124,5 +126,25 @@ def test_widget_layout_sequences(root):
     assert layout[0][1] == {'row': 0, 'column': 0, 'height': 6, 'width': 30}
     assert layout[1][0] == child_b
     assert layout[1][1] == {'row': 6, 'column': 30, 'height': 6, 'width': 30}
+    assert layout[2][0] == child_c
+    assert layout[2][1] == {'row': 12, 'column': 60, 'height': 6, 'width': 30}
+
+
+def test_widget_layout_span(root):
+    parent = Widget(root)
+
+    child_a = Widget(parent).span(2, 2)
+    child_b = Widget(parent).sequence(1, 2).span(2)
+    child_c = Widget(parent).sequence(3, 4).span(column=2)
+
+    parent.attach()
+
+    layout = parent.layout()
+
+    assert isinstance(layout, list)
+    assert layout[0][0] == child_a
+    assert layout[0][1] == {'row': 0, 'column': 0, 'height': 12, 'width': 60}
+    assert layout[1][0] == child_b
+    assert layout[1][1] == {'row': 6, 'column': 30, 'height': 12, 'width': 30}
     assert layout[2][0] == child_c
     assert layout[2][1] == {'row': 12, 'column': 60, 'height': 6, 'width': 30}
