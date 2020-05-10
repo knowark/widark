@@ -48,9 +48,7 @@ class Widget:
 
         height, width = self.window.getmaxyx()
 
-        children = {}
-        columns = {}
-        rows = {}
+        children, columns, rows = {}, {}, {}
         for child in self.children:
             children.setdefault((child.row, child.column), [])
             children[(child.row, child.column)].append(child)
