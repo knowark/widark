@@ -21,6 +21,9 @@ def stdscr():
 @fixture
 def root(stdscr):
     root = Widget(None)
+    # Run all tests with a resolution
+    # of 18 rows and 90 columns
+    stdscr.resize(18, 90)
     root.window = stdscr
     return root
 
@@ -33,8 +36,8 @@ def test_widget_instantiation_defaults():
     assert widget.content == ''
     assert widget.row_sequence == 0
     assert widget.column_sequence == 0
-    assert widget.row_weight == 1
-    assert widget.column_weight == 1
+    assert widget.width_weight == 1
+    assert widget.height_weight == 1
 
 
 def test_widget_attach(root):
@@ -68,11 +71,11 @@ def test_widget_position(root):
 
 
 def test_widget_weight(root):
-    widget = Widget(root).weight(row=2, column=3)
+    widget = Widget(root).weight(width=2, height=3)
 
     assert isinstance(widget, Widget)
-    assert widget.row_weight == 2
-    assert widget.column_weight == 3
+    assert widget.width_weight == 2
+    assert widget.height_weight == 3
 
 
 def test_widget_update(root):
@@ -103,3 +106,23 @@ def test_widget_attach_children(root):
     assert child_a.window is not None
     assert child_b.window is not None
     assert child_c.window is not None
+
+
+def test_widget_layout_sequences(root):
+    parent = Widget(root)
+
+    child_a = Widget(parent)
+    child_b = Widget(parent).sequence(1, 2)
+    child_c = Widget(parent).sequence(3, 4)
+
+    parent.attach()
+
+    layout = parent.layout()
+
+    assert isinstance(layout, list)
+    assert layout[0][0] == child_a
+    assert layout[0][1] == {'row': 0, 'column': 0, 'height': 6, 'width': 30}
+    assert layout[1][0] == child_b
+    assert layout[1][1] == {'row': 6, 'column': 30, 'height': 6, 'width': 30}
+    assert layout[2][0] == child_c
+    assert layout[2][1] == {'row': 12, 'column': 60, 'height': 6, 'width': 30}
