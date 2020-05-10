@@ -53,6 +53,13 @@ def test_widget_attach(root):
     assert relative_coordinates == (1, 2)
 
 
+def test_widget_attach_without_parent(root):
+    widget = Widget(None).attach(1, 2)
+
+    assert isinstance(widget, Widget)
+    assert widget.window is None
+
+
 def test_widget_attach_dimensions(root):
     widget = Widget(root).attach(height=3, width=2)
 
@@ -94,6 +101,18 @@ def test_widget_update(root):
     assert window_text == b'Hello World'
 
 
+def test_widget_update_without_window(root):
+    widget = Widget(root)
+    widget.content = 'Hello World'
+
+    widget = widget.update()
+
+    curses.doupdate()
+
+    assert isinstance(widget, Widget)
+    assert widget.window is None
+
+
 def test_widget_attach_children(root):
     parent = Widget(root)
 
@@ -129,6 +148,22 @@ def test_widget_layout_sequences(root):
     assert layout[1][1] == {'row': 6, 'column': 30, 'height': 6, 'width': 30}
     assert layout[2][0] == child_c
     assert layout[2][1] == {'row': 12, 'column': 60, 'height': 6, 'width': 30}
+
+
+def test_widget_layout_without_window_or_children(root):
+    parent = Widget(None)
+
+    layout = parent.layout()
+
+    assert layout == []
+    assert parent.window is None
+
+    widget = Widget(root)
+
+    layout = widget.layout()
+
+    assert layout == []
+    assert widget.children == []
 
 
 def test_widget_layout_span(root):
