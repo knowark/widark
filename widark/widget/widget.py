@@ -11,8 +11,8 @@ class Widget:
         self.column = 0
         self.row_span = 1
         self.column_span = 1
-        self.height_weight = 1
-        self.width_weight = 1
+        self.row_weight = 1
+        self.column_weight = 1
 
         if self.parent:
             self.parent.children.append(self)
@@ -44,9 +44,9 @@ class Widget:
         self.column_span = column
         return self
 
-    def weight(self, width=1, height=1) -> 'Widget':
-        self.width_weight = width
-        self.height_weight = height
+    def weight(self, row=1, column=1) -> 'Widget':
+        self.row_weight = row
+        self.column_weight = column
         return self
 
     def layout(self) -> List[Tuple['Widget', Dict[str, int]]]:
@@ -61,13 +61,13 @@ class Widget:
             children[(child.row, child.column)].append(child)
 
             column_weight = columns.setdefault(child.column, 1)
-            columns[child.column] = max([column_weight, child.width_weight])
+            columns[child.column] = max([column_weight, child.column_weight])
 
             row_weight = rows.setdefault(child.row, 1)
-            rows[child.row] = max([row_weight, child.height_weight])
+            rows[child.row] = max([row_weight, child.row_weight])
 
-        width_split = int(width / sum(columns.values()))
-        height_split = int(height / sum(rows.values()))
+        width_split = width / sum(columns.values())
+        height_split = height / sum(rows.values())
 
         row_indexes, row_weights = {}, {}
         for y, (row, row_weight) in enumerate(rows.items()):
@@ -87,14 +87,18 @@ class Widget:
             column_span = column_index + child.column_span
 
             dimensions = {
-                'row': sum(row_weights[y] for y in
-                           range(row_index)) * height_split,
-                'column': sum(column_weights[x] for x
-                              in range(column_index)) * width_split,
-                'height': sum(row_weights.get(y, 0) for y in
-                              range(row_index, row_span)) * height_split,
-                'width': sum(column_weights.get(x, 0) for x in
-                             range(column_index, column_span)) * width_split
+                'row': int(
+                    sum(row_weights[y] for y in
+                        range(row_index)) * height_split),
+                'column': int(
+                    sum(column_weights[x] for x in
+                        range(column_index)) * width_split),
+                'height': int(
+                    sum(row_weights.get(y, 0) for y in
+                        range(row_index, row_span)) * height_split),
+                'width': int(
+                    sum(column_weights.get(x, 0) for x in
+                        range(column_index, column_span)) * width_split)
             }
 
             layout.append((child, dimensions))

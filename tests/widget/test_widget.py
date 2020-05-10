@@ -38,8 +38,8 @@ def test_widget_instantiation_defaults():
     assert widget.column == 0
     assert widget.row_span == 1
     assert widget.column_span == 1
-    assert widget.width_weight == 1
-    assert widget.height_weight == 1
+    assert widget.column_weight == 1
+    assert widget.row_weight == 1
 
 
 def test_widget_attach(root):
@@ -73,11 +73,11 @@ def test_widget_position(root):
 
 
 def test_widget_weight(root):
-    widget = Widget(root).weight(height=3, width=2)
+    widget = Widget(root).weight(row=3, column=2)
 
     assert isinstance(widget, Widget)
-    assert widget.height_weight == 3
-    assert widget.width_weight == 2
+    assert widget.row_weight == 3
+    assert widget.column_weight == 2
 
 
 def test_widget_update(root):
@@ -148,3 +148,23 @@ def test_widget_layout_span(root):
     assert layout[1][1] == {'row': 6, 'column': 30, 'height': 12, 'width': 30}
     assert layout[2][0] == child_c
     assert layout[2][1] == {'row': 12, 'column': 60, 'height': 6, 'width': 30}
+
+
+def test_widget_layout_weight(root):
+    parent = Widget(root)
+
+    child_a = Widget(parent).span(2, 2)
+    child_b = Widget(parent).sequence(1, 2).span(2).weight(column=2)
+    child_c = Widget(parent).sequence(3, 4).span(column=2).weight(2)
+
+    parent.attach()
+
+    layout = parent.layout()
+
+    assert isinstance(layout, list)
+    assert layout[0][0] == child_a
+    assert layout[0][1] == {'row': 0, 'column': 0, 'height': 9, 'width': 67}
+    assert layout[1][0] == child_b
+    assert layout[1][1] == {'row': 4, 'column': 22, 'height': 13, 'width': 45}
+    assert layout[2][0] == child_c
+    assert layout[2][1] == {'row': 9, 'column': 67, 'height': 9, 'width': 22}
