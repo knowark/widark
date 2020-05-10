@@ -15,11 +15,11 @@ class Widget:
         if self.parent:
             self.parent.children.append(self)
 
-    def attach(self, row=0, column=0, height=0, width=0) -> 'Widget':
+    def attach(self, y=0, x=0, height=0, width=0) -> 'Widget':
         if not self.parent:
             return self
         factory = self.parent.window.derwin  # type: ignore
-        self.window = factory(width, height, row, column)
+        self.window = factory(height, width, y, x)
 
         for child in self.children:
             child.attach().update()
@@ -52,18 +52,14 @@ class Widget:
         columns = {}
         rows = {}
         for child in self.children:
-            children.setdefault(
-                (child.row, child.column), [])
-            children[
-                (child.row, child.column)].append(child)
+            children.setdefault((child.row, child.column), [])
+            children[(child.row, child.column)].append(child)
 
             column_weight = columns.setdefault(child.column, 1)
-            columns[child.column] = max(
-                [column_weight, child.width_weight])
+            columns[child.column] = max([column_weight, child.width_weight])
 
             row_weight = rows.setdefault(child.row, 1)
-            rows[child.row] = max(
-                [row_weight, child.height_weight])
+            rows[child.row] = max([row_weight, child.height_weight])
 
         width_split = int(width / sum(columns.values()))
         height_split = int(height / sum(rows.values()))

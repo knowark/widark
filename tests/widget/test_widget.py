@@ -51,7 +51,7 @@ def test_widget_attach(root):
 
 
 def test_widget_attach_dimensions(root):
-    widget = Widget(root).attach(width=2, height=3)
+    widget = Widget(root).attach(height=3, width=2)
 
     relative_coordinates = widget.window.getparyx()
     dimensions = widget.window.getmaxyx()
@@ -59,7 +59,7 @@ def test_widget_attach_dimensions(root):
     assert widget in root.children
     assert widget.window is not None
     assert relative_coordinates == (0, 0)
-    assert dimensions == (2, 3)
+    assert dimensions == (3, 2)
 
 
 def test_widget_position(root):
@@ -71,11 +71,11 @@ def test_widget_position(root):
 
 
 def test_widget_weight(root):
-    widget = Widget(root).weight(width=2, height=3)
+    widget = Widget(root).weight(height=3, width=2)
 
     assert isinstance(widget, Widget)
-    assert widget.width_weight == 2
     assert widget.height_weight == 3
+    assert widget.width_weight == 2
 
 
 def test_widget_update(root):
