@@ -6,6 +6,7 @@ class Widget:
         self.parent: Optional['Widget'] = parent
         self.children: List['Widget'] = []
         self.window = None
+        self.border: List[int] = []
         self.content = ''
         self.row = 0
         self.column = 0
@@ -22,6 +23,8 @@ class Widget:
             return self
         factory = self.parent.window.derwin  # type: ignore
         self.window = factory(height, width, y, x)
+        if self.window and self.border:
+            self.window.border(*self.border)
 
         for child in self.children:
             child.attach().update()
@@ -53,7 +56,11 @@ class Widget:
         if not self.window or not self.children:
             return []
 
+        row_origin, column_origin = 0, 0
         height, width = self.window.getmaxyx()
+        if self.border:
+            row_origin, column_origin = 1, 1
+            height, width = height - 2, width - 2
 
         children, columns, rows = {}, {}, {}
         for child in self.children:
@@ -88,9 +95,11 @@ class Widget:
 
             dimensions = {
                 'row': int(
+                    row_origin +
                     sum(row_weights[y] for y in
                         range(row_index)) * height_split),
                 'column': int(
+                    column_origin +
                     sum(column_weights[x] for x in
                         range(column_index)) * width_split),
                 'height': int(

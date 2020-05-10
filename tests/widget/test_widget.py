@@ -33,6 +33,7 @@ def test_widget_instantiation_defaults():
     assert isinstance(widget, Widget)
     assert widget.parent is None
     assert widget.children == []
+    assert widget.border == []
     assert widget.content == ''
     assert widget.row == 0
     assert widget.column == 0
@@ -168,3 +169,24 @@ def test_widget_layout_weight(root):
     assert layout[1][1] == {'row': 4, 'column': 22, 'height': 13, 'width': 45}
     assert layout[2][0] == child_c
     assert layout[2][1] == {'row': 9, 'column': 67, 'height': 9, 'width': 22}
+
+
+def test_widget_layout_with_border(root):
+    parent = Widget(root)
+    parent.border = [0]
+
+    child_a = Widget(parent).span(2, 2)
+    child_b = Widget(parent).sequence(1, 2).span(2).weight(column=2)
+    child_c = Widget(parent).sequence(3, 4).span(column=2).weight(2)
+
+    parent.attach()
+
+    layout = parent.layout()
+
+    assert isinstance(layout, list)
+    assert layout[0][0] == child_a
+    assert layout[0][1] == {'row': 1, 'column': 1, 'height': 8, 'width': 66}
+    assert layout[1][0] == child_b
+    assert layout[1][1] == {'row': 5, 'column': 23, 'height': 12, 'width': 44}
+    assert layout[2][0] == child_c
+    assert layout[2][1] == {'row': 9, 'column': 67, 'height': 8, 'width': 22}
