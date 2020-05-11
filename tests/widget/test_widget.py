@@ -213,11 +213,11 @@ def test_widget_layout_weight(root):
 
     assert isinstance(layout, list)
     assert layout[0][0] == child_a
-    assert layout[0][1] == {'row': 0, 'col': 0, 'height': 9, 'width': 67}
+    assert layout[0][1] == {'row': 0, 'col': 0, 'height': 9, 'width': 68}
     assert layout[1][0] == child_b
-    assert layout[1][1] == {'row': 4, 'col': 22, 'height': 13, 'width': 45}
+    assert layout[1][1] == {'row': 5, 'col': 23, 'height': 13, 'width': 45}
     assert layout[2][0] == child_c
-    assert layout[2][1] == {'row': 9, 'col': 67, 'height': 9, 'width': 22}
+    assert layout[2][1] == {'row': 9, 'col': 68, 'height': 9, 'width': 22}
 
 
 def test_widget_layout_with_border(root):

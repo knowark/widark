@@ -1,4 +1,5 @@
 from typing import List, Dict, Optional, Tuple, Any
+from math import ceil
 
 
 class Widget:
@@ -60,10 +61,10 @@ class Widget:
             return []
 
         row_origin, col_origin = 0, 0
-        height, width = self.window.getmaxyx()
+        total_height, total_width = self.window.getmaxyx()
         if self.border:
             row_origin, col_origin = 1, 1
-            height, width = height - 2, width - 2
+            total_height, total_width = total_height - 2, total_width - 2
 
         cols: Dict[int, int] = {}
         rows: Dict[int, int] = {}
@@ -74,8 +75,8 @@ class Widget:
             row_weight = rows.setdefault(child.row, 1)
             rows[child.row] = max([row_weight, child.row_weight])
 
-        width_split = width / sum(cols.values())
-        height_split = height / sum(rows.values())
+        width_split = total_width / sum(cols.values())
+        height_split = total_height / sum(rows.values())
 
         row_indexes, row_weights = {}, {}
         for y, (row, row_weight) in enumerate(rows.items()):
@@ -94,23 +95,26 @@ class Widget:
             col_index = col_indexes[child.col]
             col_span = col_index + child.col_span
 
-            dimensions = {
-                'row': int(
-                    row_origin +
-                    sum(row_weights[y] for y in
-                        range(row_index)) * height_split),
-                'col': int(
-                    col_origin +
-                    sum(col_weights[x] for x in
-                        range(col_index)) * width_split),
-                'height': int(
-                    sum(row_weights.get(y, 0) for y in
-                        range(row_index, row_span)) * height_split),
-                'width': int(
-                    sum(col_weights.get(x, 0) for x in
-                        range(col_index, col_span)) * width_split)
-            }
+            row = ceil(
+                row_origin +
+                sum(row_weights[y] for y in
+                    range(row_index)) * height_split)
+            col = ceil(
+                col_origin +
+                sum(col_weights[x] for x in
+                    range(col_index)) * width_split)
 
-            layout.append((child, dimensions))
+            height = ceil(
+                sum(row_weights.get(y, 0) for y in
+                    range(row_index, row_span)) * height_split)
+            height = height - max(0, height + row - total_height - row_origin)
+
+            width = ceil(
+                sum(col_weights.get(x, 0) for x in
+                    range(col_index, col_span)) * width_split)
+            width = width - max(0, width + col - total_width - col_origin)
+
+            layout.append((child, {'row': row, 'col': col,
+                                   'height': height, 'width': width}))
 
         return layout
