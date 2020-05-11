@@ -53,11 +53,18 @@ def test_widget_attach(root):
     assert relative_coordinates == (1, 2)
 
 
-def test_widget_attach_without_parent(root):
-    widget = Widget(None).attach(1, 2)
+def test_widget_attach_with_window(stdscr):
+    widget = Widget(None)
+    widget.window = stdscr
+    widget.content = 'Hello World'
+    widget.attach(1, 2)
+
+    window_text = widget.window.instr(0, 0, 11)
 
     assert isinstance(widget, Widget)
-    assert widget.window is None
+    assert widget.window is not None
+
+    assert window_text == b'Hello World'
 
 
 def test_widget_attach_dimensions(root):

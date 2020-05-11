@@ -1,11 +1,11 @@
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional, Tuple, Any
 
 
 class Widget:
     def __init__(self, parent: Optional['Widget']) -> None:
         self.parent: Optional['Widget'] = parent
         self.children: List['Widget'] = []
-        self.window = None
+        self.window: Any = None
         self.border: List[int] = []
         self.content = ''
         self.row = 0
@@ -18,21 +18,23 @@ class Widget:
         if self.parent:
             self.parent.children.append(self)
 
-    def attach(self, y=0, x=0, height=0, width=0) -> 'Widget':
-        if not self.parent:
-            return self
-        factory = self.parent.window.derwin  # type: ignore
-        self.window = factory(height, width, y, x)
+    def attach(self, row=0, column=0, height=0, width=0) -> 'Widget':
+        if not self.window:
+            factory = self.parent.window.derwin  # type: ignore
+            self.window = factory(height, width, row, column)
+
         if self.window and self.border:
-            self.window.border(*self.border)
+            self.window.border(*[])
 
-        for child in self.children:
-            child.attach().update()
+        for child, dimensions in self.layout():
+            child.attach(**dimensions).update()
 
-        return self
+        return self.update()
 
     def update(self) -> 'Widget':
         if self.window:
+            origin = 1 if self.border else 0
+            self.window.move(origin, origin)
             self.window.addstr(self.content)
             self.window.noutrefresh()
         return self
@@ -62,11 +64,9 @@ class Widget:
             row_origin, column_origin = 1, 1
             height, width = height - 2, width - 2
 
-        children, columns, rows = {}, {}, {}
+        columns: Dict[int, int] = {}
+        rows: Dict[int, int] = {}
         for child in self.children:
-            children.setdefault((child.row, child.column), [])
-            children[(child.row, child.column)].append(child)
-
             column_weight = columns.setdefault(child.column, 1)
             columns[child.column] = max([column_weight, child.column_weight])
 

@@ -10,7 +10,7 @@ def test_application_instantiation():
     application = Application()
 
     assert isinstance(application, Widget)
-    assert application.window is None
+    assert application.window is not None
 
 
 async def test_application_run():
