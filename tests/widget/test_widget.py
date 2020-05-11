@@ -43,6 +43,13 @@ def test_widget_instantiation_defaults():
     assert widget.row_weight == 1
 
 
+def test_widget_instantiation_arguments():
+    widget = Widget(None, 'Custom Content', [0])
+    assert isinstance(widget, Widget)
+    assert widget.border == [0]
+    assert widget.content == 'Custom Content'
+
+
 def test_widget_attach(root):
     widget = Widget(root).attach(1, 2)
 

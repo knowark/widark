@@ -2,12 +2,13 @@ from typing import List, Dict, Optional, Tuple, Any
 
 
 class Widget:
-    def __init__(self, parent: Optional['Widget']) -> None:
+    def __init__(self, parent: Optional['Widget'],
+                 content: str = '', border: List[int] = None) -> None:
         self.parent: Optional['Widget'] = parent
-        self.children: List['Widget'] = []
+        self.content = content
+        self.border: List[int] = border or []
         self.window: Any = None
-        self.border: List[int] = []
-        self.content = ''
+        self.children: List['Widget'] = []
         self.row = 0
         self.col = 0
         self.row_span = 1
