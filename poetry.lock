@@ -236,7 +236,7 @@ version = "3.7.4.2"
 
 [[package]]
 category = "dev"
-description = "Measures number of Terminal column cells of wide-character codes"
+description = "Measures number of Terminal col cells of wide-character codes"
 name = "wcwidth"
 optional = false
 python-versions = "*"
