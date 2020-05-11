@@ -39,7 +39,7 @@ class Widget:
             self.window.noutrefresh()
         return self
 
-    def sequence(self, row=0, column=0) -> 'Widget':
+    def grid(self, row=0, column=0) -> 'Widget':
         self.row = row
         self.column = column
         return self

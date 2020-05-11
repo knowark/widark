@@ -80,7 +80,7 @@ def test_widget_attach_dimensions(root):
 
 
 def test_widget_position(root):
-    widget = Widget(root).sequence(row=1, column=2)
+    widget = Widget(root).grid(row=1, column=2)
 
     assert isinstance(widget, Widget)
     assert widget.row == 1
@@ -141,8 +141,8 @@ def test_widget_layout_sequences(root):
     parent = Widget(root)
 
     child_a = Widget(parent)
-    child_b = Widget(parent).sequence(1, 2)
-    child_c = Widget(parent).sequence(3, 4)
+    child_b = Widget(parent).grid(1, 2)
+    child_c = Widget(parent).grid(3, 4)
 
     parent.attach()
 
@@ -177,8 +177,8 @@ def test_widget_layout_span(root):
     parent = Widget(root)
 
     child_a = Widget(parent).span(2, 2)
-    child_b = Widget(parent).sequence(1, 2).span(2)
-    child_c = Widget(parent).sequence(3, 4).span(column=2)
+    child_b = Widget(parent).grid(1, 2).span(2)
+    child_c = Widget(parent).grid(3, 4).span(column=2)
 
     parent.attach()
 
@@ -197,8 +197,8 @@ def test_widget_layout_weight(root):
     parent = Widget(root)
 
     child_a = Widget(parent).span(2, 2)
-    child_b = Widget(parent).sequence(1, 2).span(2).weight(column=2)
-    child_c = Widget(parent).sequence(3, 4).span(column=2).weight(2)
+    child_b = Widget(parent).grid(1, 2).span(2).weight(column=2)
+    child_c = Widget(parent).grid(3, 4).span(column=2).weight(2)
 
     parent.attach()
 
@@ -218,8 +218,8 @@ def test_widget_layout_with_border(root):
     parent.border = [0]
 
     child_a = Widget(parent).span(2, 2)
-    child_b = Widget(parent).sequence(1, 2).span(2).weight(column=2)
-    child_c = Widget(parent).sequence(3, 4).span(column=2).weight(2)
+    child_b = Widget(parent).grid(1, 2).span(2).weight(column=2)
+    child_c = Widget(parent).grid(3, 4).span(column=2).weight(2)
 
     parent.attach()
 
