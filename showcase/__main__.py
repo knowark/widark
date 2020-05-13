@@ -4,7 +4,7 @@ from widark import Application, Widget
 
 
 class Main(Application):
-    async def run(self):
+    async def build(self):
 
         self.border = [0]
         child_a = Widget(self, border=[0]).grid(0)
