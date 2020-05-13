@@ -21,7 +21,7 @@ class Widget:
             self.parent.children.append(self)
 
     def attach(self, row=0, col=0, height=0, width=0) -> 'Widget':
-        if not self.window:
+        if self.parent:
             factory = self.parent.window.derwin  # type: ignore
             self.window = factory(height, width, row, col)
 
