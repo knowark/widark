@@ -5,10 +5,14 @@ from .widget import Widget
 class Application(Widget):
     def __init__(self) -> None:
         super().__init__(None)
+        self.rate = 1 / 20
         self._start_screen()
 
+    async def build(self) -> None:
+        """Interface building method"""
+
     async def run(self) -> None:
-        pass
+        await self.build()
 
     def _start_screen(self) -> None:
         self.window = curses.initscr()
