@@ -17,6 +17,8 @@ class Main(Application):
 
         child_b = Widget(self, 'World', [0]).grid(1)
         child_c = Widget(self, border=[0]).grid(0, 1).span(2).weight(col=3)
+        child_c_1 = Widget(child_c, border=[0]).grid(0, 1)
+        child_c_2 = Widget(child_c, border=[0]).grid(0, 2)
 
 
 if __name__ == '__main__':
