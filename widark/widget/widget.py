@@ -1,4 +1,5 @@
 from typing import List, Dict, Optional, Tuple, Any
+from _curses import error as CursesError
 from math import ceil
 
 
@@ -23,7 +24,10 @@ class Widget:
     def attach(self, row=0, col=0, height=0, width=0) -> 'Widget':
         if self.parent:
             factory = self.parent.window.derwin  # type: ignore
-            self.window = factory(height, width, row, col)
+            try:
+                self.window = factory(height, width, row, col)
+            except CursesError:
+                return self
 
         if self.window and self.border:
             self.window.border(*[])
@@ -34,11 +38,17 @@ class Widget:
         return self.update()
 
     def update(self) -> 'Widget':
-        if self.window:
+        if not self.window:
+            return self
+
+        try:
             origin = 1 if self.border else 0
             self.window.move(origin, origin)
             self.window.addstr(self.content)
             self.window.noutrefresh()
+        except CursesError:
+            pass
+
         return self
 
     def grid(self, row=0, col=0) -> 'Widget':

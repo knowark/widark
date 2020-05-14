@@ -60,9 +60,20 @@ def test_widget_attach(root):
     assert relative_coordinates == (1, 2)
 
 
-def test_widget_attach_with_window(stdscr):
+def test_widget_attach_error(root):
+    root.window.resize(1, 1)
+
+    widget = Widget(root)
+
+    result = widget.attach(height=2, width=2)
+
+    assert result is widget
+    assert widget.window is None
+
+
+def test_widget_attach_with_window(root):
     widget = Widget(None)
-    widget.window = stdscr
+    widget.window = root.window
     widget.content = 'Hello World'
     widget.attach(1, 2)
 
@@ -113,6 +124,21 @@ def test_widget_update(root):
     window_text = widget.window.instr(0, 0, 11)
 
     assert window_text == b'Hello World'
+
+
+def test_widget_update_error(root):
+    root.window.resize(1, 1)
+
+    widget = Widget(root)
+    widget.content = 'Hello World'
+
+    widget = widget.attach().update()
+
+    curses.doupdate()
+
+    window_text = widget.window.instr(0, 0, 1)
+
+    assert window_text == b'H'
 
 
 def test_widget_update_without_window(root):
