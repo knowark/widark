@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Any
+from typing import Awaitable, Callable, List, Dict, Optional, Any
 
 
 CATEGORIES = {'Mouse': 'Mouse', 'Keyboard': 'Keyboard', 'Custom': 'Custom'}
@@ -13,6 +13,9 @@ class Event:
         self.details: Dict[str, Any] = attributes.get('details', {})
 
 
+Handler = Callable[[Event], Awaitable]
+
+
 class Target:
     def __init__(self) -> None:
         self.parent: Optional['Target'] = None
@@ -20,7 +23,16 @@ class Target:
         self.x_min = 0
         self.y_max = 1
         self.x_max = 1
+        self.listeners: Dict[str, List[Handler]] = {
+            'capture': [],
+            'bubble': []
+        }
 
     def hit(self, event: Event) -> bool:
         return (self.y_min <= event.y <= self.y_max and
                 self.x_min <= event.x <= self.x_max)
+
+    def listen(self, type: str, handler: Handler,
+               capture: bool = False) -> None:
+        phase = 'capture' if capture else 'bubble'
+        self.listeners[phase].append(handler)
