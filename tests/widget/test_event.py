@@ -26,3 +26,29 @@ def test_target_instantiation_defaults():
     assert target.x_min == 0
     assert target.y_max == 1
     assert target.x_max == 1
+
+
+def test_target_hit():
+    event = Event('Mouse', 'click', y=3, x=7)
+    target = Target()
+    target.y_min = 1
+    target.x_min = 6
+    target.y_max = 5
+    target.x_max = 10
+
+    hit = target.hit(event)
+
+    assert hit is True
+
+
+def test_target_not_hit():
+    event = Event('Mouse', 'click', y=3, x=15)
+    target = Target()
+    target.y_min = 1
+    target.x_min = 6
+    target.y_max = 5
+    target.x_max = 10
+
+    hit = target.hit(event)
+
+    assert hit is False

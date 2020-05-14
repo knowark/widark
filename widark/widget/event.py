@@ -20,3 +20,7 @@ class Target:
         self.x_min = 0
         self.y_max = 1
         self.x_max = 1
+
+    def hit(self, event: Event) -> bool:
+        return (self.y_min <= event.y <= self.y_max and
+                self.x_min <= event.x <= self.x_max)
