@@ -1,4 +1,4 @@
-from widark.widget import Event
+from widark.widget import Event, Target
 
 
 def test_event_instantiation_defaults():
@@ -17,3 +17,12 @@ def test_event_instantiation_arguments():
     assert event.y == 5
     assert event.x == 3
     assert event.details == {'hello': 'world'}
+
+
+def test_target_instantiation_defaults():
+    target = Target()
+    assert target.parent is None
+    assert target.y_min == 0
+    assert target.x_min == 0
+    assert target.y_max == 1
+    assert target.x_max == 1
