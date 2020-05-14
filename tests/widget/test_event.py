@@ -26,7 +26,8 @@ def test_target_instantiation_defaults():
     assert target.x_min == 0
     assert target.y_max == 1
     assert target.x_max == 1
-    assert target.listeners == {'capture': [], 'bubble': []}
+    assert target.capture_listeners == {}
+    assert target.bubble_listeners == {}
 
 
 def test_target_hit():
@@ -63,8 +64,26 @@ def test_target_listen():
 
     target.listen('click', click_handler)
 
-    assert click_handler in target.listeners['bubble']
+    assert click_handler in target.bubble_listeners['click']
 
     target.listen('click', click_handler, True)
 
-    assert click_handler in target.listeners['capture']
+    assert click_handler in target.capture_listeners['click']
+
+
+def test_target_ignore():
+    target = Target()
+
+    async def click_handler(event: Event) -> None:
+        pass
+
+    target.capture_listeners['click'].append(click_handler)
+    target.bubble_listeners['click'].append(click_handler)
+
+    target.ignore('click', click_handler)
+
+    assert target.bubble_listeners['click'] == []
+
+    target.ignore('click', click_handler, True)
+
+    assert target.capture_listeners['click'] == []
