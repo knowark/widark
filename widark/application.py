@@ -68,5 +68,4 @@ class Application(Widget):
 
     def _interrupt(self, signal: int, frame: Any) -> None:
         self._stop_screen()
-        sys.stderr.write("Exiting: SIGINT or CTRL-C detected.\n")
         sys.exit(0)
