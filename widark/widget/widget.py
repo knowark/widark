@@ -23,6 +23,11 @@ class Widget(Target):
         if self.parent:
             self.parent.children.append(self)
 
+        self.setup()
+
+    def setup(self) -> None:
+        """Custom setup"""
+
     def attach(self, row=0, col=0, height=0, width=0) -> 'Widget':
         if self.parent:
             factory = self.parent.window.derwin  # type: ignore

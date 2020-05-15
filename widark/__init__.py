@@ -1,2 +1,2 @@
 from .application import Application
-from .widget import Widget
+from .widget import Widget, Event

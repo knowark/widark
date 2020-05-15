@@ -53,10 +53,16 @@ class Application(Widget):
         target: Widget = self
         path: List[Target] = [self]
 
-        while target.children:  # pragma: no cover
-            target = next(item for item in target.children
-                          if item.hit(event))
-            path.append(target)
+        children = target.children
+        while children:  # pragma: no cover
+            for child in children:
+                if child.hit(event):
+                    children = child.children
+                    target = child
+                    path.append(target)
+                    break
+            else:
+                children = []
 
         event.path = list(reversed(path))
         return target
@@ -68,6 +74,8 @@ class Application(Widget):
         self.window.nodelay(True)
         curses.noecho()
         curses.cbreak()
+        curses.mousemask(
+            curses.ALL_MOUSE_EVENTS | curses.REPORT_MOUSE_POSITION)
         curses.start_color()
 
     def _clear_screen(self) -> None:
@@ -81,6 +89,7 @@ class Application(Widget):
         self.window = None
         curses.echo()
         curses.nocbreak()
+        curses.mousemask(False)
         curses.endwin()
 
     def _interrupt(self, signal: int, frame: Any) -> None:
