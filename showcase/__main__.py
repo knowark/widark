@@ -5,7 +5,7 @@ from .content import Content
 
 class Main(Application):
     async def build(self):
-        self.border = [0]
+        self.border = [ord('/'), ord('\\'), ord('^'), ord('v'), 0, 0, 0, 0]
 
         child_a = Widget(self, border=[0]).grid(0)
         Widget(child_a, 'Label:').grid(0, 0)
