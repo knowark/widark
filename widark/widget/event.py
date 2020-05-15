@@ -2,6 +2,7 @@ from typing import Awaitable, Callable, List, Dict, Optional, Any
 from collections import defaultdict
 
 CATEGORIES = {'Mouse': 'Mouse', 'Keyboard': 'Keyboard', 'Custom': 'Custom'}
+PHASES = {'Capture': 'Capture', 'Target': 'Target', 'Bubble': 'Bubble', '': ''}
 
 
 class Event:
@@ -11,6 +12,10 @@ class Event:
         self.y = attributes.get('y', 0)
         self.x = attributes.get('x', 0)
         self.details: Dict[str, Any] = attributes.get('details', {})
+        self.phase = PHASES[attributes.get('phase', '')]
+        self.path: List['Target'] = []
+        self.current: Optional['Target'] = None
+        self.target: Optional['Target'] = None
 
 
 Handler = Callable[[Event], Awaitable]
@@ -43,3 +48,33 @@ class Target:
         listeners = (self.capture_listeners if capture
                      else self.bubble_listeners)
         listeners[type].remove(handler)
+
+    async def dispatch(self, event: Event) -> None:
+        if event.phase == 'Capture':
+            for listener in self.capture_listeners.get(event.type, []):
+                await listener(event)
+
+        elif event.phase == 'Bubble':
+            for listener in self.bubble_listeners.get(event.type, []):
+                await listener(event)
+
+        elif event.phase == 'Target':
+            event.phase = 'Bubble'
+            for element in event.path:
+                event.current = element
+                await element.dispatch(event)
+
+        else:
+            event.phase = 'Capture'
+            path_target: Optional['Target'] = self
+            while path_target:
+                event.path.append(path_target)
+                path_target = path_target.parent
+
+            for element in reversed(event.path):
+                event.current = element
+                if element == self:
+                    event.phase = 'Target'
+                    event.target = element
+
+                await element.dispatch(event)

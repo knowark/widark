@@ -1,4 +1,8 @@
+from pytest import mark, raises, fixture
 from widark.widget import Event, Target
+
+
+pytestmark = mark.asyncio
 
 
 def test_event_instantiation_defaults():
@@ -8,6 +12,10 @@ def test_event_instantiation_defaults():
     assert event.y == 0
     assert event.x == 0
     assert event.details == {}
+    assert event.phase == ''
+    assert event.path == []
+    assert event.current is None
+    assert event.target is None
 
 
 def test_event_instantiation_arguments():
@@ -87,3 +95,63 @@ def test_target_ignore():
     target.ignore('click', click_handler, True)
 
     assert target.capture_listeners['click'] == []
+
+
+@fixture
+def targets():
+    first = Target()
+    first.y_min = 0
+    first.x_min = 0
+    first.y_max = 12
+    first.x_max = 12
+
+    second = Target()
+    second.parent = first
+    second.y_min = 3
+    second.x_min = 3
+    second.y_max = 6
+    second.x_max = 9
+
+    third = Target()
+    third.parent = first
+    third.y_min = 7
+    third.x_min = 3
+    third.y_max = 11
+    third.x_max = 11
+
+    fourth = Target()
+    fourth.parent = third
+    fourth.y_min = 8
+    fourth.x_min = 6
+    fourth.y_max = 10
+    fourth.x_max = 8
+
+    return first, second, third, fourth
+
+
+async def test_target_dispatch(targets):
+    first, second, third, fourth = targets
+
+    calls = []
+
+    async def capture_click_handler(event: Event) -> None:
+        nonlocal calls
+        calls.append('capture')
+
+    async def bubble_click_handler(event: Event) -> None:
+        nonlocal calls
+        calls.append('bubble')
+
+    first.listen('click', capture_click_handler, True)
+    assert capture_click_handler in first.capture_listeners['click']
+
+    fourth.listen('click', bubble_click_handler)
+    assert bubble_click_handler in fourth.bubble_listeners['click']
+    assert fourth.parent.parent == first
+
+    event = Event('Mouse', 'click', y=9, x=7)
+    await fourth.dispatch(event)  # Dispatch
+
+    assert len(first.capture_listeners['click']) == 1
+    assert len(fourth.bubble_listeners['click']) == 1
+    assert calls == ['capture', 'bubble']
