@@ -66,10 +66,11 @@ class Target:
 
         else:
             event.phase = 'Capture'
-            path_target: Optional['Target'] = self
-            while path_target:
-                event.path.append(path_target)
-                path_target = path_target.parent
+            if not event.path:
+                path_target: Optional['Target'] = self
+                while path_target:
+                    event.path.append(path_target)
+                    path_target = path_target.parent
 
             for element in reversed(event.path):
                 event.current = element

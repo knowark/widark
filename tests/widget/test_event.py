@@ -130,7 +130,7 @@ def targets():
 
 
 async def test_target_dispatch(targets):
-    first, second, third, fourth = targets
+    first, _, _, fourth = targets
 
     calls = []
 
@@ -155,3 +155,35 @@ async def test_target_dispatch(targets):
     assert len(first.capture_listeners['click']) == 1
     assert len(fourth.bubble_listeners['click']) == 1
     assert calls == ['capture', 'bubble']
+
+
+async def test_target_dispatch_with_given_event_path(targets):
+    first, _, third, fourth = targets
+
+    calls = []
+
+    async def capture_click_handler(event: Event) -> None:
+        nonlocal calls
+        calls.append('capture')
+
+    async def bubble_click_handler(event: Event) -> None:
+        nonlocal calls
+        calls.append('bubble')
+
+    first.listen('click', capture_click_handler, True)
+    assert capture_click_handler in first.capture_listeners['click']
+
+    fourth.listen('click', bubble_click_handler)
+    assert bubble_click_handler in fourth.bubble_listeners['click']
+    assert fourth.parent.parent == first
+
+    event = Event('Mouse', 'click', y=9, x=7)
+    event.path = [
+        fourth,
+        third
+    ]
+    await fourth.dispatch(event)  # Dispatch
+
+    assert len(first.capture_listeners['click']) == 1
+    assert len(fourth.bubble_listeners['click']) == 1
+    assert calls == ['bubble']
