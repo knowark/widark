@@ -1,11 +1,13 @@
 from typing import List, Dict, Optional, Tuple, Any
 from _curses import error as CursesError
 from math import ceil
+from .event import Target
 
 
-class Widget:
+class Widget(Target):
     def __init__(self, parent: Optional['Widget'],
                  content: str = '', border: List[int] = None) -> None:
+        super().__init__()
         self.parent: Optional['Widget'] = parent
         self.content = content
         self.border: List[int] = border or []
@@ -26,6 +28,9 @@ class Widget:
             factory = self.parent.window.derwin  # type: ignore
             try:
                 self.window = factory(height, width, row, col)
+                h, w = self.window.getmaxyx()
+                self.y_min, self.x_min = self.window.getbegyx()
+                self.y_max, self.x_max = self.y_min + h, self.x_min + w
             except CursesError:
                 return self
 

@@ -1,6 +1,6 @@
 import curses
 from pytest import fixture
-from widark.widget import Widget
+from widark.widget import Widget, Target
 
 
 @fixture
@@ -31,6 +31,7 @@ def root(stdscr):
 def test_widget_instantiation_defaults():
     widget = Widget(None)
     assert isinstance(widget, Widget)
+    assert isinstance(widget, Target)
     assert widget.parent is None
     assert widget.children == []
     assert widget.border == []
@@ -58,6 +59,10 @@ def test_widget_attach(root):
     assert widget in root.children
     assert widget.window is not None
     assert relative_coordinates == (1, 2)
+    assert widget.y_min == 1
+    assert widget.x_min == 2
+    assert widget.y_max == 18
+    assert widget.x_max == 90
 
 
 def test_widget_attach_error(root):
