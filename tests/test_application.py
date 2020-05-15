@@ -4,7 +4,7 @@ import asyncio
 from types import MethodType
 from pytest import mark, fixture, raises
 from widark.application import Application
-from widark.widget import Widget
+from widark.widget import Widget, Event
 
 
 pytestmark = mark.asyncio
@@ -14,8 +14,17 @@ pytestmark = mark.asyncio
 def application():
     class CustomApplication(Application):
         async def build(self) -> None:
-            Widget(self, 'First Child')
-            Widget(self, 'Second Child')
+            self.border = [0]
+            self.first = Widget(self, 'First Child', [0]).grid(0, 0)
+            self.second = Widget(self, 'Second Child', [0]).grid(0, 1)
+            self.third = Widget(self.first, 'Third Child', [0]).grid(0)
+            self.fourth = Widget(self.first, 'Fourth Child', [0]).grid(1)
+
+        def _start_screen(self) -> None:
+            super()._start_screen()
+            # Run all tests with a resolution
+            # of 24 rows and 120 cols
+            self.window.resize(24, 120)
 
     return CustomApplication()
 
@@ -142,3 +151,26 @@ async def test_application_interrupt(application):
         application._interrupt(0, None)
 
     assert stop_screen_called is True
+
+
+async def test_application_capture(application):
+    application.active = False
+    original_stop_screen = application._stop_screen
+
+    def mock_stop_screen(self) -> None:
+        pass
+
+    application._stop_screen = MethodType(mock_stop_screen, application)
+
+    await application._run()
+    curses.doupdate()
+
+    event = Event('Mouse', 'click', y=15, x=35)
+    widget = application._capture(event)
+
+    application._stop_screen = original_stop_screen
+    application._stop_screen()
+
+    assert widget is not None
+    assert widget is application.fourth
+    assert event.path == [application.fourth, application.first, application]

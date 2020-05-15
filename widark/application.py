@@ -2,8 +2,8 @@ import sys
 import curses
 import asyncio
 from signal import signal, SIGINT
-from typing import Any
-from .widget import Widget
+from typing import List, Any
+from .widget import Widget, Event, Target
 
 
 class Application(Widget):
@@ -43,6 +43,18 @@ class Application(Widget):
         if key == curses.KEY_RESIZE:
             self._clear_screen()
             self.attach()
+
+    def _capture(self, event: Event) -> Widget:
+        target: Widget = self
+        path: List[Target] = [self]
+
+        while target.children:  # pragma: no cover
+            target = next(item for item in target.children
+                          if item.hit(event))
+            path.append(target)
+
+        event.path = list(reversed(path))
+        return target
 
     def _start_screen(self) -> None:
         self.window = curses.initscr()

@@ -35,7 +35,7 @@ class Widget(Target):
                 return self
 
         if self.window and self.border:
-            self.window.border(*[])
+            self.window.border(*self.border)
 
         for child, dimensions in self.layout():
             child.attach(**dimensions).update()
