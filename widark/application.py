@@ -43,6 +43,11 @@ class Application(Widget):
         if key == curses.KEY_RESIZE:
             self._clear_screen()
             self.attach()
+        elif key == curses.KEY_MOUSE:
+            _, x, y, _, _ = curses.getmouse()
+            event = Event('Mouse', 'click', y=y, x=x)
+            target = self._capture(event)
+            await target.dispatch(event)
 
     def _capture(self, event: Event) -> Widget:
         target: Widget = self

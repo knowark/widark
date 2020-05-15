@@ -174,3 +174,35 @@ async def test_application_capture(application):
     assert widget is not None
     assert widget is application.fourth
     assert event.path == [application.fourth, application.first, application]
+
+
+async def test_application_process_mouse_events(application, monkeypatch):
+    getmouse_called = False
+    capture_event = None
+    dispatch_event = None
+
+    def mock_getmouse():
+        nonlocal getmouse_called
+        getmouse_called = True
+        return (1, 5, 10, 0, 4)
+
+    def mock_capture(self, event: Event):
+        nonlocal capture_event
+        capture_event = event
+        return application
+
+    async def mock_dispatch(self, event: Event):
+        nonlocal dispatch_event
+        dispatch_event = event
+
+    monkeypatch.setattr(curses, "getmouse", mock_getmouse)
+    application._capture = MethodType(mock_capture, application)
+    application.dispatch = MethodType(mock_dispatch, application)
+
+    await application._process(curses.KEY_MOUSE)
+
+    assert getmouse_called is True
+    assert getattr(capture_event, 'y') == 10
+    assert getattr(capture_event, 'x') == 5
+    assert getattr(dispatch_event, 'y') == 10
+    assert getattr(dispatch_event, 'x') == 5
