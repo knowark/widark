@@ -1,16 +1,20 @@
 from typing import List, Dict, Optional, Tuple, Any
 from _curses import error as CursesError
+from curses import color_pair
 from math import ceil
+from .color import Color
 from .event import Target
 
 
 class Widget(Target):
     def __init__(self, parent: Optional['Widget'],
-                 content: str = '', border: List[int] = None) -> None:
+                 content: str = '', border: List[int] = None,
+                 color: Color = Color.DEFAULT) -> None:
         super().__init__()
         self.parent: Optional['Widget'] = parent
         self.content = content
         self.border: List[int] = border or []
+        self.color = color
         self.window: Any = None
         self.children: List['Widget'] = []
         self.row = 0
@@ -53,8 +57,8 @@ class Widget(Target):
 
         try:
             origin = 1 if self.border else 0
-            self.window.move(origin, origin)
-            self.window.addstr(self.content)
+            self.window.addstr(
+                origin, origin, self.content, color_pair(self.color))
             self.window.noutrefresh()
         except CursesError:
             pass

@@ -4,12 +4,14 @@ import asyncio
 from signal import signal, SIGINT
 from typing import List, Any
 from .widget import Widget, Event, Target
+from .palette import DefaultPalette, Palette
 
 
 class Application(Widget):
-    def __init__(self) -> None:
+    def __init__(self, palette: Palette = None) -> None:
         super().__init__(None)
         self.active = True
+        self.palette = palette or DefaultPalette()
         self._rate = 1 / 20
         signal(SIGINT, self._interrupt)
 
@@ -77,6 +79,9 @@ class Application(Widget):
         curses.mousemask(
             curses.ALL_MOUSE_EVENTS | curses.REPORT_MOUSE_POSITION)
         curses.start_color()
+        curses.use_default_colors()
+        for pair, foreground, background in self.palette.generate():
+            curses.init_pair(pair, foreground, background)
 
     def _clear_screen(self) -> None:
         self.window.clear()

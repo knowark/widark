@@ -42,6 +42,7 @@ def test_widget_instantiation_defaults():
     assert widget.col_span == 1
     assert widget.col_weight == 1
     assert widget.row_weight == 1
+    assert widget.color == 0
 
 
 def test_widget_instantiation_arguments():
