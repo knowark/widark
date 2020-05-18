@@ -1,7 +1,6 @@
 from typing import Optional
 from ..widget import Widget
 from ..style import Style
-from ..event import Handler
 
 
 class Label(Widget):

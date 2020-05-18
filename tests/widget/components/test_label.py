@@ -1,4 +1,3 @@
-from pytest import mark
 from widark.widget import Label
 
 

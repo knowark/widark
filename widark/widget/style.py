@@ -12,7 +12,7 @@ class Style:
                   background_color: str = '',
                   border_color: str = '',
                   border: List[int] = [],
-                  align: str = 'LL',
+                  align: str = '',
                   template: str = '') -> None:
         self.border: List[int] = border or getattr(self, 'border', [])
         self.color = color or getattr(self, 'color', 'DEFAULT')

@@ -1,18 +1,17 @@
 import asyncio
-from widark import Application, Widget, Event, Style, Button, Label
+from widark import Application, Widget, Event, Style, Button, Label, Spacer
 from .content import Content
 
 
 class Main(Application):
     async def build(self):
-        self._style.border = [
-            ord('/'), ord('\\'), ord('^'), ord('v'), 0, 0, 0, 0]
+        self.style(
+            border=[ord('/'), ord('\\'), ord('^'), ord('v'), 0, 0, 0, 0])
 
         child_a = Widget(self, style=Style(border=[0])).grid(0)
 
         Label(child_a, 'Label:').grid(0, 0)
-        Widget(child_a).grid(0, 1)  # spacer
-
+        Spacer(child_a).grid(0, 1)
         Button(child_a, 'Button', self.say_hello).grid(0, 2)
 
         Widget(child_a, 'Details', Style(border=[0])
