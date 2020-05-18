@@ -75,18 +75,15 @@ class Widget(Target):
         return self
 
     def grid(self, row=0, col=0) -> 'Widget':
-        self._row = row
-        self._col = col
+        self._row, self._col = row, col
         return self
 
     def span(self, row=1, col=1) -> 'Widget':
-        self._row_span = row
-        self._col_span = col
+        self._row_span, self._col_span = row, col
         return self
 
     def weight(self, row=1, col=1) -> 'Widget':
-        self._row_weight = row
-        self._col_weight = col
+        self._row_weight, self._col_weight = row, col
         return self
 
     def layout(self) -> List[Tuple['Widget', Dict[str, int]]]:
