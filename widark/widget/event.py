@@ -24,38 +24,38 @@ Handler = Callable[[Event], Awaitable]
 class Target:
     def __init__(self) -> None:
         self.parent: Optional['Target'] = None
-        self.y_min = 0
-        self.x_min = 0
-        self.y_max = 1
-        self.x_max = 1
-        self.capture_listeners: Dict[str, List[Handler]] = (
+        self._y_min = 0
+        self._x_min = 0
+        self._y_max = 1
+        self._x_max = 1
+        self._capture_listeners: Dict[str, List[Handler]] = (
             defaultdict(lambda: []))
-        self.bubble_listeners: Dict[str, List[Handler]] = (
+        self._bubble_listeners: Dict[str, List[Handler]] = (
             defaultdict(lambda: []))
 
     def hit(self, event: Event) -> bool:
-        return (self.y_min <= event.y <= self.y_max and
-                self.x_min <= event.x <= self.x_max)
+        return (self._y_min <= event.y <= self._y_max and
+                self._x_min <= event.x <= self._x_max)
 
     def listen(self, type: str, handler: Handler,
                capture: bool = False) -> None:
-        listeners = (self.capture_listeners if capture
-                     else self.bubble_listeners)
+        listeners = (self._capture_listeners if capture
+                     else self._bubble_listeners)
         listeners[type].append(handler)
 
     def ignore(self, type: str, handler: Handler,
                capture: bool = False) -> None:
-        listeners = (self.capture_listeners if capture
-                     else self.bubble_listeners)
+        listeners = (self._capture_listeners if capture
+                     else self._bubble_listeners)
         listeners[type].remove(handler)
 
     async def dispatch(self, event: Event) -> None:
         if event.phase == 'Capture':
-            for listener in self.capture_listeners.get(event.type, []):
+            for listener in self._capture_listeners.get(event.type, []):
                 await listener(event)
 
         elif event.phase == 'Bubble':
-            for listener in self.bubble_listeners.get(event.type, []):
+            for listener in self._bubble_listeners.get(event.type, []):
                 await listener(event)
 
         elif event.phase == 'Target':

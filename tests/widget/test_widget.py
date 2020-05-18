@@ -33,10 +33,10 @@ def test_widget_attach(root):
     assert widget in root.children
     assert widget.window is not None
     assert relative_coordinates == (1, 2)
-    assert widget.y_min == 1
-    assert widget.x_min == 2
-    assert widget.y_max == 18
-    assert widget.x_max == 90
+    assert widget._y_min == 1
+    assert widget._x_min == 2
+    assert widget._y_max == 18
+    assert widget._x_max == 90
 
 
 def test_widget_attach_error(root):

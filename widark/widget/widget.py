@@ -35,8 +35,8 @@ class Widget(Target):
             try:
                 self.window = factory(height, width, row, col)
                 h, w = self.size()
-                self.y_min, self.x_min = self.window.getbegyx()
-                self.y_max, self.x_max = self.y_min + h, self.x_min + w
+                self._y_min, self._x_min = self.window.getbegyx()
+                self._y_max, self._x_max = self._y_min + h, self._x_min + w
             except CursesError:
                 return self
 

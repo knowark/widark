@@ -30,21 +30,21 @@ def test_event_instantiation_arguments():
 def test_target_instantiation_defaults():
     target = Target()
     assert target.parent is None
-    assert target.y_min == 0
-    assert target.x_min == 0
-    assert target.y_max == 1
-    assert target.x_max == 1
-    assert target.capture_listeners == {}
-    assert target.bubble_listeners == {}
+    assert target._y_min == 0
+    assert target._x_min == 0
+    assert target._y_max == 1
+    assert target._x_max == 1
+    assert target._capture_listeners == {}
+    assert target._bubble_listeners == {}
 
 
 def test_target_hit():
     event = Event('Mouse', 'click', y=3, x=7)
     target = Target()
-    target.y_min = 1
-    target.x_min = 6
-    target.y_max = 5
-    target.x_max = 10
+    target._y_min = 1
+    target._x_min = 6
+    target._y_max = 5
+    target._x_max = 10
 
     hit = target.hit(event)
 
@@ -54,10 +54,10 @@ def test_target_hit():
 def test_target_not_hit():
     event = Event('Mouse', 'click', y=3, x=15)
     target = Target()
-    target.y_min = 1
-    target.x_min = 6
-    target.y_max = 5
-    target.x_max = 10
+    target._y_min = 1
+    target._x_min = 6
+    target._y_max = 5
+    target._x_max = 10
 
     hit = target.hit(event)
 
@@ -72,11 +72,11 @@ def test_target_listen():
 
     target.listen('click', click_handler)
 
-    assert click_handler in target.bubble_listeners['click']
+    assert click_handler in target._bubble_listeners['click']
 
     target.listen('click', click_handler, True)
 
-    assert click_handler in target.capture_listeners['click']
+    assert click_handler in target._capture_listeners['click']
 
 
 def test_target_ignore():
@@ -85,46 +85,46 @@ def test_target_ignore():
     async def click_handler(event: Event) -> None:
         pass
 
-    target.capture_listeners['click'].append(click_handler)
-    target.bubble_listeners['click'].append(click_handler)
+    target._capture_listeners['click'].append(click_handler)
+    target._bubble_listeners['click'].append(click_handler)
 
     target.ignore('click', click_handler)
 
-    assert target.bubble_listeners['click'] == []
+    assert target._bubble_listeners['click'] == []
 
     target.ignore('click', click_handler, True)
 
-    assert target.capture_listeners['click'] == []
+    assert target._capture_listeners['click'] == []
 
 
 @fixture
 def targets():
     first = Target()
-    first.y_min = 0
-    first.x_min = 0
-    first.y_max = 12
-    first.x_max = 12
+    first._y_min = 0
+    first._x_min = 0
+    first._y_max = 12
+    first._x_max = 12
 
     second = Target()
     second.parent = first
-    second.y_min = 3
-    second.x_min = 3
-    second.y_max = 6
-    second.x_max = 9
+    second._y_min = 3
+    second._x_min = 3
+    second._y_max = 6
+    second._x_max = 9
 
     third = Target()
     third.parent = first
-    third.y_min = 7
-    third.x_min = 3
-    third.y_max = 11
-    third.x_max = 11
+    third._y_min = 7
+    third._x_min = 3
+    third._y_max = 11
+    third._x_max = 11
 
     fourth = Target()
     fourth.parent = third
-    fourth.y_min = 8
-    fourth.x_min = 6
-    fourth.y_max = 10
-    fourth.x_max = 8
+    fourth._y_min = 8
+    fourth._x_min = 6
+    fourth._y_max = 10
+    fourth._x_max = 8
 
     return first, second, third, fourth
 
@@ -143,17 +143,17 @@ async def test_target_dispatch(targets):
         calls.append('bubble')
 
     first.listen('click', capture_click_handler, True)
-    assert capture_click_handler in first.capture_listeners['click']
+    assert capture_click_handler in first._capture_listeners['click']
 
     fourth.listen('click', bubble_click_handler)
-    assert bubble_click_handler in fourth.bubble_listeners['click']
+    assert bubble_click_handler in fourth._bubble_listeners['click']
     assert fourth.parent.parent == first
 
     event = Event('Mouse', 'click', y=9, x=7)
     await fourth.dispatch(event)  # Dispatch
 
-    assert len(first.capture_listeners['click']) == 1
-    assert len(fourth.bubble_listeners['click']) == 1
+    assert len(first._capture_listeners['click']) == 1
+    assert len(fourth._bubble_listeners['click']) == 1
     assert calls == ['capture', 'bubble']
 
 
@@ -171,10 +171,10 @@ async def test_target_dispatch_with_given_event_path(targets):
         calls.append('bubble')
 
     first.listen('click', capture_click_handler, True)
-    assert capture_click_handler in first.capture_listeners['click']
+    assert capture_click_handler in first._capture_listeners['click']
 
     fourth.listen('click', bubble_click_handler)
-    assert bubble_click_handler in fourth.bubble_listeners['click']
+    assert bubble_click_handler in fourth._bubble_listeners['click']
     assert fourth.parent.parent == first
 
     event = Event('Mouse', 'click', y=9, x=7)
@@ -184,6 +184,6 @@ async def test_target_dispatch_with_given_event_path(targets):
     ]
     await fourth.dispatch(event)  # Dispatch
 
-    assert len(first.capture_listeners['click']) == 1
-    assert len(fourth.bubble_listeners['click']) == 1
+    assert len(first._capture_listeners['click']) == 1
+    assert len(fourth._bubble_listeners['click']) == 1
     assert calls == ['bubble']
