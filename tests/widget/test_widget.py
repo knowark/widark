@@ -170,6 +170,16 @@ def test_widget_attach_children(root):
     assert child_c.window is not None
 
 
+def test_widget_place(root):
+    # height, width = 18, 90
+    assert Widget(root).attach().place() == (0, 0)
+    assert Widget(root, 'ABC',  Style(align='C')).attach().place() == (8, 43)
+    assert Widget(root, 'ABC', Style(align='R')).attach().place() == (17, 87)
+    assert Widget(root, 'ABC', Style(align='CR')).attach().place() == (8, 87)
+    assert Widget(
+        root, 'ABC' * 40, Style(align='CC')).attach().place() == (8, 0)
+
+
 def test_widget_layout_sequences(root):
     parent = Widget(root)
 

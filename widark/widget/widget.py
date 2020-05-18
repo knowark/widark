@@ -54,13 +54,8 @@ class Widget(Target):
             return self
 
         try:
-            origin, loss = (1, 2) if self._style.border else (0, 0)
-            height, width = self.size()
-            fill = len(self.content)
-            y, x = self._style.place(
-                max(height - loss, 1), max(width - loss, 1), fill)
-            self.window.addstr(
-                y + origin, x + origin, self.content, self._style.color)
+            y, x = self.place()
+            self.window.addstr(y, x, self.content, self._style.color)
             self.window.noutrefresh()
         except CursesError:
             pass
@@ -85,6 +80,27 @@ class Widget(Target):
     def weight(self, row=1, col=1) -> 'Widget':
         self._row_weight, self._col_weight = row, col
         return self
+
+    def place(self) -> Tuple[int, int]:
+        y, x = 0, 0
+        h, w = self.size()
+        origin, loss = (1, 2) if self._style.border else (0, 0)
+        height, width = max(h - loss, 1), max(w - loss, 1)
+        fill = len(self.content)
+        vertical, horizontal = (
+            (3 - len(self._style.align)) * self._style.align)
+
+        if vertical == 'C':
+            y = int(max(height - ceil(fill / width), 0) / 2)
+        elif vertical == 'R':
+            y = max(height - ceil(fill / width), 0)
+
+        if horizontal == 'C':
+            x = int(max(width - fill, 0) / 2)
+        elif horizontal == 'R':
+            x = max(width - fill, 0)
+
+        return y + origin, x + origin
 
     def layout(self) -> List[Tuple['Widget', Dict[str, int]]]:
         if not self.window or not self.children:
