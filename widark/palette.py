@@ -4,8 +4,6 @@ from .widget import Color
 
 
 class Palette:
-    REVERSE = curses.A_REVERSE
-
     def generate(self) -> List[Tuple[int, int, int]]:
         raise NotImplementedError('Please provide your own palette.')
 
