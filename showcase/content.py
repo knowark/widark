@@ -6,9 +6,9 @@ class Content(Widget):
         child_c_1 = Widget(self, style=Style(border=[0])).grid(0, 1)
         Widget(child_c_1, 'Content UP', Style('SUCCESS', border=[0])).grid(0)
         Widget(child_c_1, 'Content MIDDLE UP',
-               Style('WARNING', border=[0])).grid(1)
+               Style('WARNING', border=[0], align='C')).grid(1)
         Widget(child_c_1, 'Content MIDDLE DOWN',
-               Style('DANGER', border=[0])).grid(2)
+               Style('DANGER', border=[0], align='R')).grid(2)
         Widget(child_c_1, 'Content DOWN', Style('LIGHT', border=[0])).grid(3)
         self.listen('click', self.on_click)
 

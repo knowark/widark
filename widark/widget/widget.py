@@ -54,8 +54,13 @@ class Widget(Target):
             return self
 
         try:
-            origin = 1 if self.style.border else 0
-            self.window.addstr(origin, origin, self.content, self.style.color)
+            origin, loss = (1, 2) if self.style.border else (0, 0)
+            height, width = self.size()
+            fill = len(self.content)
+            y, x = self.style.place(
+                max(height - loss, 1), max(width - loss, 1), fill)
+            self.window.addstr(
+                y + origin, x + origin, self.content, self.style.color)
             self.window.noutrefresh()
         except CursesError:
             pass
