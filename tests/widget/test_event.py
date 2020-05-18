@@ -97,6 +97,24 @@ def test_target_ignore():
     assert target._capture_listeners['click'] == []
 
 
+def test_target_ignore_all():
+    target = Target()
+
+    async def click_handler(event: Event) -> None:
+        pass
+
+    target._capture_listeners['click'].append(click_handler)
+    target._bubble_listeners['click'].append(click_handler)
+
+    target.ignore('click')
+
+    assert target._bubble_listeners['click'] == []
+
+    target.ignore('click', capture=True)
+
+    assert target._capture_listeners['click'] == []
+
+
 @fixture
 def targets():
     first = Target()
