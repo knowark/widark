@@ -50,20 +50,28 @@ class Widget(Target):
 
         return self.update()
 
+    def settle(self) -> None:
+        """Custom settlement"""
+
     def update(self) -> 'Widget':
         if not self.window:
             return self
 
         try:
+            self.settle()
             y, x = self.place()
             content = self._style.template.format(self.content)
             color = color_pair(Color[self._style.color])
             self.window.addstr(y, x, content, color)
+            self.amend()
             self.window.noutrefresh()
         except CursesError:
             pass
 
         return self
+
+    def amend(self) -> None:
+        """Custom amendment"""
 
     def size(self) -> Tuple[int, int]:
         return self.window.getmaxyx() if self.window else (0, 0)

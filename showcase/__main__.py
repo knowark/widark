@@ -1,5 +1,6 @@
 import asyncio
-from widark import Application, Widget, Event, Style, Button, Label, Spacer
+from widark import (
+    Application, Widget, Event, Style, Button, Label, Spacer, Frame)
 from .content import Content
 
 
@@ -17,7 +18,9 @@ class Main(Application):
         Widget(child_a, 'Details', Style(border=[0])
                ).grid(1, 0).span(col=3).weight(3)
 
-        Widget(self, 'World', Style(border=[0])).grid(1)
+        Frame(self, 'World').grid(1)
+
+        # Widget(self, 'World', Style(border=[0])).grid(1)
 
         child_c = Content(self, style=Style(border=[0])).grid(
             0, 1).span(2).weight(col=3)
