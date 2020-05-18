@@ -1,18 +1,22 @@
 from typing import Optional
+from curses import color_pair
 from ..widget import Widget
-from ..style import Style
+from ..style import Style, Color
 
 
 class Frame(Widget):
     def __init__(self, parent: Optional['Widget'],
                  title: str = '',
-                 title_align: str = 'C',
-                 title_template: str = ' {} ') -> None:
+                 title_style: Style = None,
+                 style: Style = None) -> None:
         self.title = title
-        self.title_align = title_align
-        self.title_template = title_template
-        style = Style(border=[0])
-        super().__init__(parent, style=style)
+        self._title_style = (
+            title_style or Style(align='C', template=' {} '))
+        super().__init__(parent, style=style or Style(border=[0]))
+
+    def title_style(self, *args, **kwargs) -> 'Widget':
+        self._title_style.configure(*args, **kwargs)
+        return self
 
     def settle(self) -> None:
         x = 0
@@ -21,10 +25,11 @@ class Frame(Widget):
         origin, loss = (1, 2) if self._style.border else (0, 0)
         width = max(w - loss, 1)
 
-        if self.title_align == 'C':
+        if self._title_style.align == 'C':
             x = int(max(width - fill, 0) / 2)
-        elif self.title_align == 'R':
+        elif self._title_style.align == 'R':
             x = max(width - fill, 0)
 
-        title = self.title_template.format(self.title)
-        self.window.addstr(0, x + origin, title)
+        title = self._title_style.template.format(self.title)
+        color = color_pair(Color[self._title_style.color])
+        self.window.addstr(0, x + origin, title, color)

@@ -18,7 +18,7 @@ class Main(Application):
         Widget(child_a, 'Details', Style(border=[0])
                ).grid(1, 0).span(col=3).weight(3)
 
-        Frame(self, 'World').grid(1)
+        Frame(self, 'World').title_style('WARNING').grid(1)
 
         # Widget(self, 'World', Style(border=[0])).grid(1)
 
