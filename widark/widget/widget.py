@@ -34,7 +34,7 @@ class Widget(Target):
             factory = self.parent.window.derwin  # type: ignore
             try:
                 self.window = factory(height, width, row, col)
-                h, w = self.window.getmaxyx()
+                h, w = self.size()
                 self.y_min, self.x_min = self.window.getbegyx()
                 self.y_max, self.x_max = self.y_min + h, self.x_min + w
             except CursesError:
@@ -61,6 +61,9 @@ class Widget(Target):
             pass
 
         return self
+
+    def size(self) -> Tuple[int, int]:
+        return self.window.getmaxyx() if self.window else (0, 0)
 
     def grid(self, row=0, col=0) -> 'Widget':
         self.row = row

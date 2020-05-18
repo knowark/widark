@@ -131,6 +131,19 @@ def test_widget_update(root):
     assert window_text == b'Hello World'
 
 
+def test_widget_size(root):
+    widget = Widget(root)
+    widget.content = 'Hello World'
+
+    assert widget.size() == (0, 0)
+
+    widget = widget.attach().update()
+
+    curses.doupdate()
+
+    assert widget.size() == (18, 90)
+
+
 def test_widget_update_error(root):
     root.window.resize(1, 1)
 
