@@ -1,4 +1,3 @@
-import curses
 from typing import List, Tuple
 from .widget import Color
 
