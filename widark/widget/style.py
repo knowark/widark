@@ -8,10 +8,12 @@ class Style:
                  background_color: str = 'DEFAULT',
                  border_color: str = 'DEFAULT',
                  border: List[int] = None,
-                 align: str = 'LL') -> None:
+                 align: str = 'LL',
+                 template: str = '{}') -> None:
         self.border: List[int] = border or []
         self.align = (align if all(char in 'LCR' for char in list(align))
                       and len(align) <= 2 else 'LL')
+        self.template = template
         self._color = Color[color]
         self._background_color = Color[background_color]
         self._border_color = Color[border_color]

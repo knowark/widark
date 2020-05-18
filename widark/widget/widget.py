@@ -55,7 +55,8 @@ class Widget(Target):
 
         try:
             y, x = self.place()
-            self.window.addstr(y, x, self.content, self._style.color)
+            content = self._style.template.format(self.content)
+            self.window.addstr(y, x, content, self._style.color)
             self.window.noutrefresh()
         except CursesError:
             pass
@@ -86,7 +87,7 @@ class Widget(Target):
         h, w = self.size()
         origin, loss = (1, 2) if self._style.border else (0, 0)
         height, width = max(h - loss, 1), max(w - loss, 1)
-        fill = len(self.content)
+        fill = len(self._style.template.format(self.content))
         vertical, horizontal = (
             (3 - len(self._style.align)) * self._style.align)
 
