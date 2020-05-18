@@ -1,2 +1,2 @@
 from .application import Application
-from .widget import Widget, Event, Style, Color
+from .widget import *
