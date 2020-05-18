@@ -1,5 +1,5 @@
 import asyncio
-from widark import Application, Widget, Style
+from widark import Application, Widget, Event, Style, Button
 from .content import Content
 
 
@@ -11,7 +11,9 @@ class Main(Application):
         child_a = Widget(self, style=Style(border=[0])).grid(0)
         Widget(child_a, 'Label:').grid(0, 0)
         Widget(child_a).grid(0, 1)  # spacer
-        Widget(child_a, '<Button>').grid(0, 2)
+
+        Button(child_a, 'Button', self.say_hello).grid(0, 2)
+
         Widget(child_a, 'Details', Style(border=[0])
                ).grid(1, 0).span(col=3).weight(3)
 
@@ -20,6 +22,9 @@ class Main(Application):
         child_c = Content(self, style=Style(border=[0])).grid(
             0, 1).span(2).weight(col=3)
         Widget(child_c, style=Style(border=[0])).grid(0, 2)
+
+    async def say_hello(self, event: Event) -> None:
+        print('Hello!')
 
 
 if __name__ == '__main__':

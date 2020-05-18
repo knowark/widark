@@ -15,7 +15,7 @@ def test_style_instantiation_defaults(monkeypatch):
 
     monkeypatch.setattr(curses, "color_pair", mock_color_pair)
 
-    assert style.color == Color.DEFAULT
-    assert style.background_color == Color.DEFAULT
+    assert style.color == 'DEFAULT'
+    assert style.background_color == 'DEFAULT'
     assert style.align == 'LL'
     assert style.template == '{}'

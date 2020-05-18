@@ -97,7 +97,7 @@ def test_widget_style(root):
 
     assert isinstance(widget, Widget)
     assert widget._style.align == 'C'
-    assert widget._style._color == 2
+    assert widget._style.color == 'SECONDARY'
 
 
 def test_widget_update(root):

@@ -7,10 +7,8 @@ pytestmark = mark.asyncio
 
 def test_button_instantiation_defaults(root):
     button = Button(root)
-    assert button.text == ''
-    assert button.template == '< {} >'
-    assert button.content == '<  >'
-    assert button.command is None
+    assert button._style.template == '< {} >'
+    assert button.content == ''
 
 
 async def test_button_command(root):
@@ -26,6 +24,5 @@ async def test_button_command(root):
 
     await button.dispatch(event)
 
-    assert button.content == '< Accept >'
-    assert button.command is custom_command
+    assert button.content == 'Accept'
     assert command_called is True

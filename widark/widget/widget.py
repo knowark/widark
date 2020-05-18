@@ -1,8 +1,9 @@
 from math import ceil
 from typing import List, Dict, Optional, Tuple, Any
 from _curses import error as CursesError
+from curses import color_pair
 from .event import Target
-from .style import Style
+from .style import Style, Color
 
 
 class Widget(Target):
@@ -41,7 +42,7 @@ class Widget(Target):
                 return self
 
         if self.window and self._style.border:
-            self.window.attrset(self._style.border_color)
+            self.window.attrset(color_pair(Color[self._style.border_color]))
             self.window.border(*self._style.border)
 
         for child, dimensions in self.layout():
@@ -56,7 +57,8 @@ class Widget(Target):
         try:
             y, x = self.place()
             content = self._style.template.format(self.content)
-            self.window.addstr(y, x, content, self._style.color)
+            color = color_pair(Color[self._style.color])
+            self.window.addstr(y, x, content, color)
             self.window.noutrefresh()
         except CursesError:
             pass
@@ -67,7 +69,7 @@ class Widget(Target):
         return self.window.getmaxyx() if self.window else (0, 0)
 
     def style(self, *args, **kwargs) -> 'Widget':
-        self._style = Style(*args, **kwargs)
+        self._style.configure(*args, **kwargs)
         return self
 
     def grid(self, row=0, col=0) -> 'Widget':

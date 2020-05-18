@@ -5,11 +5,9 @@ from ..event import Handler
 
 
 class Button(Widget):
-    def __init__(self, parent: Optional['Widget'], text: str = '',
+    def __init__(self, parent: Optional['Widget'], content: str = '',
                  command: Handler=None, style: Style = None) -> None:
-        self.text = text
-        self.template = '< {} >'
-        self.command = command
-        super().__init__(parent, self.template.format(self.text), style)
-        if self.command:
-            self.listen('click', self.command)
+        style = style or Style('PRIMARY', align='C', template='< {} >')
+        super().__init__(parent, content, style)
+        if command:
+            self.listen('click', command)
