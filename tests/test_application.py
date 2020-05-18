@@ -14,11 +14,10 @@ pytestmark = mark.asyncio
 def application():
     class CustomApplication(Application):
         async def build(self) -> None:
-            self.border = [0]
-            self.first = Widget(self, 'First Child', [0]).grid(0, 0)
-            self.second = Widget(self, 'Second Child', [0]).grid(0, 1)
-            self.third = Widget(self.first, 'Third Child', [0]).grid(0)
-            self.fourth = Widget(self.first, 'Fourth Child', [0]).grid(1)
+            self.first = Widget(self, 'First Child').grid(0, 0)
+            self.second = Widget(self, 'Second Child').grid(0, 1)
+            self.third = Widget(self.first, 'Third Child').grid(0)
+            self.fourth = Widget(self.first, 'Fourth Child').grid(1)
 
         def _start_screen(self) -> None:
             super()._start_screen()

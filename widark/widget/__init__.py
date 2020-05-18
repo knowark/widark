@@ -1,3 +1,3 @@
-from .color import Color
+from .style import Style, Color
 from .widget import Widget
 from .event import Event, Target

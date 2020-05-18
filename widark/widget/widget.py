@@ -1,20 +1,17 @@
+from math import ceil
 from typing import List, Dict, Optional, Tuple, Any
 from _curses import error as CursesError
-from curses import color_pair
-from math import ceil
-from .color import Color
 from .event import Target
+from .style import Style
 
 
 class Widget(Target):
     def __init__(self, parent: Optional['Widget'],
-                 content: str = '', border: List[int] = None,
-                 color: Color = Color.DEFAULT) -> None:
+                 content: str = '', style: Style = None) -> None:
         super().__init__()
         self.parent: Optional['Widget'] = parent
         self.content = content
-        self.border: List[int] = border or []
-        self.color = color
+        self.style = style or Style()
         self.window: Any = None
         self.children: List['Widget'] = []
         self.row = 0
@@ -43,8 +40,9 @@ class Widget(Target):
             except CursesError:
                 return self
 
-        if self.window and self.border:
-            self.window.border(*self.border)
+        if self.window and self.style.border:
+            self.window.attrset(self.style.border_color)
+            self.window.border(*self.style.border)
 
         for child, dimensions in self.layout():
             child.attach(**dimensions).update()
@@ -56,9 +54,8 @@ class Widget(Target):
             return self
 
         try:
-            origin = 1 if self.border else 0
-            self.window.addstr(
-                origin, origin, self.content, color_pair(self.color))
+            origin = 1 if self.style.border else 0
+            self.window.addstr(origin, origin, self.content, self.style.color)
             self.window.noutrefresh()
         except CursesError:
             pass
@@ -86,7 +83,7 @@ class Widget(Target):
 
         row_origin, col_origin = 0, 0
         total_height, total_width = self.window.getmaxyx()
-        if self.border:
+        if self.style.border:
             row_origin, col_origin = 1, 1
             total_height, total_width = total_height - 2, total_width - 2
 

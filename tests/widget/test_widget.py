@@ -1,6 +1,6 @@
 import curses
 from pytest import fixture
-from widark.widget import Widget, Target
+from widark.widget import Widget, Target, Style
 
 
 @fixture
@@ -32,9 +32,9 @@ def test_widget_instantiation_defaults():
     widget = Widget(None)
     assert isinstance(widget, Widget)
     assert isinstance(widget, Target)
+    assert isinstance(widget.style, Style)
     assert widget.parent is None
     assert widget.children == []
-    assert widget.border == []
     assert widget.content == ''
     assert widget.row == 0
     assert widget.col == 0
@@ -42,13 +42,12 @@ def test_widget_instantiation_defaults():
     assert widget.col_span == 1
     assert widget.col_weight == 1
     assert widget.row_weight == 1
-    assert widget.color == 0
 
 
 def test_widget_instantiation_arguments():
-    widget = Widget(None, 'Custom Content', [0])
+    widget = Widget(None, 'Custom Content', Style(border=[1]))
     assert isinstance(widget, Widget)
-    assert widget.border == [0]
+    assert widget.style.border == [1]
     assert widget.content == 'Custom Content'
 
 
@@ -254,7 +253,7 @@ def test_widget_layout_weight(root):
 
 def test_widget_layout_with_border(root):
     parent = Widget(root)
-    parent.border = [0]
+    parent.style.border = [0]
 
     child_a = Widget(parent).span(2, 2)
     child_b = Widget(parent).grid(1, 2).span(2).weight(col=2)

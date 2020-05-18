@@ -4,19 +4,22 @@ from .widget import Color
 
 
 class Palette:
+    REVERSE = curses.A_REVERSE
+
     def generate(self) -> List[Tuple[int, int, int]]:
         raise NotImplementedError('Please provide your own palette.')
 
 
 class DefaultPalette(Palette):
+    # https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit
     def generate(self) -> List[Tuple[int, int, int]]:
         return [
-            (Color.PRIMARY, curses.COLOR_BLUE, curses.COLOR_BLACK),
-            (Color.SECONDARY, curses.COLOR_MAGENTA, curses.COLOR_BLACK),
-            (Color.SUCCESS, curses.COLOR_GREEN, curses.COLOR_BLACK),
-            (Color.DANGER, curses.COLOR_RED, curses.COLOR_BLACK),
-            (Color.WARNING, curses.COLOR_YELLOW, curses.COLOR_BLACK),
-            (Color.INFO, curses.COLOR_CYAN, curses.COLOR_BLACK),
-            (Color.LIGHT, curses.COLOR_WHITE, curses.COLOR_BLACK),
-            (Color.DARK, curses.COLOR_BLACK, curses.COLOR_BLACK)
+            (Color.PRIMARY, 12, -1),
+            (Color.SECONDARY, 8, -1),
+            (Color.SUCCESS, 10, -1),
+            (Color.DANGER, 9, -1),
+            (Color.WARNING, 11, -1),
+            (Color.INFO, 14, -1),
+            (Color.LIGHT, 15, -1),
+            (Color.DARK, 8, -1)
         ]
