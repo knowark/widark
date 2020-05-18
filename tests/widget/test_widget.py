@@ -6,10 +6,10 @@ def test_widget_instantiation_defaults():
     widget = Widget(None)
     assert isinstance(widget, Widget)
     assert isinstance(widget, Target)
-    assert isinstance(widget._style, Style)
     assert widget.parent is None
     assert widget.children == []
     assert widget.content == ''
+    assert isinstance(widget._style, Style)
     assert widget._row == 0
     assert widget._col == 0
     assert widget._row_span == 1
@@ -90,6 +90,14 @@ def test_widget_weight(root):
     assert isinstance(widget, Widget)
     assert widget._row_weight == 3
     assert widget._col_weight == 2
+
+
+def test_widget_style(root):
+    widget = Widget(root).style('SECONDARY', align='C')
+
+    assert isinstance(widget, Widget)
+    assert widget._style.align == 'C'
+    assert widget._style._color == 2
 
 
 def test_widget_update(root):

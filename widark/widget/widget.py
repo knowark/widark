@@ -70,6 +70,10 @@ class Widget(Target):
     def size(self) -> Tuple[int, int]:
         return self.window.getmaxyx() if self.window else (0, 0)
 
+    def style(self, *args, **kwargs) -> 'Widget':
+        self._style = Style(*args, **kwargs)
+        return self
+
     def grid(self, row=0, col=0) -> 'Widget':
         self._row = row
         self._col = col

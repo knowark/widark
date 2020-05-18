@@ -10,12 +10,12 @@ class Style:
                  border_color: str = 'DEFAULT',
                  border: List[int] = None,
                  align: str = 'LL') -> None:
-        self._color = Color[color]
-        self._background_color = Color[background_color]
-        self._border_color = Color[border_color]
         self.border: List[int] = border or []
         self.align = (align if all(char in 'LCR' for char in list(align))
                       and len(align) <= 2 else 'LL')
+        self._color = Color[color]
+        self._background_color = Color[background_color]
+        self._border_color = Color[border_color]
 
     @property
     def color(self):
