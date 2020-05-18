@@ -11,15 +11,15 @@ class Widget(Target):
         super().__init__()
         self.parent: Optional['Widget'] = parent
         self.content = content
-        self.style = style or Style()
-        self.window: Any = None
         self.children: List['Widget'] = []
-        self.row = 0
-        self.col = 0
-        self.row_span = 1
-        self.col_span = 1
-        self.row_weight = 1
-        self.col_weight = 1
+        self.window: Any = None
+        self._style = style or Style()
+        self._row = 0
+        self._col = 0
+        self._row_span = 1
+        self._col_span = 1
+        self._row_weight = 1
+        self._col_weight = 1
 
         if self.parent:
             self.parent.children.append(self)
@@ -40,9 +40,9 @@ class Widget(Target):
             except CursesError:
                 return self
 
-        if self.window and self.style.border:
-            self.window.attrset(self.style.border_color)
-            self.window.border(*self.style.border)
+        if self.window and self._style.border:
+            self.window.attrset(self._style.border_color)
+            self.window.border(*self._style.border)
 
         for child, dimensions in self.layout():
             child.attach(**dimensions).update()
@@ -54,13 +54,13 @@ class Widget(Target):
             return self
 
         try:
-            origin, loss = (1, 2) if self.style.border else (0, 0)
+            origin, loss = (1, 2) if self._style.border else (0, 0)
             height, width = self.size()
             fill = len(self.content)
-            y, x = self.style.place(
+            y, x = self._style.place(
                 max(height - loss, 1), max(width - loss, 1), fill)
             self.window.addstr(
-                y + origin, x + origin, self.content, self.style.color)
+                y + origin, x + origin, self.content, self._style.color)
             self.window.noutrefresh()
         except CursesError:
             pass
@@ -71,18 +71,18 @@ class Widget(Target):
         return self.window.getmaxyx() if self.window else (0, 0)
 
     def grid(self, row=0, col=0) -> 'Widget':
-        self.row = row
-        self.col = col
+        self._row = row
+        self._col = col
         return self
 
     def span(self, row=1, col=1) -> 'Widget':
-        self.row_span = row
-        self.col_span = col
+        self._row_span = row
+        self._col_span = col
         return self
 
     def weight(self, row=1, col=1) -> 'Widget':
-        self.row_weight = row
-        self.col_weight = col
+        self._row_weight = row
+        self._col_weight = col
         return self
 
     def layout(self) -> List[Tuple['Widget', Dict[str, int]]]:
@@ -91,18 +91,18 @@ class Widget(Target):
 
         row_origin, col_origin = 0, 0
         total_height, total_width = self.window.getmaxyx()
-        if self.style.border:
+        if self._style.border:
             row_origin, col_origin = 1, 1
             total_height, total_width = total_height - 2, total_width - 2
 
         cols: Dict[int, int] = {}
         rows: Dict[int, int] = {}
         for child in self.children:
-            col_weight = cols.setdefault(child.col, 1)
-            cols[child.col] = max([col_weight, child.col_weight])
+            col_weight = cols.setdefault(child._col, 1)
+            cols[child._col] = max([col_weight, child._col_weight])
 
-            row_weight = rows.setdefault(child.row, 1)
-            rows[child.row] = max([row_weight, child.row_weight])
+            row_weight = rows.setdefault(child._row, 1)
+            rows[child._row] = max([row_weight, child._row_weight])
 
         width_split = total_width / sum(cols.values())
         height_split = total_height / sum(rows.values())
@@ -119,10 +119,10 @@ class Widget(Target):
 
         layout = []
         for child in self.children:
-            row_index = row_indexes[child.row]
-            row_span = row_index + child.row_span
-            col_index = col_indexes[child.col]
-            col_span = col_index + child.col_span
+            row_index = row_indexes[child._row]
+            row_span = row_index + child._row_span
+            col_index = col_indexes[child._col]
+            col_span = col_index + child._col_span
 
             row = ceil(
                 row_origin +

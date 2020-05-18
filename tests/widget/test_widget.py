@@ -6,22 +6,22 @@ def test_widget_instantiation_defaults():
     widget = Widget(None)
     assert isinstance(widget, Widget)
     assert isinstance(widget, Target)
-    assert isinstance(widget.style, Style)
+    assert isinstance(widget._style, Style)
     assert widget.parent is None
     assert widget.children == []
     assert widget.content == ''
-    assert widget.row == 0
-    assert widget.col == 0
-    assert widget.row_span == 1
-    assert widget.col_span == 1
-    assert widget.col_weight == 1
-    assert widget.row_weight == 1
+    assert widget._row == 0
+    assert widget._col == 0
+    assert widget._row_span == 1
+    assert widget._col_span == 1
+    assert widget._col_weight == 1
+    assert widget._row_weight == 1
 
 
 def test_widget_instantiation_arguments():
     widget = Widget(None, 'Custom Content', Style(border=[1]))
     assert isinstance(widget, Widget)
-    assert widget.style.border == [1]
+    assert widget._style.border == [1]
     assert widget.content == 'Custom Content'
 
 
@@ -76,20 +76,20 @@ def test_widget_attach_dimensions(root):
     assert dimensions == (3, 2)
 
 
-def test_widget_position(root):
+def test_widget_grid(root):
     widget = Widget(root).grid(row=1, col=2)
 
     assert isinstance(widget, Widget)
-    assert widget.row == 1
-    assert widget.col == 2
+    assert widget._row == 1
+    assert widget._col == 2
 
 
 def test_widget_weight(root):
     widget = Widget(root).weight(row=3, col=2)
 
     assert isinstance(widget, Widget)
-    assert widget.row_weight == 3
-    assert widget.col_weight == 2
+    assert widget._row_weight == 3
+    assert widget._col_weight == 2
 
 
 def test_widget_update(root):
@@ -240,7 +240,7 @@ def test_widget_layout_weight(root):
 
 def test_widget_layout_with_border(root):
     parent = Widget(root)
-    parent.style.border = [0]
+    parent._style.border = [0]
 
     child_a = Widget(parent).span(2, 2)
     child_b = Widget(parent).grid(1, 2).span(2).weight(col=2)
