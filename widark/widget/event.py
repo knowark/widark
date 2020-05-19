@@ -12,7 +12,7 @@ class Event:
         self.y = attributes.get('y', 0)
         self.x = attributes.get('x', 0)
         self.bubbles = attributes.get('bubbles', True)
-        self.stopped = attributes.get('stopped', False)
+        self.stop = attributes.get('stop', False)
         self.details: Dict[str, Any] = attributes.get('details', {})
         self.phase = PHASES[attributes.get('phase', '')]
         self.path: List['Target'] = []
@@ -69,6 +69,8 @@ class Target:
             if event.bubbles:
                 event.phase = 'Bubble'
                 for element in event.path:
+                    if event.stop:
+                        return
                     event.current = element
                     await element.dispatch(event)
 
@@ -81,6 +83,8 @@ class Target:
                     path_target = path_target.parent
 
             for element in reversed(event.path):
+                if event.stop:
+                    return
                 event.current = element
                 if element == self:
                     event.phase = 'Target'

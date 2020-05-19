@@ -12,7 +12,7 @@ def test_event_instantiation_defaults():
     assert event.y == 0
     assert event.x == 0
     assert event.bubbles is True
-    assert event.stopped is False
+    assert event.stop is False
     assert event.details == {}
     assert event.phase == ''
     assert event.path == []
@@ -239,3 +239,88 @@ async def test_target_dispatch_bubbles_false(targets):
     assert len(fourth._capture_listeners['click']) == 1
     assert len(fourth._bubble_listeners['click']) == 1
     assert calls == ['capture', 'capture']
+
+
+async def test_target_dispatch_event_stop_bubbling(targets):
+    first, _, third, fourth = targets
+
+    calls = []
+
+    async def capture_click_handler(event: Event) -> None:
+        nonlocal calls
+        calls.append('capture')
+
+    async def bubble_click_handler(event: Event) -> None:
+        nonlocal calls
+        calls.append('bubble')
+
+    async def stop_click_handler(event: Event) -> None:
+        nonlocal calls
+        calls.append('bubble:stopped')
+        event.stop = True
+
+    first.listen('click', capture_click_handler, True)
+    assert capture_click_handler in first._capture_listeners['click']
+
+    third.listen('click', bubble_click_handler)
+    assert bubble_click_handler in third._bubble_listeners['click']
+    assert third.parent == first
+
+    fourth.listen('click', capture_click_handler, True)
+    fourth.listen('click', stop_click_handler)
+    assert capture_click_handler in fourth._capture_listeners['click']
+    assert stop_click_handler in fourth._bubble_listeners['click']
+    assert fourth.parent.parent == first
+
+    event = Event('Mouse', 'click', y=9, x=7)
+
+    await fourth.dispatch(event)  # Dispatch
+
+    assert len(first._capture_listeners['click']) == 1
+    assert len(third._bubble_listeners['click']) == 1
+    assert len(fourth._capture_listeners['click']) == 1
+    assert len(fourth._bubble_listeners['click']) == 1
+    assert calls == ['capture', 'capture', 'bubble:stopped']
+
+
+async def test_target_dispatch_event_stop_capturing(targets):
+    first, _, third, fourth = targets
+
+    calls = []
+
+    async def capture_click_handler(event: Event) -> None:
+        nonlocal calls
+        calls.append('capture')
+
+    async def bubble_click_handler(event: Event) -> None:
+        nonlocal calls
+        calls.append('bubble')
+
+    async def stop_click_handler(event: Event) -> None:
+        nonlocal calls
+        calls.append('capture:stopped')
+        event.stop = True
+
+    first.listen('click', capture_click_handler, True)
+    assert capture_click_handler in first._capture_listeners['click']
+
+    third.listen('click', stop_click_handler, True)
+    assert stop_click_handler in third._capture_listeners['click']
+    assert third.parent == first
+
+    fourth.listen('click', capture_click_handler, True)
+    fourth.listen('click', bubble_click_handler)
+    assert capture_click_handler in fourth._capture_listeners['click']
+    assert bubble_click_handler in fourth._bubble_listeners['click']
+    assert fourth.parent.parent == first
+
+    event = Event('Mouse', 'click', y=9, x=7)
+
+    await fourth.dispatch(event)  # Dispatch
+
+    assert len(first._capture_listeners['click']) == 1
+    assert len(third._bubble_listeners['click']) == 0
+    assert len(third._capture_listeners['click']) == 1
+    assert len(fourth._capture_listeners['click']) == 1
+    assert len(fourth._bubble_listeners['click']) == 1
+    assert calls == ['capture', 'capture:stopped']
