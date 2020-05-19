@@ -1,3 +1,4 @@
+from typing import cast
 from widark import Event, Label, Button, Frame
 
 
@@ -6,9 +7,9 @@ class Content(Frame):
         child_c_1 = Frame(self).grid(0, 1)
         Label(child_c_1, 'Content UP').style(
             'SUCCESS', border=[0], align='L').grid(0)
-        Label(child_c_1, 'Content MIDDLE UP').style(
+        Button(child_c_1, 'MIDDLE UP BUTTON', self.on_click).style(
             'WARNING', border=[0], align='C').grid(1)
-        self.button = Button(child_c_1, 'MIDDLE BUTTON', self.on_click).style(
+        Button(child_c_1, 'MIDDLE DOWN BUTTON', self.on_click).style(
             'DANGER', border=[0], align='C').grid(2)
         Label(child_c_1, 'Content DOWN').style(
             'LIGHT', border=[0]).grid(3)
@@ -16,4 +17,5 @@ class Content(Frame):
     async def on_click(self, event: Event) -> None:
         self.content = f'Clicked on: y={event.y:03d}, x={event.x:03d}'
         self.update()
-        self.button.focus()
+        button = cast(Button, event.target)
+        button.focus()

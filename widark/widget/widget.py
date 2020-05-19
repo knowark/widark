@@ -99,7 +99,9 @@ class Widget(Target):
     def focus(self: T) -> T:
         if not self.window:
             return self
-        setsyx(*self.window.getbegyx())
+        origin = 1 if self._style.border else 0
+        y, x = self.window.getbegyx()
+        setsyx(y + origin, x + origin)
         self._focused = True
         return self
 
