@@ -78,6 +78,7 @@ class Application(Widget):
         curses.cbreak()
         curses.mousemask(
             curses.ALL_MOUSE_EVENTS | curses.REPORT_MOUSE_POSITION)
+        curses.mouseinterval(100)
         curses.start_color()
         curses.use_default_colors()
         for pair, foreground, background in self.palette.generate():
