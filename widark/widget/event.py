@@ -9,10 +9,11 @@ class Event:
     def __init__(self, category: str, type: str, **attributes) -> None:
         self.category = CATEGORIES[category]
         self.type = type
-        self.y = attributes.get('y', 0)
-        self.x = attributes.get('x', 0)
-        self.bubbles = attributes.get('bubbles', True)
-        self.stop = attributes.get('stop', False)
+        self.y: int = attributes.get('y', 0)
+        self.x: int = attributes.get('x', 0)
+        self.key: str = attributes.get('key', '')
+        self.bubbles: bool = attributes.get('bubbles', True)
+        self.stop: bool = attributes.get('stop', False)
         self.details: Dict[str, Any] = attributes.get('details', {})
         self.phase = PHASES[attributes.get('phase', '')]
         self.path: List['Target'] = []

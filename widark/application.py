@@ -47,7 +47,12 @@ class Application(Widget):
             self.attach()
         elif key == curses.KEY_MOUSE:
             _, x, y, _, _ = curses.getmouse()
-            event = Event('Mouse', 'click', y=y, x=x)
+            event = Event('Mouse', 'click', y=y, x=x, key=chr(key))
+            target = self._capture(event)
+            await target.dispatch(event)
+        elif key >= 0:
+            y, x = curses.getsyx()
+            event = Event('Keyboard', 'keydown', y=y, x=x, key=chr(key))
             target = self._capture(event)
             await target.dispatch(event)
 
