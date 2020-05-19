@@ -37,8 +37,8 @@ class Target:
             defaultdict(lambda: []))
 
     def hit(self, event: Event) -> bool:
-        return (self._y_min <= event.y <= self._y_max and
-                self._x_min <= event.x <= self._x_max)
+        return (self._y_min <= event.y < self._y_max and
+                self._x_min <= event.x < self._x_max)
 
     def listen(self, type: str, handler: Handler,
                capture: bool = False) -> None:
