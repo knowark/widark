@@ -40,6 +40,15 @@ def test_widget_attach(root):
     assert widget._x_max == 90
 
 
+def test_widget_move(root):
+    widget = Widget(root).move().attach()
+
+    widget = widget.move(5, 7)
+
+    assert isinstance(widget, Widget)
+    assert widget.window.getyx() == (5, 7)
+
+
 def test_widget_attach_error(root):
     root.window.resize(1, 1)
 

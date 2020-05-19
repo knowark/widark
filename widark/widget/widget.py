@@ -57,6 +57,12 @@ class Widget(Target):
     def settle(self) -> None:
         """Custom settlement"""
 
+    def move(self: T, row=0, col=0) -> T:
+        if not self.window:
+            return self
+        self.window.move(row, col)
+        return self
+
     def update(self: T, content: str = None) -> T:
         if not self.window:
             return self
