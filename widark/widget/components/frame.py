@@ -1,11 +1,10 @@
-from typing import Optional
 from curses import color_pair
 from ..widget import Widget
 from ..style import Style, Color
 
 
 class Frame(Widget):
-    def __init__(self, parent: Optional['Widget'],
+    def __init__(self, parent: 'Widget',
                  title: str = '',
                  title_style: Style = None,
                  style: Style = None) -> None:
