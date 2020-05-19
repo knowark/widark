@@ -10,6 +10,7 @@ def test_widget_instantiation_defaults():
     assert widget.children == []
     assert widget.content == ''
     assert isinstance(widget._style, Style)
+    assert widget._focused is False
     assert widget._row == 0
     assert widget._col == 0
     assert widget._row_span == 1
@@ -275,3 +276,17 @@ def test_widget_layout_with_border(root):
     assert layout[1][1] == {'row': 5, 'col': 23, 'height': 12, 'width': 44}
     assert layout[2][0] == child_c
     assert layout[2][1] == {'row': 9, 'col': 67, 'height': 8, 'width': 22}
+
+
+def test_widget_focus(root):
+    widget = Widget(root).focus()
+
+    assert isinstance(widget, Widget)
+    assert widget._focus is True
+
+
+def test_widget_focus(root):
+    widget = Widget(root).blur()
+
+    assert isinstance(widget, Widget)
+    assert widget._focus is False

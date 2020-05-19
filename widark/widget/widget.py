@@ -18,6 +18,7 @@ class Widget(Target):
         self.children: List['Widget'] = []
         self.window: Any = None
         self._style = style or Style()
+        self._focused = False
         self._row = 0
         self._col = 0
         self._row_span = 1
@@ -93,6 +94,14 @@ class Widget(Target):
 
     def weight(self: T, row=1, col=1) -> T:
         self._row_weight, self._col_weight = row, col
+        return self
+
+    def focus(self: T) -> T:
+        self._focus = True
+        return self
+
+    def blur(self: T) -> T:
+        self._focus = False
         return self
 
     def place(self) -> Tuple[int, int]:
