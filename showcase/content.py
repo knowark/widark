@@ -14,6 +14,11 @@ class Content(Frame):
         Label(child_c_1, 'Content DOWN').style(
             'LIGHT', border=[0]).grid(3)
 
+        self.listen('keydown', self.on_keydown)
+
+    async def on_keydown(self, event: Event) -> None:
+        print('Key:', event.key, ord(event.key))
+
     async def on_click(self, event: Event) -> None:
         self.update(f'Clicked on: y={event.y:03d}, x={event.x:03d}')
         button = cast(Button, event.target)
