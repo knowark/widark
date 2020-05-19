@@ -1,9 +1,12 @@
 from math import ceil
-from typing import List, Dict, Optional, Tuple, Any
+from typing import List, Dict, Optional, Tuple, Any, TypeVar
 from _curses import error as CursesError
 from curses import color_pair
 from .event import Target
 from .style import Style, Color
+
+
+T = TypeVar('T', bound='Widget')
 
 
 class Widget(Target):
@@ -30,7 +33,7 @@ class Widget(Target):
     def setup(self) -> None:
         """Custom setup"""
 
-    def attach(self, row=0, col=0, height=0, width=0) -> 'Widget':
+    def attach(self: T, row=0, col=0, height=0, width=0) -> T:
         if self.parent:
             factory = self.parent.window.derwin  # type: ignore
             try:
@@ -53,7 +56,7 @@ class Widget(Target):
     def settle(self) -> None:
         """Custom settlement"""
 
-    def update(self) -> 'Widget':
+    def update(self: T) -> T:
         if not self.window:
             return self
 
@@ -76,19 +79,19 @@ class Widget(Target):
     def size(self) -> Tuple[int, int]:
         return self.window.getmaxyx() if self.window else (0, 0)
 
-    def style(self, *args, **kwargs) -> 'Widget':
+    def style(self: T, *args, **kwargs) -> T:
         self._style.configure(*args, **kwargs)
         return self
 
-    def grid(self, row=0, col=0) -> 'Widget':
+    def grid(self: T, row=0, col=0) -> T:
         self._row, self._col = row, col
         return self
 
-    def span(self, row=1, col=1) -> 'Widget':
+    def span(self: T, row=1, col=1) -> T:
         self._row_span, self._col_span = row, col
         return self
 
-    def weight(self, row=1, col=1) -> 'Widget':
+    def weight(self: T, row=1, col=1) -> T:
         self._row_weight, self._col_weight = row, col
         return self
 

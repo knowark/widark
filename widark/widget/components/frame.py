@@ -14,7 +14,7 @@ class Frame(Widget):
             title_style or Style(align='C', template=' {} '))
         super().__init__(parent, style=style or Style(border=[0]))
 
-    def title_style(self, *args, **kwargs) -> 'Widget':
+    def title_style(self, *args, **kwargs) -> 'Frame':
         self._title_style.configure(*args, **kwargs)
         return self
 
