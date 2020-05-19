@@ -1,7 +1,7 @@
 import asyncio
 import curses
 from widark import (
-    Application, Widget, Event, Style, Button, Label, Spacer, Frame)
+    Application, Event, Button, Label, Spacer, Frame)
 from .content import Content
 from random import randint
 

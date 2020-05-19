@@ -103,14 +103,16 @@ def test_widget_style(root):
 
 def test_widget_update(root):
     widget = Widget(root)
-    widget.content = 'Hello World'
+    assert widget.content == ''
 
-    widget = widget.attach().update()
+    content = 'Hello World'
+    widget = widget.attach().update(content)
 
     curses.doupdate()
 
     window_text = widget.window.instr(0, 0, 11)
 
+    assert widget.content == content
     assert window_text == b'Hello World'
 
 

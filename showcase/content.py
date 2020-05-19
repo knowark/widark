@@ -15,7 +15,6 @@ class Content(Frame):
             'LIGHT', border=[0]).grid(3)
 
     async def on_click(self, event: Event) -> None:
-        self.content = f'Clicked on: y={event.y:03d}, x={event.x:03d}'
-        self.update()
+        self.update(f'Clicked on: y={event.y:03d}, x={event.x:03d}')
         button = cast(Button, event.target)
         button.focus()

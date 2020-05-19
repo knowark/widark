@@ -57,16 +57,18 @@ class Widget(Target):
     def settle(self) -> None:
         """Custom settlement"""
 
-    def update(self: T) -> T:
+    def update(self: T, content: str = None) -> T:
         if not self.window:
             return self
+        if content is not None:
+            self.content = content
 
         try:
             self.settle()
             y, x = self.place()
-            content = self._style.template.format(self.content)
+            formatted_content = self._style.template.format(self.content)
             color = color_pair(Color[self._style.color])
-            self.window.addstr(y, x, content, color)
+            self.window.addstr(y, x, formatted_content, color)
             self.amend()
             self.window.noutrefresh()
         except CursesError:
