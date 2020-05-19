@@ -1,7 +1,9 @@
 import asyncio
+import curses
 from widark import (
     Application, Widget, Event, Style, Button, Label, Spacer, Frame)
 from .content import Content
+from random import randint
 
 
 class Main(Application):
@@ -22,7 +24,7 @@ class Main(Application):
         Frame(content).grid(0, 2)
 
     async def say_hello(self, event: Event) -> None:
-        print('Hello!')
+        curses.setsyx(randint(0, 20), randint(0, 120))
 
 
 if __name__ == '__main__':

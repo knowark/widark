@@ -1,7 +1,7 @@
 from math import ceil
 from typing import List, Dict, Optional, Tuple, Any, TypeVar
 from _curses import error as CursesError
-from curses import color_pair
+from curses import color_pair, setsyx
 from .event import Target
 from .style import Style, Color
 
@@ -97,11 +97,14 @@ class Widget(Target):
         return self
 
     def focus(self: T) -> T:
-        self._focus = True
+        if not self.window:
+            return self
+        setsyx(*self.window.getbegyx())
+        self._focused = True
         return self
 
     def blur(self: T) -> T:
-        self._focus = False
+        self._focused = False
         return self
 
     def place(self) -> Tuple[int, int]:

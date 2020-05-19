@@ -279,14 +279,31 @@ def test_widget_layout_with_border(root):
 
 
 def test_widget_focus(root):
-    widget = Widget(root).focus()
+    parent = Widget(root).focus()
+    assert isinstance(parent, Widget)
 
-    assert isinstance(widget, Widget)
-    assert widget._focus is True
+    child_a = Widget(parent).grid(0, 0)
+    child_b = Widget(parent).grid(0, 1)
+    assert isinstance(child_a, Widget)
+    assert isinstance(child_b, Widget)
+
+    parent.attach()
+
+    child_a.focus()
+    curses.doupdate()
+    cursor_y, cursor_x = curses.getsyx()
+    assert child_a._focused is True
+    assert (cursor_y, cursor_x) == (0, 0)
+
+    child_b.focus()
+    curses.doupdate()
+    cursor_y, cursor_x = curses.getsyx()
+    assert child_b._focused is True
+    assert (cursor_y, cursor_x) == (0, 45)
 
 
-def test_widget_focus(root):
+def test_widget_blur(root):
     widget = Widget(root).blur()
 
     assert isinstance(widget, Widget)
-    assert widget._focus is False
+    assert widget._focused is False
