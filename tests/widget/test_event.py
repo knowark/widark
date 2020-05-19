@@ -11,6 +11,8 @@ def test_event_instantiation_defaults():
     assert event.type == 'click'
     assert event.y == 0
     assert event.x == 0
+    assert event.bubbles is True
+    assert event.stopped is False
     assert event.details == {}
     assert event.phase == ''
     assert event.path == []
@@ -205,3 +207,35 @@ async def test_target_dispatch_with_given_event_path(targets):
     assert len(first._capture_listeners['click']) == 1
     assert len(fourth._bubble_listeners['click']) == 1
     assert calls == ['bubble']
+
+
+async def test_target_dispatch_bubbles_false(targets):
+    first, _, _, fourth = targets
+
+    calls = []
+
+    async def capture_click_handler(event: Event) -> None:
+        nonlocal calls
+        calls.append('capture')
+
+    async def bubble_click_handler(event: Event) -> None:
+        nonlocal calls
+        calls.append('bubble')
+
+    first.listen('click', capture_click_handler, True)
+    assert capture_click_handler in first._capture_listeners['click']
+
+    fourth.listen('click', capture_click_handler, True)
+    fourth.listen('click', bubble_click_handler)
+    assert capture_click_handler in fourth._capture_listeners['click']
+    assert bubble_click_handler in fourth._bubble_listeners['click']
+    assert fourth.parent.parent == first
+
+    event = Event('Mouse', 'click', y=9, x=7, bubbles=False)
+
+    await fourth.dispatch(event)  # Dispatch
+
+    assert len(first._capture_listeners['click']) == 1
+    assert len(fourth._capture_listeners['click']) == 1
+    assert len(fourth._bubble_listeners['click']) == 1
+    assert calls == ['capture', 'capture']

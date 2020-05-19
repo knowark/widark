@@ -11,6 +11,8 @@ class Event:
         self.type = type
         self.y = attributes.get('y', 0)
         self.x = attributes.get('x', 0)
+        self.bubbles = attributes.get('bubbles', True)
+        self.stopped = attributes.get('stopped', False)
         self.details: Dict[str, Any] = attributes.get('details', {})
         self.phase = PHASES[attributes.get('phase', '')]
         self.path: List['Target'] = []
@@ -62,10 +64,13 @@ class Target:
                 await listener(event)
 
         elif event.phase == 'Target':
-            event.phase = 'Bubble'
-            for element in event.path:
-                event.current = element
-                await element.dispatch(event)
+            for listener in self._capture_listeners.get(event.type, []):
+                await listener(event)
+            if event.bubbles:
+                event.phase = 'Bubble'
+                for element in event.path:
+                    event.current = element
+                    await element.dispatch(event)
 
         else:
             event.phase = 'Capture'
