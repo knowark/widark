@@ -30,6 +30,7 @@ class Frame(Widget):
         elif self._title_style.align == 'R':
             x = max(width - fill, 0)
 
-        title = self._title_style.template.format(self.title)
+        title = (self.title and
+                 self._title_style.template.format(self.title) or '')
         color = color_pair(Color[self._title_style.color])
         self.window.addstr(0, x + origin, title, color)
