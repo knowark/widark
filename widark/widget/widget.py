@@ -45,10 +45,6 @@ class Widget(Target):
             except CursesError:
                 return self
 
-        # if self.window and self._style.border:
-        #     self.window.attrset(color_pair(Color[self._style.border_color]))
-        #     self.window.border(*self._style.border)
-
         for child, dimensions in self.layout():
             child.attach(**dimensions).update()
 
@@ -191,14 +187,10 @@ class Widget(Target):
             col_index = col_indexes[child._col]
             col_span = col_index + child._col_span
 
-            row = ceil(
-                row_origin +
-                sum(row_weights[y] for y in
-                    range(row_index)) * height_split)
-            col = ceil(
-                col_origin +
-                sum(col_weights[x] for x in
-                    range(col_index)) * width_split)
+            row = sum(ceil(row_weights[y] * height_split) for y in
+                      range(row_index)) + row_origin
+            col = sum(ceil(col_weights[x] * width_split) for x in
+                      range(col_index)) + col_origin
 
             height = ceil(
                 sum(row_weights.get(y, 0) for y in

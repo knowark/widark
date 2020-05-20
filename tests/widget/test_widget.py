@@ -279,7 +279,7 @@ def test_widget_layout_weight(root):
     assert layout[1][0] == child_b
     assert layout[1][1] == {'row': 5, 'col': 23, 'height': 13, 'width': 45}
     assert layout[2][0] == child_c
-    assert layout[2][1] == {'row': 9, 'col': 68, 'height': 9, 'width': 22}
+    assert layout[2][1] == {'row': 10, 'col': 68, 'height': 8, 'width': 22}
 
 
 def test_widget_layout_with_border(root):
