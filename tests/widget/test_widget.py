@@ -49,6 +49,20 @@ def test_widget_move(root):
     assert widget.window.getyx() == (5, 7)
 
 
+def test_widget_clear(root):
+    widget = Widget(root, 'SUPER').attach()
+
+    window_text = widget.window.instr(0, 0, 5)
+    assert window_text == b'SUPER'
+
+    widget = widget.clear()
+    curses.doupdate()
+
+    window_text = widget.window.instr(0, 0, 5)
+    assert isinstance(widget, Widget)
+    assert window_text == b'     '
+
+
 def test_widget_attach_error(root):
     root.window.resize(1, 1)
 

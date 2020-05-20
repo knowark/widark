@@ -17,7 +17,7 @@ class Frame(Widget):
         self._title_style.configure(*args, **kwargs)
         return self
 
-    def settle(self) -> None:
+    def amend(self) -> None:
         x = 0
         _, w = self.size()
         fill = len(self.title)

@@ -14,7 +14,7 @@ def test_entry_instantiation_defaults(root):
     assert len(entry._bubble_listeners['keydown']) == 1
 
 
-async def test_button_on_click(root):
+async def test_entry_on_click(root):
     focus_called = False
 
     def mock_focus(self):
@@ -25,6 +25,8 @@ async def test_button_on_click(root):
     entry = Entry(root, 'QWERTY')
     entry.focus = MethodType(mock_focus, entry)
 
+    root.attach()
+
     event = Event('Custom', 'click')
 
     await entry.dispatch(event)
@@ -32,7 +34,7 @@ async def test_button_on_click(root):
     assert focus_called is True
 
 
-async def test_button_on_keydown_backspace(root):
+async def test_entry_on_keydown_backspace(root):
     given_content = None
 
     def mock_update(self, content):
@@ -51,7 +53,7 @@ async def test_button_on_keydown_backspace(root):
     assert given_content == 'QWERT'
 
 
-async def test_button_on_keydown_all(root):
+async def test_entry_on_keydown_all(root):
     given_content = None
 
     def mock_update(self, content):

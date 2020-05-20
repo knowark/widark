@@ -45,9 +45,9 @@ class Widget(Target):
             except CursesError:
                 return self
 
-        if self.window and self._style.border:
-            self.window.attrset(color_pair(Color[self._style.border_color]))
-            self.window.border(*self._style.border)
+        # if self.window and self._style.border:
+        #     self.window.attrset(color_pair(Color[self._style.border_color]))
+        #     self.window.border(*self._style.border)
 
         for child, dimensions in self.layout():
             child.attach(**dimensions).update()
@@ -58,9 +58,16 @@ class Widget(Target):
         """Custom settlement"""
 
     def move(self: T, row=0, col=0) -> T:
-        if not self.window:
-            return self
-        self.window.move(row, col)
+        if self.window:
+            height, width = self.window.getmaxyx()
+            self.window.move(min(row, height - 1), min(col, width - 1))
+            self.window.noutrefresh()
+        return self
+
+    def clear(self: T) -> T:
+        if self.window:
+            self.window.clear()
+            self.window.noutrefresh()
         return self
 
     def update(self: T, content: str = None) -> T:
@@ -71,10 +78,17 @@ class Widget(Target):
 
         try:
             self.settle()
+
+            if self._style.border:
+                self.window.attrset(color_pair(
+                    Color[self._style.border_color]))
+                self.window.border(*self._style.border)
+
             y, x = self.place()
             formatted_content = self._style.template.format(self.content)
             color = color_pair(Color[self._style.color])
             self.window.addstr(y, x, formatted_content, color)
+
             self.amend()
             self.window.noutrefresh()
         except CursesError:
