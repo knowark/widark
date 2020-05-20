@@ -34,13 +34,6 @@ class Widget(Target):
     def setup(self) -> None:
         """Custom setup"""
 
-    def add(self: T, child: 'Widget', index: int = None) -> T:
-        if child not in self.children:
-            child.parent = self
-            index = index or len(self.children)
-            self.children.insert(index, child)
-        return self
-
     def attach(self: T, row=0, col=0, height=0, width=0) -> T:
         if self.parent:
             factory = self.parent.window.derwin  # type: ignore
@@ -56,6 +49,16 @@ class Widget(Target):
             child.attach(**dimensions).update()
 
         return self.update()
+
+    def add(self: T, child: 'Widget', index: int = None) -> T:
+        if child not in self.children:
+            child.parent = self
+            index = index or len(self.children)
+            self.children.insert(index, child)
+            self.clear()
+            origin = 1 if self._style.border else 0
+            self.attach(origin, origin, *self.size())
+        return self
 
     def settle(self) -> None:
         """Custom settlement"""
@@ -75,8 +78,11 @@ class Widget(Target):
 
     def remove(self: T, child: 'Widget') -> T:
         if child in self.children:
-            child.parent = None
+            child.parent, child.window = None, None
             self.children.remove(child)
+            self.clear()
+            origin = 1 if self._style.border else 0
+            self.attach(origin, origin, *self.size())
         return self
 
     def update(self: T, content: str = None) -> T:
