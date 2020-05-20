@@ -100,6 +100,32 @@ def test_widget_attach_dimensions(root):
     assert dimensions == (3, 2)
 
 
+def test_widget_add(root):
+    parent = Widget(root).grid(row=1, col=2)
+    child = Widget(None)
+
+    parent.add(child)
+    parent.add(child)
+
+    assert len(parent.children) == 1
+    assert child in parent.children
+    assert child.parent is parent
+
+
+def test_widget_remove(root):
+    parent = Widget(root).grid(row=1, col=2)
+    parent.remove(root)
+
+    child = Widget(parent)
+    assert child in parent.children
+    assert child.parent is parent
+
+    parent.remove(child)
+
+    assert len(parent.children) == 0
+    assert child.parent is None
+
+
 def test_widget_grid(root):
     widget = Widget(root).grid(row=1, col=2)
 

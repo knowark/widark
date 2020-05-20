@@ -34,6 +34,13 @@ class Widget(Target):
     def setup(self) -> None:
         """Custom setup"""
 
+    def add(self: T, child: 'Widget', index: int = None) -> T:
+        if child not in self.children:
+            child.parent = self
+            index = index or len(self.children)
+            self.children.insert(index, child)
+        return self
+
     def attach(self: T, row=0, col=0, height=0, width=0) -> T:
         if self.parent:
             factory = self.parent.window.derwin  # type: ignore
@@ -64,6 +71,12 @@ class Widget(Target):
         if self.window:
             self.window.clear()
             self.window.noutrefresh()
+        return self
+
+    def remove(self: T, child: 'Widget') -> T:
+        if child in self.children:
+            child.parent = None
+            self.children.remove(child)
         return self
 
     def update(self: T, content: str = None) -> T:
