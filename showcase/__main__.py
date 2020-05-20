@@ -20,8 +20,7 @@ class Main(Application):
 
         Frame(self, 'World').title_style('WARNING').grid(1)
 
-        content = Content(self, 'Content').grid(0, 1).span(2).weight(col=3)
-        Frame(content).grid(0, 2)
+        Content(self, 'Content').grid(0, 1).span(2).weight(col=3)
 
     async def say_hello(self, event: Event) -> None:
         curses.setsyx(randint(0, 20), randint(0, 120))
