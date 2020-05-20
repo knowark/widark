@@ -9,6 +9,7 @@ def test_widget_instantiation_defaults():
     assert widget.parent is None
     assert widget.children == []
     assert widget.content == ''
+    assert widget.position == 'relative'
     assert isinstance(widget._style, Style)
     assert widget._focused is False
     assert widget._row == 0
@@ -98,6 +99,30 @@ def test_widget_attach_dimensions(root):
     assert widget.window is not None
     assert relative_coordinates == (0, 0)
     assert dimensions == (3, 2)
+
+
+def test_widget_attach_fixed(root):
+    sibling = Widget(root).grid(0, 0)
+    parent = Widget(root).grid(0, 1)
+
+    root.attach()
+
+    assert sibling.window.getbegyx() == (0, 0)
+    assert parent.window.getbegyx() == (0, 45)
+
+    fixed_widget = Widget(parent)
+    fixed_widget.position = 'fixed'
+    fixed_widget.attach(5, 5, 5, 60)
+
+    assert fixed_widget.parent is parent
+
+    coordinates = fixed_widget.window.getbegyx()
+    dimensions = fixed_widget.window.getmaxyx()
+
+    assert fixed_widget in parent.children
+    assert fixed_widget.window is not None
+    assert coordinates == (5, 5)
+    assert dimensions == (5, 60)
 
 
 def test_widget_add(root):
@@ -241,7 +266,7 @@ def test_widget_layout_sequences(root):
 
     parent.attach()
 
-    layout = parent.layout()
+    layout = parent.layout(parent.children)
 
     assert isinstance(layout, list)
     assert layout[0][0] == child_a
@@ -255,14 +280,14 @@ def test_widget_layout_sequences(root):
 def test_widget_layout_without_window_or_children(root):
     parent = Widget(None)
 
-    layout = parent.layout()
+    layout = parent.layout(parent.children)
 
     assert layout == []
     assert parent.window is None
 
     widget = Widget(root)
 
-    layout = widget.layout()
+    layout = widget.layout(widget.children)
 
     assert layout == []
     assert widget.children == []
@@ -277,7 +302,7 @@ def test_widget_layout_span(root):
 
     parent.attach()
 
-    layout = parent.layout()
+    layout = parent.layout(parent.children)
 
     assert isinstance(layout, list)
     assert layout[0][0] == child_a
@@ -297,7 +322,7 @@ def test_widget_layout_weight(root):
 
     parent.attach()
 
-    layout = parent.layout()
+    layout = parent.layout(parent.children)
 
     assert isinstance(layout, list)
     assert layout[0][0] == child_a
@@ -318,7 +343,7 @@ def test_widget_layout_with_border(root):
 
     parent.attach()
 
-    layout = parent.layout()
+    layout = parent.layout(parent.children)
 
     assert isinstance(layout, list)
     assert layout[0][0] == child_a

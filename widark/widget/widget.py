@@ -1,7 +1,7 @@
 from math import ceil
-from typing import List, Dict, Optional, Tuple, Any, TypeVar
+from typing import List, Dict, Optional, Tuple, Any, Callable, TypeVar
 from _curses import error as CursesError
-from curses import color_pair, setsyx
+from curses import color_pair, setsyx, newwin
 from .event import Target
 from .style import Style, Color
 
@@ -17,6 +17,7 @@ class Widget(Target):
         self.content = content
         self.children: List['Widget'] = []
         self.window: Any = None
+        self.position = 'relative'
         self._style = style or Style()
         self._focused = False
         self._row = 0
@@ -36,19 +37,26 @@ class Widget(Target):
 
     def attach(self: T, row=0, col=0, height=0, width=0) -> T:
         if self.parent:
-            factory = self.parent.window.derwin  # type: ignore
             try:
-                self.window = factory(height, width, row, col)
+                self.window = self.factory(height, width, row, col)
                 h, w = self.size()
                 self._y_min, self._x_min = self.window.getbegyx()
                 self._y_max, self._x_max = self._y_min + h, self._x_min + w
             except CursesError:
                 return self
 
-        for child, dimensions in self.layout():
+        relative_children = [
+            child for child in self.children if child.position == 'relative']
+        for child, dimensions in self.layout(relative_children):
             child.attach(**dimensions).update()
 
         return self.update()
+
+    def factory(self, height, width, row, col) -> Any:
+        factory = self.parent.window.derwin  # type: ignore
+        if self.position == 'fixed':
+            factory = newwin  # type: ignore
+        return factory(height, width, row, col)
 
     def add(self: T, child: 'Widget', index: int = None) -> T:
         if child not in self.children:
@@ -167,8 +175,9 @@ class Widget(Target):
 
         return y + origin, x + origin
 
-    def layout(self) -> List[Tuple['Widget', Dict[str, int]]]:
-        if not self.window or not self.children:
+    def layout(self, children: List['Widget']
+               ) -> List[Tuple['Widget', Dict[str, int]]]:
+        if not self.window or not children:
             return []
 
         row_origin, col_origin = 0, 0
@@ -179,7 +188,7 @@ class Widget(Target):
 
         cols: Dict[int, int] = {}
         rows: Dict[int, int] = {}
-        for child in self.children:
+        for child in children:
             col_weight = cols.setdefault(child._col, 1)
             cols[child._col] = max([col_weight, child._col_weight])
 
@@ -200,7 +209,7 @@ class Widget(Target):
             col_weights[x] = col_weight
 
         layout = []
-        for child in self.children:
+        for child in children:
             row_index = row_indexes[child._row]
             row_span = row_index + child._row_span
             col_index = col_indexes[child._col]
