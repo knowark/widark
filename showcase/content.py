@@ -11,8 +11,7 @@ class Content(Frame):
             'WARNING', border=[0], align='C').grid(1)
         Button(child_c_1, 'MIDDLE DOWN BUTTON', self.on_click).style(
             'DANGER', border=[0], align='C').grid(2)
-        Entry(child_c_1, 'abcdario').style('LIGHT', border=[0]).grid(3)
-        Entry(child_c_1, 'abcdario').style(border=[0]).grid(4)
+        Entry(child_c_1, 'abcdario').style('LIGHT').grid(3)
 
         self.listen('click', self.on_content_click)
 

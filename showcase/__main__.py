@@ -8,8 +8,8 @@ from random import randint
 
 class Main(Application):
     async def build(self):
-        self.style(
-            border=[ord('/'), ord('\\'), ord('^'), ord('v'), 0, 0, 0, 0])
+        # self.style(
+        #     border=[ord('/'), ord('\\'), ord('^'), ord('v'), 0, 0, 0, 0])
 
         master = Frame(self, 'Master').grid(0)
         Label(master, 'Label:').grid(0, 0)
