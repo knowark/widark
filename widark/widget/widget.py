@@ -1,7 +1,7 @@
 from math import ceil
-from typing import List, Dict, Optional, Tuple, Any, Callable, TypeVar
+from typing import List, Dict, Optional, Tuple, Any, TypeVar
 from _curses import error as CursesError
-from curses import color_pair, setsyx, newwin
+from curses import color_pair, setsyx, newwin, panel
 from .event import Target
 from .style import Style, Color
 
@@ -17,6 +17,7 @@ class Widget(Target):
         self.content = content
         self.children: List['Widget'] = []
         self.window: Any = None
+        self.panel: Any = None
         self.position = 'relative'
         self._style = style or Style()
         self._focused = False
@@ -39,6 +40,7 @@ class Widget(Target):
         if self.parent:
             try:
                 self.window = self.factory(height, width, row, col)
+                self.panel = panel.new_panel(self.window)
                 h, w = self.size()
                 self._y_min, self._x_min = self.window.getbegyx()
                 self._y_max, self._x_max = self._y_min + h, self._x_min + w
@@ -86,7 +88,8 @@ class Widget(Target):
 
     def remove(self: T, child: 'Widget') -> T:
         if child in self.children:
-            child.parent, child.window = None, None
+            child.parent = None
+            child.window, child.panel = None, None
             self.children.remove(child)
             self.clear()
             origin = 1 if self._style.border else 0

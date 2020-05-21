@@ -8,3 +8,6 @@ class Modal(Widget):
         self.style(border=[ord('+') for i in range(8)])
         self.position = 'fixed'
         self.body: Optional[Widget] = None
+
+    def amend(self) -> None:
+        self.panel.top()

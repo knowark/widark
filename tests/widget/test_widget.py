@@ -7,6 +7,8 @@ def test_widget_instantiation_defaults():
     assert isinstance(widget, Widget)
     assert isinstance(widget, Target)
     assert widget.parent is None
+    assert widget.window is None
+    assert widget.panel is None
     assert widget.children == []
     assert widget.content == ''
     assert widget.position == 'relative'
@@ -34,6 +36,7 @@ def test_widget_attach(root):
 
     assert widget in root.children
     assert widget.window is not None
+    assert widget.panel is not None
     assert relative_coordinates == (1, 2)
     assert widget._y_min == 1
     assert widget._x_min == 2
