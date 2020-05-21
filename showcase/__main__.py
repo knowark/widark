@@ -1,7 +1,7 @@
 import asyncio
 import curses
 from widark import (
-    Application, Event, Button, Label, Spacer, Frame)
+    Application, Event, Button, Label, Spacer, Frame, Modal)
 from .content import Content
 from random import randint
 
@@ -10,7 +10,6 @@ class Main(Application):
     async def build(self):
         # self.style(
         #     border=[ord('/'), ord('\\'), ord('^'), ord('v'), 0, 0, 0, 0])
-
         master = Frame(self, 'Master').grid(0)
         Label(master, 'Label:').grid(0, 0)
         Spacer(master).grid(0, 1)
