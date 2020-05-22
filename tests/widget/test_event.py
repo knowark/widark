@@ -35,8 +35,8 @@ def test_target_instantiation_defaults():
     assert target.parent is None
     assert target._y_min == 0
     assert target._x_min == 0
-    assert target._y_max == 1
-    assert target._x_max == 1
+    assert target._y_max == 0
+    assert target._x_max == 0
     assert target._capture_listeners == {}
     assert target._bubble_listeners == {}
 

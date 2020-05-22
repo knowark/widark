@@ -42,15 +42,27 @@ class Widget(Target):
                 self.window = self.factory(height, width, row, col)
                 self.panel = panel.new_panel(self.window)
                 h, w = self.size()
-                self._y_min, self._x_min = self.window.getbegyx()
+                self._y_min, self._x_min = self.beginning()
                 self._y_max, self._x_max = self._y_min + h, self._x_min + w
             except CursesError:
                 return self
 
-        relative_children = [
-            child for child in self.children if child.position == 'relative']
+        fixed_children = []
+        relative_children = []
+        for child in self.children:
+            if child.position == 'fixed':
+                fixed_children.append(child)
+            else:
+                relative_children.append(child)
+
         for child, dimensions in self.layout(relative_children):
-            child.attach(**dimensions).update()
+            child.attach(**dimensions)
+
+        for child in fixed_children:
+            y, x = child._y_min, child._x_min
+            fixed_height, fixed_width = child._y_max - y, child._x_max - x
+            if child.window:
+                child.attach(y, x, fixed_height, fixed_width)
 
         return self.update()
 
@@ -61,13 +73,14 @@ class Widget(Target):
         return factory(height, width, row, col)
 
     def add(self: T, child: 'Widget', index: int = None) -> T:
-        if child not in self.children:
-            child.parent = self
-            index = index or len(self.children)
-            self.children.insert(index, child)
-            self.clear()
-            origin = 1 if self._style.border else 0
-            self.attach(origin, origin, *self.size())
+        if child.parent:
+            child.parent.children.remove(child)
+        child.parent = self
+        index = len(self.children) if index is None else index
+        self.children.insert(index, child)
+        self.clear()
+        origin = 1 if self._style.border else 0
+        self.attach(origin, origin, *self.size())
         return self
 
     def settle(self) -> None:
@@ -124,6 +137,9 @@ class Widget(Target):
 
     def amend(self) -> None:
         """Custom amendment"""
+
+    def beginning(self) -> Tuple[int, int]:
+        return self.window.getbegyx() if self.window else (0, 0)
 
     def size(self) -> Tuple[int, int]:
         return self.window.getmaxyx() if self.window else (0, 0)

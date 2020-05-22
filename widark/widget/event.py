@@ -29,8 +29,8 @@ class Target:
         self.parent: Optional['Target'] = None
         self._y_min = 0
         self._x_min = 0
-        self._y_max = 1
-        self._x_max = 1
+        self._y_max = 0
+        self._x_max = 0
         self._capture_listeners: Dict[str, List[Handler]] = (
             defaultdict(lambda: []))
         self._bubble_listeners: Dict[str, List[Handler]] = (

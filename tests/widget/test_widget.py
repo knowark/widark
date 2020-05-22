@@ -250,6 +250,32 @@ def test_widget_attach_children(root):
     assert child_c.window is not None
 
 
+def test_widget_attach_fixed_children(root):
+    parent = Widget(root)
+
+    child_a = Widget(parent)
+    child_b = Widget(parent)
+    child_b.position = 'fixed'
+    child_c = Widget(parent)
+
+    parent.attach()
+
+    curses.doupdate()
+
+    assert parent.window is not None
+    assert child_a.window is not None
+    assert child_b.window is None
+    assert child_c.window is not None
+
+    child_b.attach(5, 5, 20, 20)
+
+    parent.attach()
+
+    curses.doupdate()
+
+    assert child_b.window is not None
+
+
 def test_widget_place(root):
     # height, width = 18, 90
     assert Widget(root).attach().place() == (0, 0)
