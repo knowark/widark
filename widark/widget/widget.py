@@ -1,7 +1,7 @@
 from math import ceil
 from typing import List, Dict, Optional, Tuple, Any, TypeVar
 from _curses import error as CursesError
-from curses import color_pair, setsyx, newwin, panel
+from curses import doupdate, setsyx, newwin, panel
 from .event import Target
 from .style import Style, Color
 
@@ -17,7 +17,6 @@ class Widget(Target):
         self.content = content
         self.children: List['Widget'] = []
         self.window: Any = None
-        self.panel: Any = None
         self.position = 'relative'
         self._style = style or Style()
         self._focused = False
@@ -40,7 +39,6 @@ class Widget(Target):
         if self.parent:
             try:
                 self.window = self.factory(height, width, row, col)
-                self.panel = panel.new_panel(self.window)
                 h, w = self.size()
                 self._y_min, self._x_min = self.beginning()
                 self._y_max, self._x_max = self._y_min + h, self._x_min + w
@@ -101,8 +99,7 @@ class Widget(Target):
 
     def remove(self: T, child: 'Widget') -> T:
         if child in self.children:
-            child.parent = None
-            child.window, child.panel = None, None
+            child.parent, child.window = None, None
             self.children.remove(child)
             self.clear()
             origin = 1 if self._style.border else 0
@@ -112,23 +109,30 @@ class Widget(Target):
     def update(self: T, content: str = None) -> T:
         if not self.window:
             return self
+
         if content is not None:
             self.content = content
 
         try:
             self.settle()
 
+            self.window.bkgd(' ', self._style.background_color)
+
             if self._style.border:
-                self.window.attrset(color_pair(
-                    Color[self._style.border_color]))
+                self.window.bkgdset(' ', self._style.border_color)
                 self.window.border(*self._style.border)
 
             y, x = self.place()
             formatted_content = self._style.template.format(self.content)
-            color = color_pair(Color[self._style.color])
-            self.window.addstr(y, x, formatted_content, color)
+
+            self.window.bkgdset(' ', self._style.color)
+            self.window.addstr(y, x, formatted_content, self._style.color)
+
+            for child in self.children:
+                child.update()
 
             self.amend()
+
             self.window.noutrefresh()
         except CursesError:
             pass

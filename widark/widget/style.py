@@ -8,23 +8,31 @@ class Style:
         self.configure(*args, **kwargs)
 
     def configure(self,
-                  color: str = '',
-                  background_color: str = '',
-                  border_color: str = '',
+                  color: int = 0,
+                  background_color: int = 0,
+                  border_color: int = 0,
                   border: List[int] = [],
                   align: str = '',
                   template: str = '') -> None:
         self.border: List[int] = border or getattr(self, 'border', [])
-        self.color = color or getattr(self, 'color', 'DEFAULT')
+        self.color = color or getattr(self, 'color', 0)
         self.background_color = background_color or (
-            getattr(self, 'background_color', 'DEFAULT'))
+            getattr(self, 'background_color', 0))
         self.border_color = border_color or (
-            getattr(self, 'border_color', 'DEFAULT'))
-        self.template = template or getattr(self, 'template', '{}')
+            getattr(self, 'border_color', 0))
         self.align = str.upper(align or getattr(self, 'align', 'LL'))
+        self.template = template or getattr(self, 'template', '{}')
 
 
-class Color(IntEnum):
+class ColorEnum(IntEnum):
+    def __call__(self) -> int:
+        return curses.color_pair(self.value)
+
+    def reverse(self) -> int:
+        return curses.color_pair(self.value) | curses.A_REVERSE
+
+
+class Color(ColorEnum):
     DEFAULT = 0
     PRIMARY = 1
     SECONDARY = 2

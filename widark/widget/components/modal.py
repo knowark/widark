@@ -1,6 +1,7 @@
-from ..event import Event
+from curses import color_pair, A_REVERSE, A_INVIS, A_DIM
+from ..style import Color
+from ..event import Event, Handler
 from ..widget import Widget
-from ..event import Handler
 
 
 class Modal(Widget):

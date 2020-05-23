@@ -16,8 +16,6 @@ def test_modal_attach(root):
     modal.attach()
 
     assert modal.window is not None
-    assert modal.panel is not None
-    assert modal.panel.above() is modal.body.panel
 
 
 async def test_modal_on_backdrop(root):

@@ -56,7 +56,6 @@ async def test_application_run(application, monkeypatch):
     build_called = False
     attach_called = False
     doupdate_called = False
-    update_panels_called = False
     stop_screen_called = False
 
     def mock_start_screen(self) -> None:
@@ -79,10 +78,6 @@ async def test_application_run(application, monkeypatch):
         nonlocal doupdate_called
         doupdate_called = True
 
-    def mock_update_panels() -> None:
-        nonlocal update_panels_called
-        update_panels_called = True
-
     def mock_stop_screen(self) -> None:
         nonlocal stop_screen_called
         stop_screen_called = True
@@ -91,7 +86,6 @@ async def test_application_run(application, monkeypatch):
     application.build = MethodType(mock_build, application)
     application.attach = MethodType(mock_attach, application)
     monkeypatch.setattr(curses, "doupdate", mock_doupdate)
-    monkeypatch.setattr(curses.panel, "update_panels", mock_update_panels)
     application._stop_screen = MethodType(mock_stop_screen, application)
 
     await asyncio.wait([application.run()], timeout=1/10)
@@ -100,7 +94,6 @@ async def test_application_run(application, monkeypatch):
     assert build_called is True
     assert attach_called is True
     assert doupdate_called is True
-    assert update_panels_called is True
     assert stop_screen_called is True
 
 

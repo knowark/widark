@@ -37,7 +37,6 @@ class Application(Widget):
 
             await self._process(key)
 
-            curses.panel.update_panels()
             curses.doupdate()
             curses.flushinp()
 

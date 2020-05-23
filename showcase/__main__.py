@@ -1,18 +1,29 @@
 import asyncio
 from widark import (
-    Application, Event, Button, Label, Frame, Modal)
+    Application, Event, Button, Label, Frame, Modal, Color)
 from .content import Content
 
 
 class Main(Application):
     async def build(self):
         self.modal = None
-        master = Frame(self, 'Master').grid(0)
-        Label(master, 'Label:').grid(0, 0)
-        Button(master, 'Create', self.launch_modal).grid(0, 1)
+        master = Frame(self, 'Master').grid(
+            0).style(background_color=Color.LIGHT.reverse(),
+                     border_color=Color.PRIMARY.reverse())
+
+        Label(master, 'Label:').grid(0, 0).style(
+            Color.DANGER.reverse(), Color.DANGER.reverse())
+
+        Button(master, 'Create', self.launch_modal).grid(0, 1).style(
+            Color.SUCCESS.reverse(), Color.SUCCESS.reverse()
+        )
+
         Frame(master, 'Details').title_style(
-            'DANGER').grid(1, 0).span(col=3).weight(3)
-        Frame(self, 'World').title_style('WARNING').grid(1)
+            Color.DANGER()).grid(1, 0).span(col=3).weight(3).style(
+                background_color=Color.LIGHT.reverse()
+        )
+
+        Frame(self, 'World').title_style(Color.WARNING()).grid(1)
         Content(self, 'Content').grid(0, 1).span(2).weight(col=3)
 
     async def launch_modal(self, event: Event) -> None:
@@ -22,6 +33,7 @@ class Main(Application):
         if self.modal:
             self.remove(self.modal)
             self.modal = None
+            self.update()
 
 
 if __name__ == '__main__':

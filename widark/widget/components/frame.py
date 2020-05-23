@@ -1,6 +1,5 @@
-from curses import color_pair
 from ..widget import Widget
-from ..style import Style, Color
+from ..style import Style
 
 
 class Frame(Widget):
@@ -31,5 +30,4 @@ class Frame(Widget):
 
         title = (self.title and
                  self._title_style.template.format(self.title) or '')
-        color = color_pair(Color[self._title_style.color])
-        self.window.addstr(0, x + origin, title, color)
+        self.window.addstr(0, x + origin, title, self._title_style.color)
