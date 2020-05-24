@@ -171,12 +171,12 @@ class Widget(Target):
         if not self.window:
             return self
         origin = 1 if self.styling.border else 0
-        y, x = self.window.getbegyx()
-        setsyx(y + origin, x + origin)
+        setsyx(self._y_min + origin, self._x_min + origin)
         self.focused = True
         return self
 
     def blur(self: T) -> T:
+        setsyx(0, 0)
         self.focused = False
         return self
 
