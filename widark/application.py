@@ -82,7 +82,6 @@ class Application(Widget):
         self.window.keypad(True)
         self.window.nodelay(True)
         curses.noecho()
-        curses.cbreak()
         curses.mousemask(
             curses.ALL_MOUSE_EVENTS | curses.REPORT_MOUSE_POSITION)
         curses.start_color()
@@ -100,7 +99,6 @@ class Application(Widget):
         self.window.nodelay(False)
         self.window = None
         curses.echo()
-        curses.nocbreak()
         curses.mousemask(False)
         curses.endwin()
 

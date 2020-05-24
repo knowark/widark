@@ -6,11 +6,14 @@ clean:
 PROJECT = widark
 COVFILE ?= .coverage
 
+test:
+	mypy widark && pytest tests/
+	
 coverage:
 	mypy widark && pytest --cov-branch --cov=$(PROJECT) tests/ \
-	--cov-report term-missing -x -s -vv -W ignore::DeprecationWarning
+	--cov-report term-missing 
 
 PART ?= patch
 
 version:
-	bump2version $(PART) $(PROJECT)/__init__.py --tag --commit
+	bump2version $(PART) pyproject.toml widark/__init__.py --tag --commit

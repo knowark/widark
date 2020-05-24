@@ -25,6 +25,12 @@ def application():
             # of 24 rows and 120 cols
             self.window.resize(24, 120)
 
+        def _stop_screen(self) -> None:
+            try:
+                super()._stop_screen()
+            except curses.error:
+                pass
+
     return CustomApplication()
 
 

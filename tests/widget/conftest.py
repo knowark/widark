@@ -5,17 +5,14 @@ from widark.widget import Widget
 
 @fixture
 def stdscr():
-    stdscr = None
-
-    def _init(screen):
-        nonlocal stdscr
-        stdscr = screen
-
-    curses.wrapper(_init)
+    stdscr = curses.initscr()
 
     yield stdscr
 
-    curses.endwin()
+    try:
+        curses.endwin()
+    except curses.error:
+        pass
 
 
 @fixture
