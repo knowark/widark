@@ -6,7 +6,8 @@ from .content import Content
 
 class Main(Application):
     async def build(self):
-        self.modal = None
+        self.style(border=[0])
+        self.modal = None  # Modal(self)  # .pin(15, 15, 15, 50)
         master = Frame(self, 'Master').grid(
             0).style(background_color=Color.LIGHT.reverse(),
                      border_color=Color.PRIMARY.reverse())
@@ -26,12 +27,19 @@ class Main(Application):
         Frame(self, 'World').title_style(Color.WARNING()).grid(1)
         Content(self, 'Content').grid(0, 1).span(2).weight(col=3)
 
-    async def launch_modal(self, event: Event) -> None:
-        self.modal = Modal(self, self.on_modal_close).launch(5, 5, 20, 100)
+        self.listen('click', self.on_backdrop_click, True)
 
-    async def on_modal_close(self, event: Event) -> None:
+    async def launch_modal(self, event: Event) -> None:
+        self.modal = Modal(self, self.close_modal).launch(5, 5, 15, 50)
+
+    async def on_backdrop_click(self, event: Event) -> None:
+        if self.modal and not self.modal.hit(event):
+            event.stop = True
+            await self.close_modal(event)
+
+    async def close_modal(self, event: Event) -> None:
         if self.modal:
-            self.remove(self.modal)
+            self.remove(self.modal).clear()
             self.modal = None
             self.update()
 

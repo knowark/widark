@@ -18,10 +18,9 @@ class Frame(Widget):
 
     def amend(self) -> None:
         x = 0
-        _, w = self.size()
         fill = len(self.title)
-        origin, loss = (1, 2) if self._style.border else (0, 0)
-        width = max(w - loss, 1)
+        origin, loss = (1, 2) if self.styling.border else (0, 0)
+        width = max(self.width - loss, 1)
 
         if self._title_style.align == 'C':
             x = int(max(width - fill, 0) / 2)

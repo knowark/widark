@@ -18,19 +18,26 @@ def test_modal_attach(root):
     assert modal.window is not None
 
 
-async def test_modal_on_backdrop(root):
-    close_called = False
+def test_modal_launch(root):
+    modal = Modal(root)
 
-    async def on_modal_close(event: Event) -> None:
-        nonlocal close_called
-        close_called = True
+    modal.launch()
 
-    modal = Modal(root, on_modal_close).launch(5, 5, 20, 20)
+    assert modal.window is not None
+    assert modal.close.window is not None
 
-    await modal.dispatch(Event('Mouse', 'click', y=15, x=15))
 
-    assert close_called is False
+async def test_modal_close(root):
+    close_modal_called = False
 
-    await modal.dispatch(Event('Mouse', 'click', y=3, x=3))
+    async def close_modal(event: Event):
+        nonlocal close_modal_called
+        close_modal_called = True
 
-    assert close_called is True
+    modal = Modal(root, close_modal)
+
+    modal.attach()
+
+    await modal.close.dispatch(Event('Mouse', 'click'))
+
+    assert close_modal_called is True

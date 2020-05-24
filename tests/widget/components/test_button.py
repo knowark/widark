@@ -7,7 +7,7 @@ pytestmark = mark.asyncio
 
 def test_button_instantiation_defaults(root):
     button = Button(root)
-    assert button._style.template == '< {} >'
+    assert button.styling.template == '< {} >'
     assert button.content == ''
 
 

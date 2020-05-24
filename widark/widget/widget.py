@@ -1,9 +1,10 @@
 from math import ceil
+from types import SimpleNamespace
 from typing import List, Dict, Optional, Tuple, Any, TypeVar
+from curses import setsyx
 from _curses import error as CursesError
-from curses import doupdate, setsyx, newwin, panel
 from .event import Target
-from .style import Style, Color
+from .style import Style
 
 
 T = TypeVar('T', bound='Widget')
@@ -11,21 +12,24 @@ T = TypeVar('T', bound='Widget')
 
 class Widget(Target):
     def __init__(self, parent: Optional['Widget'],
-                 content: str = '', style: Style = None) -> None:
+                 content: str = '', style: Style = None,
+                 position: str = 'relative') -> None:
         super().__init__()
         self.parent: Optional['Widget'] = parent
         self.content = content
         self.children: List['Widget'] = []
         self.window: Any = None
-        self.position = 'relative'
-        self._style = style or Style()
-        self._focused = False
-        self._row = 0
-        self._col = 0
-        self._row_span = 1
-        self._col_span = 1
-        self._row_weight = 1
-        self._col_weight = 1
+        self.position = position
+        self.styling = style or Style()
+        self.focused = False
+        self.y = 0
+        self.x = 0
+        self.width = 0
+        self.height = 0
+        self.row = SimpleNamespace(
+            pos=0, span=1, weight=1)
+        self.col = SimpleNamespace(
+            pos=0, span=1, weight=1)
 
         if self.parent:
             self.parent.children.append(self)
@@ -38,12 +42,16 @@ class Widget(Target):
     def attach(self: T, row=0, col=0, height=0, width=0) -> T:
         if self.parent:
             try:
-                self.window = self.factory(height, width, row, col)
-                h, w = self.size()
-                self._y_min, self._x_min = self.beginning()
+                factory = self.parent.window.derwin
+                self.window = factory(height, width, row, col)
+                h, w = self.window.getmaxyx()
+                self.pin(row, col, h, w)
+                self._y_min, self._x_min = self.window.getbegyx()
                 self._y_max, self._x_max = self._y_min + h, self._x_min + w
             except CursesError:
                 return self
+
+        self.update()
 
         fixed_children = []
         relative_children = []
@@ -57,18 +65,10 @@ class Widget(Target):
             child.attach(**dimensions)
 
         for child in fixed_children:
-            y, x = child._y_min, child._x_min
-            fixed_height, fixed_width = child._y_max - y, child._x_max - x
-            if child.window:
-                child.attach(y, x, fixed_height, fixed_width)
+            if child.height and child.width:
+                child.attach(child.y, child.x, child.height, child.width)
 
-        return self.update()
-
-    def factory(self, height, width, row, col) -> Any:
-        factory = self.parent.window.derwin  # type: ignore
-        if self.position == 'fixed':
-            factory = newwin  # type: ignore
-        return factory(height, width, row, col)
+        return self
 
     def add(self: T, child: 'Widget', index: int = None) -> T:
         if child.parent:
@@ -76,13 +76,7 @@ class Widget(Target):
         child.parent = self
         index = len(self.children) if index is None else index
         self.children.insert(index, child)
-        self.clear()
-        origin = 1 if self._style.border else 0
-        self.attach(origin, origin, *self.size())
         return self
-
-    def settle(self) -> None:
-        """Custom settlement"""
 
     def move(self: T, row=0, col=0) -> T:
         if self.window:
@@ -101,9 +95,6 @@ class Widget(Target):
         if child in self.children:
             child.parent, child.window = None, None
             self.children.remove(child)
-            self.clear()
-            origin = 1 if self._style.border else 0
-            self.attach(origin, origin, *self.size())
         return self
 
     def update(self: T, content: str = None) -> T:
@@ -116,17 +107,19 @@ class Widget(Target):
         try:
             self.settle()
 
-            self.window.bkgd(' ', self._style.background_color)
+            self.window.clear()
 
-            if self._style.border:
-                self.window.bkgdset(' ', self._style.border_color)
-                self.window.border(*self._style.border)
+            self.window.bkgd(' ', self.styling.background_color)
+
+            if self.styling.border:
+                self.window.bkgdset(' ', self.styling.border_color)
+                self.window.border(*self.styling.border)
 
             y, x = self.place()
-            formatted_content = self._style.template.format(self.content)
+            formatted_content = self.styling.template.format(self.content)
 
-            self.window.bkgdset(' ', self._style.color)
-            self.window.addstr(y, x, formatted_content, self._style.color)
+            self.window.bkgdset(' ', self.styling.color)
+            self.window.addstr(y, x, formatted_content, self.styling.color)
 
             for child in self.children:
                 child.update()
@@ -139,52 +132,54 @@ class Widget(Target):
 
         return self
 
+    def settle(self) -> None:
+        """Custom settlement"""
+
     def amend(self) -> None:
         """Custom amendment"""
 
-    def beginning(self) -> Tuple[int, int]:
-        return self.window.getbegyx() if self.window else (0, 0)
-
-    def size(self) -> Tuple[int, int]:
-        return self.window.getmaxyx() if self.window else (0, 0)
-
     def style(self: T, *args, **kwargs) -> T:
-        self._style.configure(*args, **kwargs)
+        self.styling.configure(*args, **kwargs)
+        return self
+
+    def pin(self: T, y=0, x=0, height=0, width=0) -> T:
+        self.y, self.x = y, x
+        self.height, self.width = height, width
         return self
 
     def grid(self: T, row=0, col=0) -> T:
-        self._row, self._col = row, col
+        self.row.pos, self.col.pos = row, col
         return self
 
     def span(self: T, row=1, col=1) -> T:
-        self._row_span, self._col_span = row, col
+        self.row.span, self.col.span = row, col
         return self
 
     def weight(self: T, row=1, col=1) -> T:
-        self._row_weight, self._col_weight = row, col
+        self.row.weight, self.col.weight = row, col
         return self
 
     def focus(self: T) -> T:
         if not self.window:
             return self
-        origin = 1 if self._style.border else 0
+        origin = 1 if self.styling.border else 0
         y, x = self.window.getbegyx()
         setsyx(y + origin, x + origin)
-        self._focused = True
+        self.focused = True
         return self
 
     def blur(self: T) -> T:
-        self._focused = False
+        self.focused = False
         return self
 
     def place(self) -> Tuple[int, int]:
         y, x = 0, 0
-        h, w = self.size()
-        origin, loss = (1, 2) if self._style.border else (0, 0)
+        h, w = self.height, self.width
+        origin, loss = (1, 2) if self.styling.border else (0, 0)
         height, width = max(h - loss, 1), max(w - loss, 1)
-        fill = len(self._style.template.format(self.content))
+        fill = len(self.styling.template.format(self.content))
         vertical, horizontal = (
-            (3 - len(self._style.align)) * self._style.align)
+            (3 - len(self.styling.align)) * self.styling.align)
 
         if vertical == 'C':
             y = int(max(height - ceil(fill / width), 0) / 2)
@@ -205,18 +200,18 @@ class Widget(Target):
 
         row_origin, col_origin = 0, 0
         total_height, total_width = self.window.getmaxyx()
-        if self._style.border:
+        if self.styling.border:
             row_origin, col_origin = 1, 1
             total_height, total_width = total_height - 2, total_width - 2
 
         cols: Dict[int, int] = {}
         rows: Dict[int, int] = {}
         for child in children:
-            col_weight = cols.setdefault(child._col, 1)
-            cols[child._col] = max([col_weight, child._col_weight])
+            col_weight = cols.setdefault(child.col.pos, 1)
+            cols[child.col.pos] = max([col_weight, child.col.weight])
 
-            row_weight = rows.setdefault(child._row, 1)
-            rows[child._row] = max([row_weight, child._row_weight])
+            row_weight = rows.setdefault(child.row.pos, 1)
+            rows[child.row.pos] = max([row_weight, child.row.weight])
 
         width_split = total_width / sum(cols.values())
         height_split = total_height / sum(rows.values())
@@ -233,10 +228,10 @@ class Widget(Target):
 
         layout = []
         for child in children:
-            row_index = row_indexes[child._row]
-            row_span = row_index + child._row_span
-            col_index = col_indexes[child._col]
-            col_span = col_index + child._col_span
+            row_index = row_indexes[child.row.pos]
+            row_span = row_index + child.row.span
+            col_index = col_indexes[child.col.pos]
+            col_span = col_index + child.col.span
 
             row = sum(ceil(row_weights[y] * height_split) for y in
                       range(row_index)) + row_origin

@@ -13,10 +13,9 @@ class Entry(Widget):
     async def on_click(self, event: Event) -> None:
         event.stop = True
         self.focus()
-        origin, approx = (1, ceil) if self._style.border else (0, floor)
-        _, width = self.size()
-        self.move(approx((len(self.content) + origin) / width),
-                  (len(self.content) + origin) % width)
+        origin, approx = (1, ceil) if self.styling.border else (0, floor)
+        self.move(approx((len(self.content) + origin) / self.width),
+                  (len(self.content) + origin) % self.width)
 
     async def on_keydown(self, event: Event) -> None:
         self.clear()
