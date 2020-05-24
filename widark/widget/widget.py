@@ -39,27 +39,19 @@ class Widget(Target):
     def setup(self) -> None:
         """Custom setup"""
 
-    def attach(self: T, row=0, col=0, height=0, width=0) -> T:
+    def attach(self: T, y=0, x=0, height=0, width=0) -> T:
         if self.parent:
             try:
                 factory = self.parent.window.derwin
-                self.window = factory(height, width, row, col)
+                self.window = factory(height, width, y, x)
                 h, w = self.window.getmaxyx()
-                self.pin(row, col, h, w)
+                self.pin(y, x, h, w)
                 self._y_min, self._x_min = self.window.getbegyx()
                 self._y_max, self._x_max = self._y_min + h, self._x_min + w
             except CursesError:
                 return self
 
-        self.update()
-
-        fixed_children = []
-        relative_children = []
-        for child in self.children:
-            if child.position == 'fixed':
-                fixed_children.append(child)
-            else:
-                relative_children.append(child)
+        relative_children, fixed_children = self.subtree()
 
         for child, dimensions in self.layout(relative_children):
             child.attach(**dimensions)
@@ -68,7 +60,18 @@ class Widget(Target):
             if child.height and child.width:
                 child.attach(child.y, child.x, child.height, child.width)
 
-        return self
+        return self.update()
+
+    def subtree(self) -> Tuple[List['Widget'], List['Widget']]:
+        fixed_children = []
+        relative_children = []
+        for child in self.children:
+            if child.position == 'fixed':
+                fixed_children.append(child)
+            else:
+                relative_children.append(child)
+
+        return relative_children, fixed_children
 
     def add(self: T, child: 'Widget', index: int = None) -> T:
         if child.parent:
@@ -121,7 +124,12 @@ class Widget(Target):
             self.window.bkgdset(' ', self.styling.color)
             self.window.addstr(y, x, formatted_content, self.styling.color)
 
-            for child in self.children:
+            relative_children, fixed_children = self.subtree()
+
+            for child in relative_children:
+                child.update()
+
+            for child in fixed_children:
                 child.update()
 
             self.amend()
@@ -217,14 +225,14 @@ class Widget(Target):
         height_split = total_height / sum(rows.values())
 
         row_indexes, row_weights = {}, {}
-        for y, (row, row_weight) in enumerate(rows.items()):
-            row_indexes[row] = y
-            row_weights[y] = row_weight
+        for j, (y, row_weight) in enumerate(rows.items()):
+            row_indexes[y] = j
+            row_weights[j] = row_weight
 
         col_indexes, col_weights = {}, {}
-        for x, (col, col_weight) in enumerate(cols.items()):
-            col_indexes[col] = x
-            col_weights[x] = col_weight
+        for i, (x, col_weight) in enumerate(cols.items()):
+            col_indexes[x] = i
+            col_weights[i] = col_weight
 
         layout = []
         for child in children:
@@ -233,22 +241,22 @@ class Widget(Target):
             col_index = col_indexes[child.col.pos]
             col_span = col_index + child.col.span
 
-            row = sum(ceil(row_weights[y] * height_split) for y in
-                      range(row_index)) + row_origin
-            col = sum(ceil(col_weights[x] * width_split) for x in
-                      range(col_index)) + col_origin
+            y = sum(ceil(row_weights[j] * height_split) for j in
+                    range(row_index)) + row_origin
+            x = sum(ceil(col_weights[i] * width_split) for i in
+                    range(col_index)) + col_origin
 
             height = ceil(
-                sum(row_weights.get(y, 0) for y in
+                sum(row_weights.get(j, 0) for j in
                     range(row_index, row_span)) * height_split)
-            height = height - max(0, height + row - total_height - row_origin)
+            height = height - max(0, height + y - total_height - row_origin)
 
             width = ceil(
-                sum(col_weights.get(x, 0) for x in
+                sum(col_weights.get(i, 0) for i in
                     range(col_index, col_span)) * width_split)
-            width = width - max(0, width + col - total_width - col_origin)
+            width = width - max(0, width + x - total_width - col_origin)
 
-            layout.append((child, {'row': row, 'col': col,
+            layout.append((child, {'y': y, 'x': x,
                                    'height': height, 'width': width}))
 
         return layout

@@ -45,7 +45,7 @@ class Application(Widget):
     async def _process(self, key: int) -> None:
         if key == curses.KEY_RESIZE:
             self._clear_screen()
-            self.attach()
+            self.attach()  # .update()
         elif key == curses.KEY_MOUSE:
             _, x, y, _, _ = curses.getmouse()
             event = Event('Mouse', 'click', y=y, x=x, key=chr(key))
