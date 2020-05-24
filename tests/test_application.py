@@ -1,7 +1,6 @@
 import inspect
 import curses
 import asyncio
-import curses.panel
 from types import MethodType
 from pytest import mark, fixture, raises
 from widark.application import Application

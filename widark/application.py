@@ -1,7 +1,6 @@
 import sys
 import curses
 import asyncio
-import curses.panel
 from signal import signal, SIGINT
 from typing import List, Any
 from .widget import Widget, Event, Target
