@@ -5,8 +5,8 @@ from widark.widget import Frame
 def test_frame_instantiation_defaults(root):
     frame = Frame(root)
     assert frame.title == ''
-    assert frame._title_style.align == 'C'
-    assert frame._title_style.template == ' {} '
+    assert frame.title_styling.align == 'C'
+    assert frame.title_styling.template == ' {} '
 
 
 def test_frame_settle(root):
@@ -21,8 +21,8 @@ def test_frame_settle(root):
 def test_frame_title_style(root):
     frame = Frame(root, 'Details').title_style('SUCCESS', align='L')
 
-    assert frame._title_style.color == 'SUCCESS'
-    assert frame._title_style.align == 'L'
+    assert frame.title_styling.color == 'SUCCESS'
+    assert frame.title_styling.align == 'L'
 
 
 def test_frame_settle_right_align(root):
