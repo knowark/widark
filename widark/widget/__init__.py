@@ -1,4 +1,4 @@
 from .style import Style, Color
 from .widget import Widget
-from .event import Event, Target, MouseEvents
+from .event import Event, Target, MOUSE_EVENTS
 from .components import *

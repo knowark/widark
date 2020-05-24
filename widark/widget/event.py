@@ -96,7 +96,7 @@ class Target:
                 await element.dispatch(event)
 
 
-MouseEvents = {
+MOUSE_EVENTS = {
     curses.BUTTON1_PRESSED: (1, 'press'),
     curses.BUTTON1_RELEASED: (1, 'release'),
     curses.BUTTON1_CLICKED: (1, 'click'),

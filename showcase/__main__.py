@@ -7,7 +7,7 @@ from .content import Content
 class Main(Application):
     async def build(self):
         self.style(border=[0])
-        self.modal = None  # Modal(self)  # .pin(15, 15, 15, 50)
+        self.modal = None
         master = Frame(self, 'Master').grid(
             0).style(background_color=Color.LIGHT.reverse(),
                      border_color=Color.PRIMARY.reverse())

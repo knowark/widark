@@ -23,8 +23,6 @@ class Content(Frame):
 
     async def on_click(self, event: Event) -> None:
         button = cast(Button, event.target)
-        # button.update(f'{button._y_min}, {button._y_max} | '
-        #               f'{button._x_min}, {button._x_max}').focus()
         button.focus()
 
     async def on_content_click(self, event: Event) -> None:
