@@ -1,3 +1,4 @@
+import curses
 from typing import Awaitable, Callable, List, Dict, Optional, Any
 from collections import defaultdict
 
@@ -12,6 +13,7 @@ class Event:
         self.y: int = attributes.get('y', 0)
         self.x: int = attributes.get('x', 0)
         self.key: str = attributes.get('key', '')
+        self.button: int = attributes.get('button', 0)
         self.bubbles: bool = attributes.get('bubbles', True)
         self.stop: bool = attributes.get('stop', False)
         self.details: Dict[str, Any] = attributes.get('details', {})
@@ -92,3 +94,30 @@ class Target:
                     event.target = element
 
                 await element.dispatch(event)
+
+
+MouseEvents = {
+    curses.BUTTON1_PRESSED: (1, 'press'),
+    curses.BUTTON1_RELEASED: (1, 'release'),
+    curses.BUTTON1_CLICKED: (1, 'click'),
+    curses.BUTTON1_DOUBLE_CLICKED: (1, 'doubleclick'),
+    curses.BUTTON1_TRIPLE_CLICKED: (1, 'tripleclick'),
+
+    curses.BUTTON2_PRESSED: (2, 'press'),
+    curses.BUTTON2_RELEASED: (2, 'release'),
+    curses.BUTTON2_CLICKED: (2, 'click'),
+    curses.BUTTON2_DOUBLE_CLICKED: (2, 'doubleclick'),
+    curses.BUTTON2_TRIPLE_CLICKED: (2, 'tripleclick'),
+
+    curses.BUTTON3_PRESSED: (3, 'press'),
+    curses.BUTTON3_RELEASED: (3, 'release'),
+    curses.BUTTON3_CLICKED: (3, 'click'),
+    curses.BUTTON3_DOUBLE_CLICKED: (3, 'doubleclick'),
+    curses.BUTTON3_TRIPLE_CLICKED: (3, 'tripleclick'),
+
+    curses.BUTTON4_PRESSED: (4, 'press'),
+    curses.BUTTON4_RELEASED: (4, 'release'),
+    curses.BUTTON4_CLICKED: (4, 'click'),
+    curses.BUTTON4_DOUBLE_CLICKED: (4, 'doubleclick'),
+    curses.BUTTON4_TRIPLE_CLICKED: (4, 'tripleclick')
+}

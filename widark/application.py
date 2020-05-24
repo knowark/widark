@@ -3,7 +3,7 @@ import curses
 import asyncio
 from signal import signal, SIGINT
 from typing import List, Any
-from .widget import Widget, Event, Target
+from .widget import Widget, Event, MouseEvents, Target
 from .palette import DefaultPalette, Palette
 
 
@@ -44,10 +44,13 @@ class Application(Widget):
     async def _process(self, key: int) -> None:
         if key == curses.KEY_RESIZE:
             self._clear_screen()
-            self.attach()  # .update()
+            self.attach()
         elif key == curses.KEY_MOUSE:
-            _, x, y, _, _ = curses.getmouse()
-            event = Event('Mouse', 'click', y=y, x=x, key=chr(key))
+            _, x, y, _, state = curses.getmouse()
+            button, event_type = MouseEvents.get(state, (1, 'click'))
+            event = Event(
+                'Mouse', event_type, y=y, x=x, key=chr(key), button=button)
+            print(event.button)
             target = self._capture(event)
             await target.dispatch(event)
         elif key >= 0:
