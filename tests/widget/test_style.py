@@ -1,6 +1,6 @@
 import curses
 from enum import IntEnum
-from widark.widget import Color, Style
+from widark.widget import Color, Style, Attribute
 
 
 def test_color_definition():
@@ -37,5 +37,19 @@ def test_color_enum_call(monkeypatch):
     assert result == Color.DEFAULT
 
     result = Color.DEFAULT.reverse()
-
     assert result == curses.A_REVERSE
+    result = Color.DEFAULT.bold()
+    assert result == curses.A_BOLD
+    result = Color.DEFAULT.blink()
+    assert result == curses.A_BLINK
+
+
+def test_attribute_call():
+    assert Attribute().join('REVERSE') == curses.A_REVERSE
+    assert Attribute('BOLD').join() == curses.A_BOLD
+    assert Attribute('BOLD').join('REVERSE') == (
+        curses.A_BOLD | curses.A_REVERSE)
+    assert Attribute(['BOLD', 'BLINK']).join('REVERSE') == (
+        curses.A_BOLD | curses.A_BLINK | curses.A_REVERSE)
+    assert Attribute(['BOLD', 'BLINK']).join(['REVERSE', 'DIM']) == (
+        curses.A_BOLD | curses.A_BLINK | curses.A_REVERSE | curses.A_DIM)

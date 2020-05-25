@@ -1,5 +1,5 @@
 from typing import cast
-from widark import Event, Label, Button, Frame, Entry, Modal, Color
+from widark import Event, Button, Frame, Entry, Color
 
 
 class Content(Frame):

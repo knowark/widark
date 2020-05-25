@@ -7,7 +7,7 @@ class Modal(Widget):
     def __init__(self, parent: 'Widget',
                  close_command: Handler = None) -> None:
         super().__init__(parent, position='fixed')
-        self.style(background_color=Color.WARNING.reverse(), border=[0])
+        self.style(background_color=Color.WARNING.reverse(), border=[' ']*8)
         self.close = Widget(self, 'X', position='fixed').style(Color.DANGER())
 
         if close_command:
