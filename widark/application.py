@@ -28,7 +28,7 @@ class Application(Widget):
     async def _run(self) -> None:
         self._start_screen()
         await self.build()
-        self.attach()
+        self.connect()
 
         while self.active:
             await asyncio.sleep(self._rate)

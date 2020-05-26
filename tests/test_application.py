@@ -59,7 +59,7 @@ async def test_application_build(application):
 async def test_application_run(application, monkeypatch):
     start_screen_called = False
     build_called = False
-    attach_called = False
+    connect_called = False
     doupdate_called = False
     stop_screen_called = False
 
@@ -75,9 +75,9 @@ async def test_application_run(application, monkeypatch):
         nonlocal build_called
         build_called = True
 
-    def mock_attach(self) -> None:
-        nonlocal attach_called
-        attach_called = True
+    def mock_connect(self) -> None:
+        nonlocal connect_called
+        connect_called = True
 
     def mock_doupdate() -> None:
         nonlocal doupdate_called
@@ -89,7 +89,7 @@ async def test_application_run(application, monkeypatch):
 
     application._start_screen = MethodType(mock_start_screen, application)
     application.build = MethodType(mock_build, application)
-    application.attach = MethodType(mock_attach, application)
+    application.connect = MethodType(mock_connect, application)
     monkeypatch.setattr(curses, "doupdate", mock_doupdate)
     application._stop_screen = MethodType(mock_stop_screen, application)
 
@@ -97,7 +97,7 @@ async def test_application_run(application, monkeypatch):
 
     assert start_screen_called is True
     assert build_called is True
-    assert attach_called is True
+    assert connect_called is True
     assert doupdate_called is True
     assert stop_screen_called is True
 
@@ -106,6 +106,7 @@ async def test_application_not_active(application):
     application.active = False
 
     await application.run()
+    await asyncio.sleep(1 / 15)
 
     assert application.window is None
 
@@ -114,7 +115,11 @@ async def test_application_run_exception(application, monkeypatch):
     async def mock_sleep(seconds):
         raise ValueError('Test error.')
 
+    def mock_connect(self):
+        pass
+
     monkeypatch.setattr(asyncio, "sleep", mock_sleep)
+    application.connect = MethodType(mock_connect, application)
 
     with raises(ValueError):
         await application.run()
@@ -169,6 +174,7 @@ async def test_application_capture(application):
 
     await application._run()
     curses.doupdate()
+    await asyncio.sleep(1 / 15)
 
     event = Event('Mouse', 'click', y=15, x=35)
     widget = application._capture(event)

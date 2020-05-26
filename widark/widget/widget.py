@@ -1,3 +1,4 @@
+import asyncio
 from math import ceil
 from types import SimpleNamespace
 from typing import List, Dict, Optional, Tuple, Any, TypeVar
@@ -49,6 +50,12 @@ class Widget(Target):
     def setup(self) -> None:
         """Custom setup"""
 
+    def connect(self: T, y=0, x=0, height=0, width=0) -> T:
+        self.attach(y, x, height, width)
+        loop = asyncio.get_event_loop()
+        loop.call_soon(asyncio.ensure_future, self.load())
+        return self
+
     def attach(self: T, y=0, x=0, height=0, width=0) -> T:
         if self.parent:
             try:
@@ -71,44 +78,6 @@ class Widget(Target):
                 child.attach(child.y, child.x, child.height, child.width)
 
         return self.update()
-
-    def subtree(self) -> Tuple[List['Widget'], List['Widget']]:
-        fixed_children = []
-        relative_children = []
-        for child in self.children:
-            if child.position == 'fixed':
-                fixed_children.append(child)
-            else:
-                relative_children.append(child)
-
-        return relative_children, fixed_children
-
-    def add(self: T, child: 'Widget', index: int = None) -> T:
-        if child.parent:
-            child.parent.children.remove(child)
-        child.parent = self
-        index = len(self.children) if index is None else index
-        self.children.insert(index, child)
-        return self
-
-    def move(self: T, row=0, col=0) -> T:
-        if self.window:
-            height, width = self.window.getmaxyx()
-            self.window.move(min(row, height - 1), min(col, width - 1))
-            self.window.noutrefresh()
-        return self
-
-    def clear(self: T) -> T:
-        if self.window:
-            self.window.clear()
-            self.window.noutrefresh()
-        return self
-
-    def remove(self: T, child: 'Widget') -> T:
-        if child in self.children:
-            child.parent, child.window = None, None
-            self.children.remove(child)
-        return self
 
     def update(self: T, content: str = None) -> T:
         if not self.window:
@@ -150,11 +119,52 @@ class Widget(Target):
 
         return self
 
+    async def load(self: T) -> None:
+        """Custom asynchronous load"""
+
     def settle(self) -> None:
         """Custom settlement"""
 
     def amend(self) -> None:
         """Custom amendment"""
+
+    def subtree(self) -> Tuple[List['Widget'], List['Widget']]:
+        fixed_children = []
+        relative_children = []
+        for child in self.children:
+            if child.position == 'fixed':
+                fixed_children.append(child)
+            else:
+                relative_children.append(child)
+
+        return relative_children, fixed_children
+
+    def add(self: T, child: 'Widget', index: int = None) -> T:
+        if child.parent:
+            child.parent.children.remove(child)
+        child.parent = self
+        index = len(self.children) if index is None else index
+        self.children.insert(index, child)
+        return self
+
+    def move(self: T, row=0, col=0) -> T:
+        if self.window:
+            height, width = self.window.getmaxyx()
+            self.window.move(min(row, height - 1), min(col, width - 1))
+            self.window.noutrefresh()
+        return self
+
+    def clear(self: T) -> T:
+        if self.window:
+            self.window.clear()
+            self.window.noutrefresh()
+        return self
+
+    def remove(self: T, child: 'Widget') -> T:
+        if child in self.children:
+            child.parent, child.window = None, None
+            self.children.remove(child)
+        return self
 
     def style(self: T, *args, **kwargs) -> T:
         self.styling.configure(*args, **kwargs)

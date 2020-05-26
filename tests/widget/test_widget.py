@@ -1,5 +1,10 @@
 import curses
+import asyncio
+from pytest import mark
 from widark.widget import Widget, Target, Style
+
+
+pytestmark = mark.asyncio
 
 
 def test_widget_instantiation_defaults():
@@ -293,6 +298,39 @@ def test_widget_attach_fixed_children(root):
     curses.doupdate()
 
     assert child_b.window is not None
+
+
+async def test_widget_load(root):
+    load_called = False
+
+    class CustomWidget(Widget):
+        async def load(self) -> None:
+            nonlocal load_called
+            load_called = True
+
+    widget = CustomWidget(root)
+
+    await widget.load()
+
+    assert load_called is True
+
+
+async def test_widget_connect(root):
+    load_called = False
+
+    class CustomWidget(Widget):
+        async def load(self) -> None:
+            nonlocal load_called
+            load_called = True
+
+    widget = CustomWidget(root)
+
+    widget.connect()
+
+    await asyncio.sleep(1/10)
+
+    assert widget.window is not None
+    assert load_called is True
 
 
 def test_widget_place(root):
