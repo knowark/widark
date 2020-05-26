@@ -36,6 +36,14 @@ class Widget(Target):
 
         self.setup()
 
+    @property
+    def root(self) -> 'Widget':
+        root = self
+        while root.parent:
+            root = root.parent
+
+        return root
+
     def setup(self) -> None:
         """Custom setup"""
 

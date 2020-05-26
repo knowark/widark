@@ -22,10 +22,33 @@ def test_widget_instantiation_defaults():
 
 
 def test_widget_instantiation_arguments():
-    widget = Widget(None, 'Custom Content', Style(border=[1]))
+    widget = Widget(None, 'Custom Content', Style(border=[1]), 'fixed')
     assert isinstance(widget, Widget)
     assert widget.styling.border == [1]
     assert widget.content == 'Custom Content'
+    assert widget.position == 'fixed'
+
+
+def test_widget_root(root):
+    parent = Widget(root)
+
+    child_a = Widget(parent)
+    child_b = Widget(child_a)
+    child_c = Widget(child_b)
+
+    assert root.root is root
+    assert parent.root is root
+    assert child_a.root is root
+    assert child_b.root is root
+    assert child_c.root is root
+
+
+def test_widget_instantiation_arguments():
+    widget = Widget(None, 'Custom Content', Style(border=[1]), 'fixed')
+    assert isinstance(widget, Widget)
+    assert widget.styling.border == [1]
+    assert widget.content == 'Custom Content'
+    assert widget.position == 'fixed'
 
 
 def test_widget_attach(root):
