@@ -22,6 +22,8 @@ class Widget(Target):
         self.position = position
         self.styling = style or Style()
         self.focused = False
+        self.name: str = ''
+        self.group: str = ''
         self.y = 0
         self.x = 0
         self.width = 0
@@ -156,6 +158,11 @@ class Widget(Target):
 
     def style(self: T, *args, **kwargs) -> T:
         self.styling.configure(*args, **kwargs)
+        return self
+
+    def mark(self: T, name='', group='') -> T:
+        self.name = name or self.name
+        self.group = group or self.group
         return self
 
     def pin(self: T, y=0, x=0, height=0, width=0) -> T:

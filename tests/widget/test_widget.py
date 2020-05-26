@@ -13,6 +13,8 @@ def test_widget_instantiation_defaults():
     assert widget.position == 'relative'
     assert isinstance(widget.styling, Style)
     assert widget.focused is False
+    assert widget.name == ''
+    assert widget.group == ''
     assert widget.row.pos == 0
     assert widget.col.pos == 0
     assert widget.row.span == 1
@@ -175,6 +177,14 @@ def test_widget_remove(root):
 
     assert len(parent.children) == 0
     assert child.parent is None
+
+
+def test_widget_mark(root):
+    widget = Widget(root).mark('first', 'combo')
+
+    assert isinstance(widget, Widget)
+    assert widget.name == 'first'
+    assert widget.group == 'combo'
 
 
 def test_widget_grid(root):
