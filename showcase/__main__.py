@@ -5,7 +5,7 @@ from .content import Content
 
 
 class Main(Application):
-    def build(self):
+    def build(self) -> None:
         self.style(border=[0])
         self.modal = None
         master = Frame(self, content='Master').grid(
@@ -23,11 +23,10 @@ class Main(Application):
             Color.DANGER()).grid(1, 0).span(col=3).weight(3).style(
                 background_color=Color.LIGHT.reverse())
 
-        Frame(self, content='World').title_style(Color.WARNING()).grid(1)
-        Content(self, content='Content').grid(0, 1).span(2).weight(col=3)
+        Frame(self, title='World').title_style(Color.WARNING()).grid(1)
+        Content(self, title='Content').grid(0, 1).span(2).weight(col=3)
 
         self.listen('click', self.on_backdrop_click, True)
-        return self
 
     async def launch_modal(self, event: Event) -> None:
         self.modal = Modal(

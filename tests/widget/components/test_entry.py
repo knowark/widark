@@ -37,13 +37,13 @@ async def test_entry_on_click(root):
 async def test_entry_on_keydown_backspace(root):
     given_content = None
 
-    def mock_update(self):
+    def mock_render(self):
         nonlocal given_content
         given_content = self.content
         return self
 
     entry = Entry(root, content='QWERTY')
-    entry.update = MethodType(mock_update, entry)
+    entry.render = MethodType(mock_render, entry)
 
     event = Event('Custom', 'keydown', key=chr(curses.KEY_BACKSPACE))
 
@@ -55,13 +55,13 @@ async def test_entry_on_keydown_backspace(root):
 async def test_entry_on_keydown_all(root):
     given_content = None
 
-    def mock_update(self):
+    def mock_render(self):
         nonlocal given_content
         given_content = self.content
         return self
 
     entry = Entry(root, content='QWERTY')
-    entry.update = MethodType(mock_update, entry)
+    entry.render = MethodType(mock_render, entry)
 
     event_1 = Event('Custom', 'keydown', key='U')
     await entry.dispatch(event_1)

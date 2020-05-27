@@ -25,4 +25,4 @@ class Entry(Widget):
         else:
             content += event.key
         self.content = content
-        self.update()
+        self.render()

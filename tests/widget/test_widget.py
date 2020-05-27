@@ -88,7 +88,7 @@ def test_widget_clear(root):
     assert window_text == b'     '
 
 
-def test_widget_render_error(root):
+def test_widget_render_resize_error(root):
     root.window.resize(1, 1)
 
     widget = Widget(root)
@@ -209,13 +209,13 @@ def test_widget_style(root):
     assert widget.styling.color == 'SECONDARY'
 
 
-def test_widget_update(root):
+def test_widget_render_content(root):
     widget = Widget(root)
     assert widget.content == ''
 
     content = 'Hello World'
     widget.content = content
-    widget = widget.render().update()
+    widget = widget.render()
 
     curses.doupdate()
 
@@ -225,13 +225,13 @@ def test_widget_update(root):
     assert window_text == b'Hello World'
 
 
-def test_widget_update_error(root):
+def test_widget_render_error(root):
     root.window.resize(1, 1)
 
     widget = Widget(root)
     widget.content = 'Hello World'
 
-    widget = widget.render().update()
+    widget = widget.render()
 
     curses.doupdate()
 
@@ -241,10 +241,12 @@ def test_widget_update_error(root):
 
 
 def test_widget_update_without_window(root):
+    root.window.resize(1, 1)
     widget = Widget(root)
     widget.content = 'Hello World'
+    root.window = None
 
-    widget = widget.update()
+    widget = widget.render()
 
     curses.doupdate()
 
