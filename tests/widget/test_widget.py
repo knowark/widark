@@ -16,6 +16,7 @@ def test_widget_instantiation_defaults():
     assert widget.children == []
     assert widget.content == ''
     assert widget.position == 'relative'
+    assert widget.autoload is False
     assert isinstance(widget.styling, Style)
     assert widget.focused is False
     assert widget.name == ''

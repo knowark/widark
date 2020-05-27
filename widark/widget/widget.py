@@ -22,8 +22,10 @@ class Widget(Target):
         self.x = 0
         self.width = 0
         self.height = 0
-        self.row = SimpleNamespace(pos=0, span=1, weight=1)
-        self.col = SimpleNamespace(pos=0, span=1, weight=1)
+        self.row = SimpleNamespace(
+            pos=0, span=1, weight=1)
+        self.col = SimpleNamespace(
+            pos=0, span=1, weight=1)
 
         if self.parent:
             self.parent.children.append(self)
@@ -35,6 +37,8 @@ class Widget(Target):
             'content', getattr(self, 'content', ''))
         self.position: str = context.get(
             'position', getattr(self, 'position', 'relative'))
+        self.autoload: bool = context.get(
+            'autoload', getattr(self, 'autoload', False))
         self.styling: Style = context.get(
             'style', getattr(self, 'styling', Style()))
         self.name: str = context.get('name', getattr(self, 'name', ''))
@@ -121,7 +125,8 @@ class Widget(Target):
 
     async def load(self) -> None:
         """Custom asynchronous load"""
-        await asyncio.gather(*[child.load() for child in self.children])
+        await asyncio.gather(*[
+            child.load() for child in self.children if child.autoload])
 
     def settle(self) -> None:
         """Custom settlement"""
