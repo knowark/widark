@@ -3,7 +3,7 @@ from widark import Event, Button, Frame, Entry, Color
 
 
 class Content(Frame):
-    def attach(self) -> 'Content':
+    def render(self) -> 'Content':
         self.clear()
         self.child_c_1 = Frame(self).grid(0, 1)
         self.b1 = Button(
@@ -24,7 +24,7 @@ class Content(Frame):
         self.right = Frame(self).grid(0, 2)
         self.right.listen('click', self.on_content_click)
 
-        return cast('Content', super().attach())
+        return cast('Content', super().render())
 
     async def on_click(self, event: Event) -> None:
         button = cast(Button, event.target)

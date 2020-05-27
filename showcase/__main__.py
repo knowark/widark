@@ -42,7 +42,7 @@ class Main(Application):
         if self.modal:
             self.remove(self.modal)
             self.modal = None
-            self.attach()
+            self.render()
 
 
 if __name__ == '__main__':

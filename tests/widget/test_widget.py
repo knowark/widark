@@ -51,8 +51,8 @@ def test_widget_root(root):
     assert child_c.root is root
 
 
-def test_widget_attach(root):
-    widget = Widget(root).pin(1, 2).attach()
+def test_widget_render(root):
+    widget = Widget(root).pin(1, 2).render()
 
     relative_coordinates = widget.window.getparyx()
 
@@ -66,7 +66,7 @@ def test_widget_attach(root):
 
 
 def test_widget_move(root):
-    widget = Widget(root).move().attach()
+    widget = Widget(root).move().render()
 
     widget = widget.move(5, 7)
 
@@ -75,7 +75,7 @@ def test_widget_move(root):
 
 
 def test_widget_clear(root):
-    widget = Widget(root, content='SUPER').attach()
+    widget = Widget(root, content='SUPER').render()
 
     window_text = widget.window.instr(0, 0, 5)
     assert window_text == b'SUPER'
@@ -88,22 +88,22 @@ def test_widget_clear(root):
     assert window_text == b'     '
 
 
-def test_widget_attach_error(root):
+def test_widget_render_error(root):
     root.window.resize(1, 1)
 
     widget = Widget(root)
 
-    result = widget.pin(height=2, width=2).attach()
+    result = widget.pin(height=2, width=2).render()
 
     assert result is widget
     assert widget.window is None
 
 
-def test_widget_attach_with_window(root):
+def test_widget_render_with_window(root):
     widget = Widget(None)
     widget.window = root.window
     widget.content = 'Hello World'
-    widget.pin(1, 2).attach()
+    widget.pin(1, 2).render()
 
     window_text = widget.window.instr(0, 0, 11)
 
@@ -113,8 +113,8 @@ def test_widget_attach_with_window(root):
     assert window_text == b'Hello World'
 
 
-def test_widget_attach_dimensions(root):
-    widget = Widget(root).pin(height=3, width=2).attach()
+def test_widget_render_dimensions(root):
+    widget = Widget(root).pin(height=3, width=2).render()
 
     relative_coordinates = widget.window.getparyx()
     dimensions = widget.window.getmaxyx()
@@ -125,18 +125,18 @@ def test_widget_attach_dimensions(root):
     assert dimensions == (3, 2)
 
 
-def test_widget_attach_fixed(root):
+def test_widget_render_fixed(root):
     sibling = Widget(root).grid(0, 0)
     parent = Widget(root).grid(0, 1)
 
-    root.attach()
+    root.render()
 
     assert sibling.window.getbegyx() == (0, 0)
     assert parent.window.getbegyx() == (0, 45)
 
     fixed_widget = Widget(parent, position='fixed')
 
-    fixed_widget.pin(5, 5, 5, 30).attach()
+    fixed_widget.pin(5, 5, 5, 30).render()
 
     assert fixed_widget.window is not None
 
@@ -215,7 +215,7 @@ def test_widget_update(root):
 
     content = 'Hello World'
     widget.content = content
-    widget = widget.attach().update()
+    widget = widget.render().update()
 
     curses.doupdate()
 
@@ -231,7 +231,7 @@ def test_widget_update_error(root):
     widget = Widget(root)
     widget.content = 'Hello World'
 
-    widget = widget.attach().update()
+    widget = widget.render().update()
 
     curses.doupdate()
 
@@ -252,14 +252,14 @@ def test_widget_update_without_window(root):
     assert widget.window is None
 
 
-def test_widget_attach_children(root):
+def test_widget_render_children(root):
     parent = Widget(root)
 
     child_a = Widget(parent)
     child_b = Widget(parent)
     child_c = Widget(parent)
 
-    parent.attach()
+    parent.render()
 
     curses.doupdate()
 
@@ -269,14 +269,14 @@ def test_widget_attach_children(root):
     assert child_c.window is not None
 
 
-def test_widget_attach_fixed_children(root):
+def test_widget_render_fixed_children(root):
     parent = Widget(root)
 
     child_a = Widget(parent)
     child_b = Widget(parent, position='fixed')
     child_c = Widget(parent)
 
-    parent.attach()
+    parent.render()
 
     curses.doupdate()
 
@@ -285,9 +285,9 @@ def test_widget_attach_fixed_children(root):
     assert child_b.window is None
     assert child_c.window is not None
 
-    child_b.pin(5, 5, 10, 10).attach()
+    child_b.pin(5, 5, 10, 10).render()
 
-    parent.attach()
+    parent.render()
 
     curses.doupdate()
 
@@ -329,15 +329,15 @@ async def test_widget_connect(root):
 
 def test_widget_place(root):
     # height, width = 18, 90
-    assert Widget(root).attach().place() == (0, 0)
+    assert Widget(root).render().place() == (0, 0)
     assert Widget(root, content='ABC',  style=Style(
-        align='C')).attach().place() == (8, 43)
+        align='C')).render().place() == (8, 43)
     assert Widget(root, content='ABC', style=Style(
-        align='R')).attach().place() == (17, 87)
+        align='R')).render().place() == (17, 87)
     assert Widget(root, content='ABC', style=Style(
-        align='CR')).attach().place() == (8, 87)
+        align='CR')).render().place() == (8, 87)
     assert Widget(root, content='ABC' * 40, style=Style(
-        align='CC')).attach().place() == (8, 0)
+        align='CC')).render().place() == (8, 0)
 
 
 def test_widget_layout_sequences(root):
@@ -347,7 +347,7 @@ def test_widget_layout_sequences(root):
     child_b = Widget(parent).grid(1, 2)
     child_c = Widget(parent).grid(3, 4)
 
-    parent.attach()
+    parent.render()
 
     layout = parent.layout(parent.children)
 
@@ -383,7 +383,7 @@ def test_widget_layout_span(root):
     child_b = Widget(parent).grid(1, 2).span(2)
     child_c = Widget(parent).grid(3, 4).span(col=2)
 
-    parent.attach()
+    parent.render()
 
     layout = parent.layout(parent.children)
 
@@ -403,7 +403,7 @@ def test_widget_layout_weight(root):
     child_b = Widget(parent).grid(1, 2).span(2).weight(col=2)
     child_c = Widget(parent).grid(3, 4).span(col=2).weight(2)
 
-    parent.attach()
+    parent.render()
 
     layout = parent.layout(parent.children)
 
@@ -424,7 +424,7 @@ def test_widget_layout_with_border(root):
     child_b = Widget(parent).grid(1, 2).span(2).weight(col=2)
     child_c = Widget(parent).grid(3, 4).span(col=2).weight(2)
 
-    parent.attach()
+    parent.render()
 
     layout = parent.layout(parent.children)
 
@@ -446,7 +446,7 @@ def test_widget_focus(root):
     assert isinstance(child_a, Widget)
     assert isinstance(child_b, Widget)
 
-    parent.attach()
+    parent.render()
 
     child_a.focus()
     curses.doupdate()

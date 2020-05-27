@@ -25,7 +25,7 @@ async def test_entry_on_click(root):
     entry = Entry(root, content='QWERTY')
     entry.focus = MethodType(mock_focus, entry)
 
-    root.attach()
+    root.render()
 
     event = Event('Custom', 'click')
 

@@ -53,16 +53,13 @@ class Widget(Target):
 
         return root
 
-    def connect(self: T, y=0, x=0, height=0, width=0) -> T:
-        self.pin(y, x, height, width).attach()
+    def connect(self: T) -> T:
+        self.render()
         loop = asyncio.get_event_loop()
         loop.call_soon(asyncio.ensure_future, self.load())
         return self
 
-    def attach(self: T,
-               # y=0, x=0, height=0, width=0
-
-               ) -> T:
+    def render(self: T) -> T:
         if self.parent:
             try:
                 factory = self.parent.window.derwin
@@ -78,11 +75,11 @@ class Widget(Target):
         relative_children, fixed_children = self.subtree()
 
         for child, dimensions in self.layout(relative_children):
-            child.pin(**dimensions).attach()
+            child.pin(**dimensions).render()
 
         for child in fixed_children:
             if child.height and child.width:
-                child.pin(child.y, child.x, child.height, child.width).attach()
+                child.pin(child.y, child.x, child.height, child.width).render()
 
         return self.update()
 

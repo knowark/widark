@@ -10,10 +10,10 @@ def test_modal_instantiation_defaults(root):
     assert modal.position == 'fixed'
 
 
-def test_modal_attach(root):
+def test_modal_render(root):
     modal = Modal(root)
 
-    modal.attach()
+    modal.render()
 
     assert modal.window is not None
 
@@ -36,7 +36,7 @@ async def test_modal_close(root):
 
     modal = Modal(root, close_command=close_modal)
 
-    modal.attach()
+    modal.render()
 
     await modal.close.dispatch(Event('Mouse', 'click'))
 

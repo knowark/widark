@@ -128,23 +128,23 @@ async def test_application_run_exception(application, monkeypatch):
 
 
 async def test_application_process(application):
-    attach_called = False
+    render_called = False
     clear_screen_called = False
 
-    def mock_attach(self) -> None:
-        nonlocal attach_called
-        attach_called = True
+    def mock_render(self) -> None:
+        nonlocal render_called
+        render_called = True
 
     def mock_clear_screen(self) -> None:
         nonlocal clear_screen_called
         clear_screen_called = True
 
-    application.attach = MethodType(mock_attach, application)
+    application.render = MethodType(mock_render, application)
     application._clear_screen = MethodType(mock_clear_screen, application)
 
     await application._process(curses.KEY_RESIZE)
 
-    assert attach_called is True
+    assert render_called is True
     assert clear_screen_called is True
 
 
