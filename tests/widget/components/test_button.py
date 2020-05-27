@@ -18,7 +18,7 @@ async def test_button_command(root):
         nonlocal command_called
         command_called = True
 
-    button = Button(root, 'Accept', custom_command)
+    button = Button(root, content='Accept', command=custom_command)
 
     event = Event('Custom', 'click')
 

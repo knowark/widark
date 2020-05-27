@@ -4,9 +4,13 @@ from ..event import Handler
 
 
 class Button(Widget):
-    def __init__(self, parent: 'Widget', content: str = '',
-                 command: Handler=None) -> None:
-        style = Style(Color.PRIMARY(), align='C', template='< {} >')
-        super().__init__(parent, content, style)
-        if command:
-            self.listen('click', command)
+    def setup(self, **context) -> 'Button':
+        style = context.pop('style', Style(
+            Color.PRIMARY(), align='C', template='< {} >'))
+        super().setup(**context, style=style)
+
+        if context.get('command'):
+            self.ignore('click')
+            self.listen('click', context['command'])
+
+        return self

@@ -12,32 +12,35 @@ T = TypeVar('T', bound='Widget')
 
 
 class Widget(Target):
-    def __init__(self, parent: Optional['Widget'],
-                 content: str = '', style: Style = None,
-                 position: str = 'relative') -> None:
+    def __init__(self, parent: Optional['Widget'], **context) -> None:
         super().__init__()
         self.parent: Optional['Widget'] = parent
-        self.content = content
         self.children: List['Widget'] = []
         self.window: Any = None
-        self.position = position
-        self.styling = style or Style()
         self.focused = False
-        self.name: str = ''
-        self.group: str = ''
         self.y = 0
         self.x = 0
         self.width = 0
         self.height = 0
-        self.row = SimpleNamespace(
-            pos=0, span=1, weight=1)
-        self.col = SimpleNamespace(
-            pos=0, span=1, weight=1)
+        self.row = SimpleNamespace(pos=0, span=1, weight=1)
+        self.col = SimpleNamespace(pos=0, span=1, weight=1)
 
         if self.parent:
             self.parent.children.append(self)
 
-        self.setup()
+        self.setup(**context)
+
+    def setup(self: T, **context) -> T:
+        self.content: str = context.get(
+            'content', getattr(self, 'content', ''))
+        self.position: str = context.get(
+            'position', getattr(self, 'position', 'relative'))
+        self.styling: Style = context.get(
+            'style', getattr(self, 'styling', Style()))
+        self.name: str = context.get('name', getattr(self, 'name', ''))
+        self.group: str = context.get('group', getattr(self, 'group', ''))
+
+        return self
 
     @property
     def root(self) -> 'Widget':
@@ -46,9 +49,6 @@ class Widget(Target):
             root = root.parent
 
         return root
-
-    def setup(self) -> None:
-        """Custom setup"""
 
     def connect(self: T, y=0, x=0, height=0, width=0) -> T:
         self.attach(y, x, height, width)
@@ -119,7 +119,7 @@ class Widget(Target):
 
         return self
 
-    async def load(self: T) -> None:
+    async def load(self) -> None:
         """Custom asynchronous load"""
 
     def settle(self) -> None:

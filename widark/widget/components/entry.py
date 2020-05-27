@@ -5,8 +5,8 @@ from ..event import Event
 
 
 class Entry(Widget):
-    def __init__(self, parent: 'Widget', content: str = '') -> None:
-        super().__init__(parent, content)
+    def __init__(self, parent: 'Widget', **context) -> None:
+        super().__init__(parent, **context)
         self.listen('click', self.on_click)
         self.listen('keydown', self.on_keydown)
 

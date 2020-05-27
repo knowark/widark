@@ -1,17 +1,24 @@
-from ..style import Color
+from ..style import Style, Color
 from ..event import Handler
 from ..widget import Widget
 
 
 class Modal(Widget):
-    def __init__(self, parent: 'Widget',
-                 close_command: Handler = None) -> None:
-        super().__init__(parent, position='fixed')
-        self.style(background_color=Color.WARNING.reverse(), border=[' ']*8)
-        self.close = Widget(self, 'X', position='fixed').style(Color.DANGER())
+    def __init__(self, parent: 'Widget', **context) -> None:
+        position = context.pop('position', 'fixed')
+        super().__init__(parent, **context, position=position)
 
-        if close_command:
-            self.close.listen('click', close_command)
+    def setup(self, **context) -> 'Modal':
+        style = context.pop('style', Style(
+            background_color=Color.WARNING.reverse(), border=[' ']))
+        super().setup(**context, style=style)
+
+        self.close = Widget(
+            self, content='X', position='fixed').style(Color.DANGER())
+        if context.get('close_command'):
+            self.close.listen('click', context['close_command'])
+
+        return self
 
     def launch(self, row=0, col=0, height=0, width=0) -> 'Modal':
         self.parent and self.parent.add(self, 0)

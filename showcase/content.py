@@ -3,23 +3,27 @@ from widark import Event, Button, Frame, Entry, Color
 
 
 class Content(Frame):
-    def setup(self):
+    def setup(self, **context) -> 'Content':
+        super().setup(**context)
         self.child_c_1 = Frame(self).grid(0, 1)
         self.b1 = Button(
-            self.child_c_1, 'Content UP', self.on_click).style(
+            self.child_c_1, content='Content UP',
+            command=self.on_click).style(
             Color.INFO(), Color.DANGER.reverse(),
             border=[0], align='C').grid(0)
-        Button(self.child_c_1, 'MIDDLE UP BUTTON',
-               self.on_click).style(
-                   Color.WARNING(), border=[0], align='C').grid(1)
-        Button(self.child_c_1, 'MIDDLE DOWN BUTTON', self.on_click).style(
+        Button(self.child_c_1, content='MIDDLE UP BUTTON',
+               command=self.on_click).style(
+            Color.WARNING(), border=[0], align='C').grid(1)
+        Button(self.child_c_1, content='MIDDLE DOWN BUTTON',
+               command=self.on_click).style(
             Color.DANGER(), border=[0], align='C').grid(2)
 
-        self.edit = Entry(self.child_c_1, 'abcdario').style(
+        self.edit = Entry(self.child_c_1, content='abcdario').style(
             Color.LIGHT()).grid(3)
 
         self.right = Frame(self).grid(0, 2)
         self.right.listen('click', self.on_content_click)
+        return self
 
     async def on_click(self, event: Event) -> None:
         button = cast(Button, event.target)

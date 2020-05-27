@@ -8,29 +8,29 @@ class Main(Application):
     async def build(self):
         self.style(border=[0])
         self.modal = None
-        master = Frame(self, 'Master').grid(
+        master = Frame(self, content='Master').grid(
             0).style(background_color=Color.LIGHT.reverse(),
                      border_color=Color.PRIMARY.reverse())
 
-        Label(master, 'Label:').grid(0, 0).style(
+        Label(master, content='Label:').grid(0, 0).style(
             Color.DANGER.reverse(), Color.DANGER.reverse())
 
-        Button(master, 'Create', self.launch_modal).grid(0, 1).style(
-            Color.SUCCESS.reverse(), Color.SUCCESS.reverse()
-        )
+        Button(master, content='Create',
+               command=self.launch_modal).grid(0, 1).style(
+            Color.SUCCESS.reverse(), Color.SUCCESS.reverse())
 
-        Frame(master, 'Details').title_style(
+        Frame(master, title='Details').title_style(
             Color.DANGER()).grid(1, 0).span(col=3).weight(3).style(
-                background_color=Color.LIGHT.reverse()
-        )
+                background_color=Color.LIGHT.reverse())
 
-        Frame(self, 'World').title_style(Color.WARNING()).grid(1)
-        Content(self, 'Content').grid(0, 1).span(2).weight(col=3)
+        Frame(self, content='World').title_style(Color.WARNING()).grid(1)
+        Content(self, content='Content').grid(0, 1).span(2).weight(col=3)
 
         self.listen('click', self.on_backdrop_click, True)
 
     async def launch_modal(self, event: Event) -> None:
-        self.modal = Modal(self, self.close_modal).launch(5, 5, 15, 50)
+        self.modal = Modal(
+            self, close_command=self.close_modal).launch(5, 5, 15, 50)
 
     async def on_backdrop_click(self, event: Event) -> None:
         if self.modal and not self.modal.hit(event):

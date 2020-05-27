@@ -22,7 +22,7 @@ async def test_entry_on_click(root):
         focus_called = True
         return self
 
-    entry = Entry(root, 'QWERTY')
+    entry = Entry(root, content='QWERTY')
     entry.focus = MethodType(mock_focus, entry)
 
     root.attach()
@@ -42,7 +42,7 @@ async def test_entry_on_keydown_backspace(root):
         given_content = content
         return self
 
-    entry = Entry(root, 'QWERTY')
+    entry = Entry(root, content='QWERTY')
     entry.update = MethodType(mock_update, entry)
 
     event = Event('Custom', 'keydown', key=chr(curses.KEY_BACKSPACE))
@@ -62,7 +62,7 @@ async def test_entry_on_keydown_all(root):
         given_content = content
         return self
 
-    entry = Entry(root, 'QWERTY')
+    entry = Entry(root, content='QWERTY')
     entry.update = MethodType(mock_update, entry)
 
     event_1 = Event('Custom', 'keydown', key='U')

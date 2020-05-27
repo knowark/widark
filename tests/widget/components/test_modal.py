@@ -34,10 +34,31 @@ async def test_modal_close(root):
         nonlocal close_modal_called
         close_modal_called = True
 
-    modal = Modal(root, close_modal)
+    modal = Modal(root, close_command=close_modal)
 
     modal.attach()
 
     await modal.close.dispatch(Event('Mouse', 'click'))
 
     assert close_modal_called is True
+
+
+async def test_modal_setup(root):
+    async def close_modal(event: Event):
+        pass
+
+    modal = Modal(root, close_command=close_modal)
+
+    assert close_modal in modal.close._bubble_listeners['click']
+    assert len(modal.close._bubble_listeners) == 1
+
+    original_close = modal.close
+
+    async def new_close_modal(event: Event):
+        pass
+
+    modal.setup(close_command=new_close_modal)
+
+    assert new_close_modal in modal.close._bubble_listeners['click']
+    assert len(modal.close._bubble_listeners) == 1
+    assert modal.close is not original_close

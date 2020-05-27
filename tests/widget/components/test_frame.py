@@ -9,8 +9,8 @@ def test_frame_instantiation_defaults(root):
     assert frame.title_styling.template == ' {} '
 
 
-def test_frame_settle(root):
-    frame = Frame(root, 'Details').attach().update()
+def test_frame_amend(root):
+    frame = Frame(root, title='Details').attach().update()
     curses.doupdate()
 
     title_text = frame.window.instr(0, 42, 7)
@@ -19,14 +19,15 @@ def test_frame_settle(root):
 
 
 def test_frame_title_style(root):
-    frame = Frame(root, 'Details').title_style('SUCCESS', align='L')
+    frame = Frame(root, title='Details').title_style('SUCCESS', align='L')
 
     assert frame.title_styling.color == 'SUCCESS'
     assert frame.title_styling.align == 'L'
 
 
-def test_frame_settle_right_align(root):
-    frame = Frame(root, 'Details').title_style(align='R').attach().update()
+def test_frame_amend_right_align(root):
+    frame = Frame(
+        root, title='Details').title_style(align='R').attach().update()
     curses.doupdate()
 
     title_text = frame.window.instr(0, 83, 9)
@@ -34,8 +35,9 @@ def test_frame_settle_right_align(root):
     assert title_text == b'Details'
 
 
-def test_frame_settle_left_align(root):
-    frame = Frame(root, 'Details').title_style(align='L').attach().update()
+def test_frame_amend_left_align(root):
+    frame = Frame(
+        root, title='Details').title_style(align='L').attach().update()
     curses.doupdate()
 
     title_text = frame.window.instr(0, 2, 7)

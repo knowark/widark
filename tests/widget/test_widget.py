@@ -29,7 +29,8 @@ def test_widget_instantiation_defaults():
 
 
 def test_widget_instantiation_arguments():
-    widget = Widget(None, 'Custom Content', Style(border=[1]), 'fixed')
+    widget = Widget(None, content='Custom Content',
+                    style=Style(border=[1]), position='fixed')
     assert isinstance(widget, Widget)
     assert widget.styling.border == [1]
     assert widget.content == 'Custom Content'
@@ -48,14 +49,6 @@ def test_widget_root(root):
     assert child_a.root is root
     assert child_b.root is root
     assert child_c.root is root
-
-
-def test_widget_instantiation_arguments():
-    widget = Widget(None, 'Custom Content', Style(border=[1]), 'fixed')
-    assert isinstance(widget, Widget)
-    assert widget.styling.border == [1]
-    assert widget.content == 'Custom Content'
-    assert widget.position == 'fixed'
 
 
 def test_widget_attach(root):
@@ -82,7 +75,7 @@ def test_widget_move(root):
 
 
 def test_widget_clear(root):
-    widget = Widget(root, 'SUPER').attach()
+    widget = Widget(root, content='SUPER').attach()
 
     window_text = widget.window.instr(0, 0, 5)
     assert window_text == b'SUPER'
@@ -336,11 +329,14 @@ async def test_widget_connect(root):
 def test_widget_place(root):
     # height, width = 18, 90
     assert Widget(root).attach().place() == (0, 0)
-    assert Widget(root, 'ABC',  Style(align='C')).attach().place() == (8, 43)
-    assert Widget(root, 'ABC', Style(align='R')).attach().place() == (17, 87)
-    assert Widget(root, 'ABC', Style(align='CR')).attach().place() == (8, 87)
-    assert Widget(
-        root, 'ABC' * 40, Style(align='CC')).attach().place() == (8, 0)
+    assert Widget(root, content='ABC',  style=Style(
+        align='C')).attach().place() == (8, 43)
+    assert Widget(root, content='ABC', style=Style(
+        align='R')).attach().place() == (17, 87)
+    assert Widget(root, content='ABC', style=Style(
+        align='CR')).attach().place() == (8, 87)
+    assert Widget(root, content='ABC' * 40, style=Style(
+        align='CC')).attach().place() == (8, 0)
 
 
 def test_widget_layout_sequences(root):
