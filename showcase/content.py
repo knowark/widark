@@ -31,4 +31,5 @@ class Content(Frame):
         button.focus()
 
     async def on_content_click(self, event: Event) -> None:
-        self.right.update(f'Clicked on: y={event.y:03d}, x={event.x:03d}')
+        self.right.content = f'Clicked on: y={event.y:03d}, x={event.x:03d}'
+        self.right.update()

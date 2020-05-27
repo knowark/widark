@@ -37,9 +37,9 @@ async def test_entry_on_click(root):
 async def test_entry_on_keydown_backspace(root):
     given_content = None
 
-    def mock_update(self, content):
+    def mock_update(self):
         nonlocal given_content
-        given_content = content
+        given_content = self.content
         return self
 
     entry = Entry(root, content='QWERTY')
@@ -48,7 +48,6 @@ async def test_entry_on_keydown_backspace(root):
     event = Event('Custom', 'keydown', key=chr(curses.KEY_BACKSPACE))
 
     await entry.dispatch(event)
-    await entry.dispatch(event)
 
     assert given_content == 'QWERT'
 
@@ -56,10 +55,9 @@ async def test_entry_on_keydown_backspace(root):
 async def test_entry_on_keydown_all(root):
     given_content = None
 
-    def mock_update(self, content):
+    def mock_update(self):
         nonlocal given_content
-        self.content = content
-        given_content = content
+        given_content = self.content
         return self
 
     entry = Entry(root, content='QWERTY')

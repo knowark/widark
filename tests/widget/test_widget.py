@@ -214,7 +214,8 @@ def test_widget_update(root):
     assert widget.content == ''
 
     content = 'Hello World'
-    widget = widget.attach().update(content)
+    widget.content = content
+    widget = widget.attach().update()
 
     curses.doupdate()
 

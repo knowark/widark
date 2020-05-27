@@ -86,12 +86,9 @@ class Widget(Target):
 
         return self.update()
 
-    def update(self: T, content: str = None) -> T:
+    def update(self: T) -> T:
         if not self.window:
             return self
-
-        if content is not None:
-            self.content = content
 
         try:
             self.settle()
