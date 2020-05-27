@@ -22,6 +22,6 @@ class Modal(Widget):
 
     def launch(self, row=0, col=0, height=0, width=0) -> 'Modal':
         self.parent and self.parent.add(self, 0)
-        self.attach(row, col, height, width)
-        self.close.attach(0, self.width - 2, 1, 2)
+        self.pin(row, col, height, width).attach()
+        self.close.pin(0, self.width - 2, 1, 2).attach()
         return self

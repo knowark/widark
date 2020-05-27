@@ -40,9 +40,9 @@ class Main(Application):
 
     async def close_modal(self, event: Event) -> None:
         if self.modal:
-            self.remove(self.modal).clear()
+            self.remove(self.modal)
             self.modal = None
-            self.update()
+            self.attach()
 
 
 if __name__ == '__main__':

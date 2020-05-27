@@ -18,7 +18,6 @@ def test_widget_instantiation_defaults():
     assert widget.position == 'relative'
     assert widget.autoload is False
     assert isinstance(widget.styling, Style)
-    assert widget.focused is False
     assert widget.name == ''
     assert widget.group == ''
     assert widget.row.pos == 0
@@ -53,7 +52,7 @@ def test_widget_root(root):
 
 
 def test_widget_attach(root):
-    widget = Widget(root).attach(1, 2)
+    widget = Widget(root).pin(1, 2).attach()
 
     relative_coordinates = widget.window.getparyx()
 
@@ -94,7 +93,7 @@ def test_widget_attach_error(root):
 
     widget = Widget(root)
 
-    result = widget.attach(height=2, width=2)
+    result = widget.pin(height=2, width=2).attach()
 
     assert result is widget
     assert widget.window is None
@@ -104,7 +103,7 @@ def test_widget_attach_with_window(root):
     widget = Widget(None)
     widget.window = root.window
     widget.content = 'Hello World'
-    widget.attach(1, 2)
+    widget.pin(1, 2).attach()
 
     window_text = widget.window.instr(0, 0, 11)
 
@@ -115,7 +114,7 @@ def test_widget_attach_with_window(root):
 
 
 def test_widget_attach_dimensions(root):
-    widget = Widget(root).attach(height=3, width=2)
+    widget = Widget(root).pin(height=3, width=2).attach()
 
     relative_coordinates = widget.window.getparyx()
     dimensions = widget.window.getmaxyx()
@@ -137,7 +136,7 @@ def test_widget_attach_fixed(root):
 
     fixed_widget = Widget(parent, position='fixed')
 
-    fixed_widget.attach(5, 5, 5, 30)
+    fixed_widget.pin(5, 5, 5, 30).attach()
 
     assert fixed_widget.window is not None
 
@@ -285,7 +284,7 @@ def test_widget_attach_fixed_children(root):
     assert child_b.window is None
     assert child_c.window is not None
 
-    child_b.attach(5, 5, 10, 10)
+    child_b.pin(5, 5, 10, 10).attach()
 
     parent.attach()
 
@@ -451,13 +450,11 @@ def test_widget_focus(root):
     child_a.focus()
     curses.doupdate()
     cursor_y, cursor_x = curses.getsyx()
-    assert child_a.focused is True
     assert (cursor_y, cursor_x) == (0, 0)
 
     child_b.focus()
     curses.doupdate()
     cursor_y, cursor_x = curses.getsyx()
-    assert child_b.focused is True
     assert (cursor_y, cursor_x) == (0, 45)
 
 
@@ -465,4 +462,5 @@ def test_widget_blur(root):
     widget = Widget(root).blur()
 
     assert isinstance(widget, Widget)
-    assert widget.focused is False
+    cursor_y, cursor_x = curses.getsyx()
+    assert (cursor_y, cursor_x) == (0, 0)

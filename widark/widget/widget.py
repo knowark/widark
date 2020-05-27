@@ -17,15 +17,6 @@ class Widget(Target):
         self.parent: Optional['Widget'] = parent
         self.children: List['Widget'] = []
         self.window: Any = None
-        self.focused = False
-        self.y = 0
-        self.x = 0
-        self.width = 0
-        self.height = 0
-        self.row = SimpleNamespace(
-            pos=0, span=1, weight=1)
-        self.col = SimpleNamespace(
-            pos=0, span=1, weight=1)
 
         if self.parent:
             self.parent.children.append(self)
@@ -43,6 +34,14 @@ class Widget(Target):
             'style', getattr(self, 'styling', Style()))
         self.name: str = context.get('name', getattr(self, 'name', ''))
         self.group: str = context.get('group', getattr(self, 'group', ''))
+        self.y = 0
+        self.x = 0
+        self.width = 0
+        self.height = 0
+        self.row = SimpleNamespace(
+            pos=0, span=1, weight=1)
+        self.col = SimpleNamespace(
+            pos=0, span=1, weight=1)
 
         return self
 
@@ -55,18 +54,22 @@ class Widget(Target):
         return root
 
     def connect(self: T, y=0, x=0, height=0, width=0) -> T:
-        self.attach(y, x, height, width)
+        self.pin(y, x, height, width).attach()
         loop = asyncio.get_event_loop()
         loop.call_soon(asyncio.ensure_future, self.load())
         return self
 
-    def attach(self: T, y=0, x=0, height=0, width=0) -> T:
+    def attach(self: T,
+               # y=0, x=0, height=0, width=0
+
+               ) -> T:
         if self.parent:
             try:
                 factory = self.parent.window.derwin
-                self.window = factory(height, width, y, x)
+                self.window = factory(
+                    self.height, self.width, self.y, self.x)
                 h, w = self.window.getmaxyx()
-                self.pin(y, x, h, w)
+                self.pin(self.y, self.x, h, w)
                 self._y_min, self._x_min = self.window.getbegyx()
                 self._y_max, self._x_max = self._y_min + h, self._x_min + w
             except CursesError:
@@ -75,11 +78,11 @@ class Widget(Target):
         relative_children, fixed_children = self.subtree()
 
         for child, dimensions in self.layout(relative_children):
-            child.attach(**dimensions)
+            child.pin(**dimensions).attach()
 
         for child in fixed_children:
             if child.height and child.width:
-                child.attach(child.y, child.x, child.height, child.width)
+                child.pin(child.y, child.x, child.height, child.width).attach()
 
         return self.update()
 
@@ -161,6 +164,7 @@ class Widget(Target):
         return self
 
     def clear(self: T) -> T:
+        self.children = []
         if self.window:
             self.window.clear()
             self.window.noutrefresh()
@@ -203,12 +207,10 @@ class Widget(Target):
             return self
         origin = 1 if self.styling.border else 0
         setsyx(self._y_min + origin, self._x_min + origin)
-        self.focused = True
         return self
 
     def blur(self: T) -> T:
         setsyx(0, 0)
-        self.focused = False
         return self
 
     def place(self) -> Tuple[int, int]:
