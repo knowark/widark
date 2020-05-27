@@ -27,6 +27,7 @@ class Main(Application):
         Content(self, content='Content').grid(0, 1).span(2).weight(col=3)
 
         self.listen('click', self.on_backdrop_click, True)
+        return self
 
     async def launch_modal(self, event: Event) -> None:
         self.modal = Modal(

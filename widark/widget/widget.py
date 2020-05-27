@@ -121,6 +121,7 @@ class Widget(Target):
 
     async def load(self) -> None:
         """Custom asynchronous load"""
+        await asyncio.gather(*[child.load() for child in self.children])
 
     def settle(self) -> None:
         """Custom settlement"""
