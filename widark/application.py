@@ -8,8 +8,8 @@ from .palette import DefaultPalette, Palette
 
 
 class Application(Widget):
-    def __init__(self, palette: Palette = None) -> None:
-        super().__init__(None, autoload=True)
+    def __init__(self, palette: Palette = None, **context) -> None:
+        super().__init__(None, **context, autoload=True)
         self.active = True
         self.palette = palette or DefaultPalette()
         self._rate = 1 / 20
