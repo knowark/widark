@@ -5,7 +5,7 @@ from .content import Content
 
 
 class Main(Application):
-    async def build(self):
+    def build(self):
         self.style(border=[0])
         self.modal = None
         master = Frame(self, content='Master').grid(

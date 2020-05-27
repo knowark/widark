@@ -9,13 +9,13 @@ from .palette import DefaultPalette, Palette
 
 class Application(Widget):
     def __init__(self, palette: Palette = None) -> None:
-        super().__init__(None)
+        super().__init__(None, autoload=True)
         self.active = True
         self.palette = palette or DefaultPalette()
         self._rate = 1 / 20
         signal(SIGINT, self._interrupt)
 
-    async def build(self) -> None:
+    def build(self) -> None:
         """Interface building method"""
 
     async def run(self) -> None:
@@ -27,7 +27,7 @@ class Application(Widget):
 
     async def _run(self) -> None:
         self._start_screen()
-        await self.build()
+        self.build()
         self.connect()
 
         while self.active:

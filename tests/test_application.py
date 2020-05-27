@@ -13,7 +13,7 @@ pytestmark = mark.asyncio
 @fixture
 def application():
     class CustomApplication(Application):
-        async def build(self) -> None:
+        def build(self) -> None:
             self.first = Widget(self, content='First Child').grid(0, 0)
             self.second = Widget(self, content='Second Child').grid(0, 1)
             self.third = Widget(self.first, content='Third Child').grid(0)
@@ -49,8 +49,8 @@ def test_application_instantiation(application):
     assert application.active is True
 
 
-async def test_application_build(application):
-    await application.build()
+def test_application_build(application):
+    application.build()
 
     assert application.window is None
     assert len(application.children) == 2
@@ -71,7 +71,7 @@ async def test_application_run(application, monkeypatch):
         nonlocal start_screen_called
         start_screen_called = True
 
-    async def mock_build(self) -> None:
+    def mock_build(self) -> None:
         nonlocal build_called
         build_called = True
 
