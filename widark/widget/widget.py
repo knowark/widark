@@ -110,43 +110,6 @@ class Widget(Target):
 
         return self
 
-    # def update(self: T) -> T:
-    #     if not self.window:
-    #         return self
-
-    #     try:
-    #         self.settle()
-
-    #         self.window.clear()
-
-    #         self.window.bkgd(' ', self.styling.background_color)
-
-    #         if self.styling.border:
-    #             self.window.bkgdset(' ', self.styling.border_color)
-    #             self.window.border(*self.styling.border)
-
-    #         y, x = self.place()
-    #         formatted_content = self.styling.template.format(self.content)
-
-    #         self.window.bkgdset(' ', self.styling.color)
-    #         self.window.addstr(y, x, formatted_content, self.styling.color)
-
-    #         relative_children, fixed_children = self.subtree()
-
-    #         for child in relative_children:
-    #             child.update()
-
-    #         for child in fixed_children:
-    #             child.update()
-
-    #         self.amend()
-
-    #         self.window.noutrefresh()
-    #     except CursesError:
-    #         pass
-
-    #     return self
-
     async def load(self) -> None:
         """Custom asynchronous load"""
         await asyncio.gather(*[
