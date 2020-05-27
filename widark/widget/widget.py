@@ -34,14 +34,14 @@ class Widget(Target):
             'style', getattr(self, 'styling', Style()))
         self.name: str = context.get('name', getattr(self, 'name', ''))
         self.group: str = context.get('group', getattr(self, 'group', ''))
-        self.y = 0
-        self.x = 0
-        self.width = 0
-        self.height = 0
-        self.row = SimpleNamespace(
-            pos=0, span=1, weight=1)
-        self.col = SimpleNamespace(
-            pos=0, span=1, weight=1)
+        self.y: int = context.get('y', getattr(self, 'y', 0))
+        self.x: int = context.get('x', getattr(self, 'x', 0))
+        self.width: int = context.get('width', getattr(self, 'width', 0))
+        self.height: int = context.get('height', getattr(self, 'height', 0))
+        self.row: SimpleNamespace = context.get('row', getattr(
+            self, 'row', SimpleNamespace(pos=0, span=1, weight=1)))
+        self.col: SimpleNamespace = context.get('col', getattr(
+            self, 'col', SimpleNamespace(pos=0, span=1, weight=1)))
 
         return self
 
