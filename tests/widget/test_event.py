@@ -75,7 +75,9 @@ def test_target_listen():
         pass
 
     target.listen('click', click_handler)
+    target.listen('click', click_handler)  # Duplicate call
 
+    assert len(target._bubble_listeners['click']) == 1
     assert click_handler in target._bubble_listeners['click']
 
     target.listen('click', click_handler, True)
@@ -93,6 +95,7 @@ def test_target_ignore():
     target._bubble_listeners['click'].append(click_handler)
 
     target.ignore('click', click_handler)
+    target.ignore('click', click_handler)  # Duplicate call
 
     assert target._bubble_listeners['click'] == []
 

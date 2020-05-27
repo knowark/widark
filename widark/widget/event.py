@@ -46,16 +46,17 @@ class Target:
                capture: bool = False) -> None:
         listeners = (self._capture_listeners if capture
                      else self._bubble_listeners)
-        listeners[type].append(handler)
+        if handler not in listeners[type]:
+            listeners[type].append(handler)
 
     def ignore(self, type: str, handler: Handler = None,
                capture: bool = False) -> None:
         listeners = (self._capture_listeners if capture
                      else self._bubble_listeners)
-        if handler:
-            listeners[type].remove(handler)
-        else:
+        if not handler:
             listeners[type].clear()
+        elif handler in listeners[type]:
+            listeners[type].remove(handler)
 
     async def dispatch(self, event: Event) -> None:
         if event.phase == 'Capture':
