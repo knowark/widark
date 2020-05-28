@@ -1,5 +1,5 @@
 from typing import cast
-from widark import Event, Button, Frame, Entry, Color
+from widark import Event, Button, Frame, Entry, Color, Listbox, Style
 
 
 class Content(Frame):
@@ -20,6 +20,10 @@ class Content(Frame):
 
         self.right = Frame(self, title='Right').grid(0, 2)
         self.right.listen('click', self.on_content_click)
+
+        data = [{'name': 'first'}, {'name': 'second'}, {'name': 'third'}]
+        Listbox(self.right, data=data,
+                item_style=Style(border=[0], align='C'))
 
     async def on_click(self, event: Event) -> None:
         button = cast(Button, event.target)

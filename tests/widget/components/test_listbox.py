@@ -17,7 +17,7 @@ def test_listbox_build(root):
         'third'
     ]
 
-    listbox = Listbox(root, data=data)
+    listbox = Listbox(root, data=data).render()
 
     assert len(listbox.children) == 3
     assert all(isinstance(item, Listitem) for item in listbox.children)

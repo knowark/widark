@@ -22,8 +22,8 @@ class Listbox(Widget):
     def build(self) -> None:
         item_constructor = self.template or Listitem
         for index, item in enumerate(self.data):
-            item_constructor(self, row=index, item=item,
-                             style=self.item_styling)
+            item_constructor(
+                self, item=item, style=self.item_styling).grid(index)
 
 
 class Listitem(Widget):
