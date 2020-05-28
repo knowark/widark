@@ -17,6 +17,10 @@ class Listbox(Widget):
         self.item_styling: Style = context.pop(
             'item_style', getattr(self, 'item_styling', Style(align='C')))
 
+        if context.get('command'):
+            self.ignore('click')
+            self.listen('click', context['command'])
+
         return super().setup(**context) and self
 
     def build(self) -> None:

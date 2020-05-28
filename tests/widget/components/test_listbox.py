@@ -1,7 +1,9 @@
 import curses
+from pytest import mark
 from widark.widget.components.listbox import Listitem
-from widark.widget.widget import Widget
-from widark.widget import Listbox
+from widark.widget import Listbox, Widget, Event
+
+pytestmark = mark.asyncio
 
 
 def test_frame_instantiation_defaults(root):
@@ -40,3 +42,24 @@ def test_listbox_template(root):
 
     assert len(listbox.children) == 3
     assert all(isinstance(item, CustomTemplate) for item in listbox.children)
+
+
+async def test_listbox_command(root):
+    data = [
+        'first',
+        'second',
+        'third'
+    ]
+
+    clicked_item = None
+
+    async def on_click(event: Event) -> None:
+        nonlocal clicked_item
+        clicked_item = event.target
+
+    listbox = Listbox(root, data=data, command=on_click).render()
+
+    await listbox.children[2].dispatch(Event('Mouse', 'click', y=15, x=45))
+
+    assert len(listbox.children) == 3
+    assert clicked_item == listbox.children[2]
