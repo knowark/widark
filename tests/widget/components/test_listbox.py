@@ -10,6 +10,9 @@ def test_frame_instantiation_defaults(root):
     listbox = Listbox(root)
     assert listbox.data == []
     assert listbox.template is None
+    assert listbox.item_styling is not None
+    assert listbox.limit is None
+    assert listbox.offset is None
 
 
 def test_listbox_build(root):
@@ -63,3 +66,25 @@ async def test_listbox_command(root):
 
     assert len(listbox.children) == 3
     assert clicked_item == listbox.children[2]
+
+
+async def test_listbox_limit_and_offset(root):
+    data = [
+        'first',
+        'second',
+        'third',
+        'fourth',
+        'fifth',
+        'sixth',
+        'seventh',
+        'eighth',
+        'ninth',
+        'tenth'
+    ]
+
+    listbox = Listbox(root, data=data, limit=3, offset=3).render()
+
+    assert len(listbox.children) == 3
+    assert listbox.children[0].content == 'fourth'
+    assert listbox.children[1].content == 'fifth'
+    assert listbox.children[2].content == 'sixth'

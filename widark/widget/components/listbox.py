@@ -16,6 +16,10 @@ class Listbox(Widget):
             'template', getattr(self, 'template', None))
         self.item_styling: Style = context.pop(
             'item_style', getattr(self, 'item_styling', Style(align='C')))
+        self.limit: int = context.pop(
+            'limit', getattr(self, 'limit', None))
+        self.offset: int = context.pop(
+            'offset', getattr(self, 'offset', None))
 
         if context.get('command'):
             self.ignore('click')
@@ -25,7 +29,15 @@ class Listbox(Widget):
 
     def build(self) -> None:
         item_constructor = self.template or Listitem
-        for index, item in enumerate(self.data):
+        items = self.data
+
+        if self.offset is not None:
+            items = items[self.offset:]
+
+        if self.limit is not None:
+            items = items[:self.limit]
+
+        for index, item in enumerate(items):
             item_constructor(
                 self, item=item, style=self.item_styling).grid(index)
 
