@@ -9,7 +9,7 @@ from .palette import DefaultPalette, Palette
 
 class Application(Widget):
     def __init__(self, palette: Palette = None, **context) -> None:
-        super().__init__(None, **context, autoload=True)
+        super().__init__(None, **context, autoload=True, autobuild=False)
         self.active = True
         self.palette = palette or DefaultPalette()
         self._rate = 1 / 20
@@ -40,7 +40,7 @@ class Application(Widget):
     async def _process(self, key: int) -> None:
         if key == curses.KEY_RESIZE:
             self._clear_screen()
-            self.clear().render()
+            self.render()
         elif key == curses.KEY_MOUSE:
             _, x, y, _, state = curses.getmouse()
             button, event_type = MOUSE_EVENTS.get(state, (1, 'click'))

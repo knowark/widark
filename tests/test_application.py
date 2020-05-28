@@ -13,13 +13,11 @@ pytestmark = mark.asyncio
 @fixture
 def application():
     class CustomApplication(Application):
-        def render(self) -> 'CustomApplication':
-            self.clear()
+        def build(self) -> None:
             self.first = Widget(self, content='First Child').grid(0, 0)
             self.second = Widget(self, content='Second Child').grid(0, 1)
             self.third = Widget(self.first, content='Third Child').grid(0)
             self.fourth = Widget(self.first, content='Fourth Child').grid(1)
-            return super().render() and self
 
         def _start_screen(self) -> None:
             super()._start_screen()

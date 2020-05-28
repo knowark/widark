@@ -23,6 +23,9 @@ class Widget(Target):
 
         self.setup(**context)
 
+        if self.autobuild:
+            self.build()
+
     def setup(self: T, **context) -> T:
         self.content: str = context.get(
             'content', getattr(self, 'content', ''))
@@ -30,6 +33,8 @@ class Widget(Target):
             'position', getattr(self, 'position', 'relative'))
         self.autoload: bool = context.get(
             'autoload', getattr(self, 'autoload', False))
+        self.autobuild: bool = context.get(
+            'autobuild', getattr(self, 'autobuild', True))
         self.styling: Style = context.get(
             'style', getattr(self, 'styling', Style()))
         self.name: str = context.get('name', getattr(self, 'name', ''))
@@ -45,6 +50,12 @@ class Widget(Target):
 
         return self
 
+    def build(self) -> None:
+        """Custom build"""
+
+    async def load(self) -> None:
+        """Custom asynchronous load"""
+
     @property
     def root(self) -> 'Widget':
         root = self
@@ -55,9 +66,16 @@ class Widget(Target):
 
     def connect(self: T) -> T:
         self.clear()
+        self.build()
         self.render()
-        loop = asyncio.get_event_loop()
-        loop.call_soon(asyncio.ensure_future, self.load())
+        self.gather()
+        return self
+
+    def clear(self: T) -> T:
+        self.children = []
+        if self.window:
+            self.window.clear()
+            self.window.noutrefresh()
         return self
 
     def render(self: T) -> T:
@@ -111,10 +129,11 @@ class Widget(Target):
 
         return self
 
-    async def load(self) -> None:
-        """Custom asynchronous load"""
-        await asyncio.gather(*[
-            child.load() for child in self.children if child.autoload])
+    def gather(self) -> None:
+        widgets = [self] + self.children
+        loop = asyncio.get_event_loop()
+        loop.call_soon(asyncio.ensure_future, asyncio.gather(
+            *[widget.load() for widget in widgets if widget.autoload]))
 
     def settle(self) -> None:
         """Custom settlement"""
@@ -147,13 +166,6 @@ class Widget(Target):
         if self.window:
             height, width = self.window.getmaxyx()
             self.window.move(min(row, height - 1), min(col, width - 1))
-            self.window.noutrefresh()
-        return self
-
-    def clear(self: T) -> T:
-        self.children = []
-        if self.window:
-            self.window.clear()
             self.window.noutrefresh()
         return self
 

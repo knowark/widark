@@ -17,6 +17,7 @@ def test_widget_instantiation_defaults():
     assert widget.content == ''
     assert widget.position == 'relative'
     assert widget.autoload is False
+    assert widget.autobuild is True
     assert isinstance(widget.styling, Style)
     assert widget.name == ''
     assert widget.group == ''
@@ -63,6 +64,20 @@ def test_widget_render(root):
     assert widget._x_min == 2
     assert widget._y_max == 18
     assert widget._x_max == 90
+
+
+def test_widget_render(root):
+
+    class CustomWidget(Widget):
+        def build(self) -> None:
+            Widget(self)
+            Widget(self)
+
+    widget = CustomWidget(root)
+    assert len(widget.children) == 2
+
+    widget = CustomWidget(root, autobuild=False)
+    assert len(widget.children) == 0
 
 
 def test_widget_move(root):
@@ -325,7 +340,7 @@ async def test_widget_connect(root):
             nonlocal load_called
             load_called = True
 
-    widget = CustomWidget(root)
+    widget = CustomWidget(root, autoload=True)
 
     widget.connect()
 
