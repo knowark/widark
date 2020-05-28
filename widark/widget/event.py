@@ -1,5 +1,5 @@
 import curses
-from typing import Awaitable, Callable, List, Dict, Optional, Any
+from typing import Awaitable, Callable, List, Dict, Optional, TypeVar, Any
 from collections import defaultdict
 
 CATEGORIES = {'Mouse': 'Mouse', 'Keyboard': 'Keyboard', 'Custom': 'Custom'}
@@ -26,6 +26,9 @@ class Event:
 Handler = Callable[[Event], Awaitable]
 
 
+T = TypeVar('T', bound='Target')
+
+
 class Target:
     def __init__(self) -> None:
         self.parent: Optional['Target'] = None
@@ -42,21 +45,23 @@ class Target:
         return (self._y_min <= event.y < self._y_max and
                 self._x_min <= event.x < self._x_max)
 
-    def listen(self, type: str, handler: Handler,
-               capture: bool = False) -> None:
+    def listen(self: T, type: str, handler: Optional[Handler],
+               capture: bool = False) -> T:
         listeners = (self._capture_listeners if capture
                      else self._bubble_listeners)
-        if handler not in listeners[type]:
+        if handler and handler not in listeners[type]:
             listeners[type].append(handler)
+        return self
 
-    def ignore(self, type: str, handler: Handler = None,
-               capture: bool = False) -> None:
+    def ignore(self: T, type: str, handler: Optional[Handler] = None,
+               capture: bool = False) -> T:
         listeners = (self._capture_listeners if capture
                      else self._bubble_listeners)
         if not handler:
             listeners[type].clear()
         elif handler in listeners[type]:
             listeners[type].remove(handler)
+        return self
 
     async def dispatch(self, event: Event) -> None:
         if event.phase == 'Capture':

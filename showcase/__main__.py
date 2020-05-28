@@ -5,10 +5,14 @@ from .content import Content
 
 
 class Main(Application):
-    def build(self) -> None:
-        self.style(border=[0])
+    def setup(self, **context) -> 'Application':
         self.modal = None
-        master = Frame(self, content='Master').grid(
+        return super().setup(**context) and self
+
+    def render(self) -> 'Application':
+        self.clear().style(border=['*']*8).add(self.modal)
+
+        master = Frame(self, title='Master').grid(
             0).style(background_color=Color.LIGHT.reverse(),
                      border_color=Color.PRIMARY.reverse())
 
@@ -24,9 +28,12 @@ class Main(Application):
                 background_color=Color.LIGHT.reverse())
 
         Frame(self, title='World').title_style(Color.WARNING()).grid(1)
-        Content(self, title='Content').grid(0, 1).span(2).weight(col=3)
+        Content(self, title='Content').grid(
+            0, 1).span(2).weight(col=3)  # .render()
 
         self.listen('click', self.on_backdrop_click, True)
+
+        return super().render() and self
 
     async def launch_modal(self, event: Event) -> None:
         self.modal = Modal(

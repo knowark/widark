@@ -15,9 +15,6 @@ class Application(Widget):
         self._rate = 1 / 20
         signal(SIGINT, self._interrupt)
 
-    def build(self) -> None:
-        """Interface building method"""
-
     async def run(self) -> None:
         try:
             await self._run()
@@ -27,7 +24,6 @@ class Application(Widget):
 
     async def _run(self) -> None:
         self._start_screen()
-        self.build()
         self.connect()
 
         while self.active:
@@ -44,7 +40,7 @@ class Application(Widget):
     async def _process(self, key: int) -> None:
         if key == curses.KEY_RESIZE:
             self._clear_screen()
-            self.render()
+            self.clear().render()
         elif key == curses.KEY_MOUSE:
             _, x, y, _, state = curses.getmouse()
             button, event_type = MOUSE_EVENTS.get(state, (1, 'click'))

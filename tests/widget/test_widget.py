@@ -162,6 +162,9 @@ def test_widget_add(root):
     assert child in parent.children
     assert child.parent is parent
 
+    result = parent.add(None)
+    assert result is parent
+
 
 def test_widget_remove(root):
     parent = Widget(root).grid(row=1, col=2)
@@ -175,6 +178,9 @@ def test_widget_remove(root):
 
     assert len(parent.children) == 0
     assert child.parent is None
+
+    result = parent.remove(None)
+    assert result is parent
 
 
 def test_widget_mark(root):

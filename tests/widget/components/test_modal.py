@@ -43,11 +43,11 @@ async def test_modal_close(root):
     assert close_modal_called is True
 
 
-async def test_modal_setup(root):
+async def test_modal_render(root):
     async def close_modal(event: Event):
         pass
 
-    modal = Modal(root, close_command=close_modal)
+    modal = Modal(root, close_command=close_modal).render()
 
     assert close_modal in modal.close._bubble_listeners['click']
     assert len(modal.close._bubble_listeners) == 1
@@ -57,7 +57,7 @@ async def test_modal_setup(root):
     async def new_close_modal(event: Event):
         pass
 
-    modal.setup(close_command=new_close_modal)
+    modal.setup(close_command=new_close_modal).render()
 
     assert new_close_modal in modal.close._bubble_listeners['click']
     assert len(modal.close._bubble_listeners) == 1

@@ -13,11 +13,13 @@ pytestmark = mark.asyncio
 @fixture
 def application():
     class CustomApplication(Application):
-        def build(self) -> None:
+        def render(self) -> 'CustomApplication':
+            self.clear()
             self.first = Widget(self, content='First Child').grid(0, 0)
             self.second = Widget(self, content='Second Child').grid(0, 1)
             self.third = Widget(self.first, content='Third Child').grid(0)
             self.fourth = Widget(self.first, content='Fourth Child').grid(1)
+            return super().render() and self
 
         def _start_screen(self) -> None:
             super()._start_screen()
@@ -38,7 +40,6 @@ def test_application_definition():
     methods = inspect.getmembers(Application, predicate=inspect.isfunction)
     methods = [item[0] for item in methods]
     assert 'run' in methods
-    assert 'build' in methods
 
 
 def test_application_instantiation(application):
@@ -49,16 +50,15 @@ def test_application_instantiation(application):
     assert application.active is True
 
 
-def test_application_build(application):
-    application.build()
+# def test_application_build(application):
+#     application.build()
 
-    assert application.window is None
-    assert len(application.children) == 2
+#     assert application.window is None
+#     assert len(application.children) == 2
 
 
 async def test_application_run(application, monkeypatch):
     start_screen_called = False
-    build_called = False
     connect_called = False
     doupdate_called = False
     stop_screen_called = False
@@ -70,10 +70,6 @@ async def test_application_run(application, monkeypatch):
         self.window = MockWindow()
         nonlocal start_screen_called
         start_screen_called = True
-
-    def mock_build(self) -> None:
-        nonlocal build_called
-        build_called = True
 
     def mock_connect(self) -> None:
         nonlocal connect_called
@@ -88,7 +84,6 @@ async def test_application_run(application, monkeypatch):
         stop_screen_called = True
 
     application._start_screen = MethodType(mock_start_screen, application)
-    application.build = MethodType(mock_build, application)
     application.connect = MethodType(mock_connect, application)
     monkeypatch.setattr(curses, "doupdate", mock_doupdate)
     application._stop_screen = MethodType(mock_stop_screen, application)
@@ -96,7 +91,6 @@ async def test_application_run(application, monkeypatch):
     await asyncio.wait([application.run()], timeout=1/10)
 
     assert start_screen_called is True
-    assert build_called is True
     assert connect_called is True
     assert doupdate_called is True
     assert stop_screen_called is True

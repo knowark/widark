@@ -54,6 +54,7 @@ class Widget(Target):
         return root
 
     def connect(self: T) -> T:
+        self.clear()
         self.render()
         loop = asyncio.get_event_loop()
         loop.call_soon(asyncio.ensure_future, self.load())
@@ -132,9 +133,11 @@ class Widget(Target):
 
         return relative_children, fixed_children
 
-    def add(self: T, child: 'Widget', index: int = None) -> T:
+    def add(self: T, child: Optional['Widget'], index: int = None) -> T:
+        if not child:
+            return self
         if child.parent:
-            child.parent.children.remove(child)
+            child.parent.remove(child)
         child.parent = self
         index = len(self.children) if index is None else index
         self.children.insert(index, child)
@@ -154,7 +157,9 @@ class Widget(Target):
             self.window.noutrefresh()
         return self
 
-    def remove(self: T, child: 'Widget') -> T:
+    def remove(self: T, child: Optional['Widget']) -> T:
+        if not child:
+            return self
         if child in self.children:
             child.parent, child.window = None, None
             self.children.remove(child)

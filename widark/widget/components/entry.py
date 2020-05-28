@@ -5,10 +5,10 @@ from ..event import Event
 
 
 class Entry(Widget):
-    def __init__(self, parent: 'Widget', **context) -> None:
-        super().__init__(parent, **context)
+    def setup(self, **context) -> 'Entry':
         self.listen('click', self.on_click)
         self.listen('keydown', self.on_keydown)
+        return super().setup(**context) and self
 
     async def on_click(self, event: Event) -> None:
         event.stop = True

@@ -4,8 +4,8 @@ from widark import Event, Button, Frame, Entry, Color
 
 class Content(Frame):
     def render(self) -> 'Content':
-        self.children.clear()
-        self.child_c_1 = Frame(self).grid(0, 1)
+        self.clear()
+        self.child_c_1 = Frame(self, title='Child C1').grid(0, 1)
         self.b1 = Button(
             self.child_c_1, content='Content UP',
             command=self.on_click).style(
@@ -21,7 +21,7 @@ class Content(Frame):
         self.edit = Entry(self.child_c_1, content='abcdario').style(
             Color.LIGHT()).grid(3)
 
-        self.right = Frame(self).grid(0, 2)
+        self.right = Frame(self, title='Right').grid(0, 2)
         self.right.listen('click', self.on_content_click)
 
         return super().render() and self
