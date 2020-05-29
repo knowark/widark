@@ -20,6 +20,8 @@ class Listbox(Widget):
             'limit', getattr(self, 'limit', None))
         self.offset: int = context.pop(
             'offset', getattr(self, 'offset', None))
+        self.orientation: str = context.pop(
+            'orientation', getattr(self, 'orientation', 'vertical'))
 
         if context.get('command'):
             self.ignore('click')
@@ -38,8 +40,10 @@ class Listbox(Widget):
             items = items[:self.limit]
 
         for index, item in enumerate(items):
+            coordinates = ((0, index) if self.orientation == 'horizontal'
+                           else (index, 0))
             item_constructor(
-                self, item=item, style=self.item_styling).grid(index)
+                self, item=item, style=self.item_styling).grid(*coordinates)
 
 
 class Listitem(Widget):

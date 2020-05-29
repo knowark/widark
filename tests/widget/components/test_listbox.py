@@ -13,6 +13,7 @@ def test_frame_instantiation_defaults(root):
     assert listbox.item_styling is not None
     assert listbox.limit is None
     assert listbox.offset is None
+    assert listbox.orientation == 'vertical'
 
 
 def test_listbox_build(root):
@@ -88,3 +89,25 @@ async def test_listbox_limit_and_offset(root):
     assert listbox.children[0].content == 'fourth'
     assert listbox.children[1].content == 'fifth'
     assert listbox.children[2].content == 'sixth'
+
+
+async def test_listbox_orientation(root):
+    data = [
+        'first',
+        'second',
+        'third'
+    ]
+
+    listbox = Listbox(root, data=data).render()
+
+    assert len(listbox.children) == 3
+    assert (listbox.children[0]._y_min, listbox.children[0]._x_min) == (0, 0)
+    assert (listbox.children[1]._y_min, listbox.children[1]._x_min) == (6, 0)
+    assert (listbox.children[2]._y_min, listbox.children[2]._x_min) == (12, 0)
+
+    listbox.setup(orientation='horizontal').connect()
+
+    assert len(listbox.children) == 3
+    assert (listbox.children[0]._y_min, listbox.children[0]._x_min) == (0, 0)
+    assert (listbox.children[1]._y_min, listbox.children[1]._x_min) == (0, 30)
+    assert (listbox.children[2]._y_min, listbox.children[2]._x_min) == (0, 60)
