@@ -105,7 +105,7 @@ async def test_listbox_orientation(root):
     assert (listbox.children[1]._y_min, listbox.children[1]._x_min) == (6, 0)
     assert (listbox.children[2]._y_min, listbox.children[2]._x_min) == (12, 0)
 
-    listbox.setup(orientation='horizontal').connect()
+    listbox = Listbox(root, data=data, orientation='horizontal').render()
 
     assert len(listbox.children) == 3
     assert (listbox.children[0]._y_min, listbox.children[0]._x_min) == (0, 0)

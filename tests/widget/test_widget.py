@@ -16,7 +16,7 @@ def test_widget_instantiation_defaults():
     assert widget.children == []
     assert widget.content == ''
     assert widget.position == 'relative'
-    assert widget.autoload is False
+    assert widget.autoload is True
     assert widget.autobuild is True
     assert isinstance(widget.styling, Style)
     assert widget.name == ''
@@ -78,6 +78,60 @@ def test_widget_render(root):
 
     widget = CustomWidget(root, autobuild=False)
     assert len(widget.children) == 0
+
+
+async def test_widget_gather(root):
+    parent_called = False
+    child_called = False
+
+    class ChildWidget(Widget):
+        async def load(self) -> None:
+            nonlocal child_called
+            child_called = True
+
+    class ParentWidget(Widget):
+        def build(self) -> None:
+            ChildWidget(self)
+
+        async def load(self) -> None:
+            nonlocal parent_called
+            parent_called = True
+
+    widget = ParentWidget(root)
+    widget.gather()
+
+    await asyncio.sleep(1/15)
+
+    assert len(widget.children) == 1
+    assert parent_called is True
+    assert child_called is True
+
+
+async def test_widget_gather_autoload_false(root):
+    parent_called = False
+    child_called = False
+
+    class ChildWidget(Widget):
+        async def load(self) -> None:
+            nonlocal child_called
+            child_called = True
+
+    class ParentWidget(Widget):
+        def build(self) -> None:
+            ChildWidget(self)
+
+        async def load(self) -> None:
+            nonlocal parent_called
+            parent_called = True
+
+    widget = ParentWidget(root, autoload=False)
+    widget.gather()
+
+    await asyncio.sleep(1/15)
+
+    assert len(widget.children) == 1
+    assert parent_called is False
+    assert child_called is False
 
 
 def test_widget_move(root):

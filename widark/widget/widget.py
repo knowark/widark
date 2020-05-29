@@ -32,7 +32,7 @@ class Widget(Target):
         self.position: str = context.get(
             'position', getattr(self, 'position', 'relative'))
         self.autoload: bool = context.get(
-            'autoload', getattr(self, 'autoload', False))
+            'autoload', getattr(self, 'autoload', True))
         self.autobuild: bool = context.get(
             'autobuild', getattr(self, 'autobuild', True))
         self.styling: Style = context.get(
@@ -130,10 +130,12 @@ class Widget(Target):
         return self
 
     def gather(self) -> None:
-        widgets = [self] + self.children
-        loop = asyncio.get_event_loop()
-        loop.call_soon(asyncio.ensure_future, asyncio.gather(
-            *[widget.load() for widget in widgets if widget.autoload]))
+        if not self.autoload:
+            return
+        asyncio.get_event_loop().call_soon(
+            asyncio.ensure_future, self.load())
+        for child in self.children:
+            child.gather()
 
     def settle(self) -> None:
         """Custom settlement"""
