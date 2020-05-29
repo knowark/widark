@@ -5,19 +5,18 @@ from ..widget import Widget
 
 class Modal(Widget):
     def setup(self, **context) -> 'Modal':
-        self.styling = context.pop('style', getattr(self, 'styling', Style(
-            background_color=Color.WARNING.reverse(), border=[0])))
         self.close_command = context.pop(
             'close_command', getattr(self, 'close_command', None))
 
-        return super().setup(**context, position='fixed') and self
+        style = context.pop('style', Style(
+            background_color=Color.WARNING.reverse(), border=[0]))
+        return super().setup(
+            **context, style=style, position='fixed') and self
 
-    def render(self) -> 'Modal':
+    def build(self) -> None:
         self.close = Widget(
             self, content='X', position='fixed').style(
                 Color.DANGER()).listen('click', self.close_command)
-
-        return super().render() and self
 
     def launch(self, row=0, col=0, height=0, width=0) -> 'Modal':
         self.parent and self.parent.add(self, 0)

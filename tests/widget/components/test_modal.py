@@ -1,3 +1,4 @@
+import asyncio
 from pytest import mark
 from widark.widget import Modal, Event
 
@@ -43,7 +44,7 @@ async def test_modal_close(root):
     assert close_modal_called is True
 
 
-async def test_modal_render(root):
+async def test_modal_close_modal(root):
     async def close_modal(event: Event):
         pass
 
@@ -57,7 +58,9 @@ async def test_modal_render(root):
     async def new_close_modal(event: Event):
         pass
 
-    modal.setup(close_command=new_close_modal).render()
+    modal.setup(close_command=new_close_modal).connect()
+
+    await asyncio.sleep(1/15)
 
     assert new_close_modal in modal.close._bubble_listeners['click']
     assert len(modal.close._bubble_listeners) == 1

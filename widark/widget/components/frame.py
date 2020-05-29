@@ -9,10 +9,9 @@ class Frame(Widget):
         self.title_styling: Style = context.pop(
             'title_style', getattr(self, 'title_styling', Style(
                 align='C', template=' {} ')))
-        self.styling: Style = context.pop(
-            'style', getattr(self, 'styling', Style(border=[0])))
 
-        return super().setup(**context) and self
+        style: Style = context.pop('style', Style(border=[0]))
+        return super().setup(**context, style=style) and self
 
     def title_style(self, *args, **kwargs) -> 'Frame':
         self.title_styling.configure(*args, **kwargs)
