@@ -8,18 +8,21 @@ class Style:
         self.configure(*args, **kwargs)
 
     def configure(self,
-                  color: int = 0,
-                  background_color: int = 0,
-                  border_color: int = 0,
-                  border: List[int] = [],
+                  color: int = None,
+                  background_color: int = None,
+                  border_color: int = None,
+                  border: List[int] = None,
                   align: str = '',
                   template: str = '') -> None:
-        self.border: List[int] = border or getattr(self, 'border', [])
-        self.color = color or getattr(self, 'color', 0)
-        self.background_color = background_color or (
-            getattr(self, 'background_color', 0))
-        self.border_color = border_color or (
-            getattr(self, 'border_color', 0))
+        self.border: List[int] = (
+            getattr(self, 'border', []) if border is None else border)
+        self.color = getattr(self, 'color', 0) if color is None else color
+        self.background_color = (
+            getattr(self, 'background_color', 0)
+            if background_color is None else background_color)
+        self.border_color = (
+            getattr(self, 'border_color', 0)
+            if border_color is None else border_color)
         self.align = str.upper(align or getattr(self, 'align', 'LL'))
         self.template = template or getattr(self, 'template', '{}')
 
