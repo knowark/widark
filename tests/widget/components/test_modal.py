@@ -9,6 +9,10 @@ pytestmark = mark.asyncio
 def test_modal_instantiation_defaults(root):
     modal = Modal(root)
     assert modal.position == 'fixed'
+    assert modal.proportion == {'height': 0.8, 'width': 0.8}
+    assert modal.margin == {
+        'left': None, 'top': None, 'right': None, 'bottom': None}
+    assert modal.align == 'CC'
 
 
 def test_modal_render(root):
@@ -84,3 +88,10 @@ async def test_modal_done_external(root):
 
     assert external_event_details == {'result': 'closed'}
     assert len(modal.close._bubble_listeners) == 1
+
+
+# async def test_modal_proportion(root):
+#     modal = Modal(root).launch()
+
+#     assert modal.height == 80
+#     assert modal.width == 80

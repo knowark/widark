@@ -27,6 +27,7 @@ def test_widget_instantiation_defaults():
     assert widget.col.span == 1
     assert widget.col.weight == 1
     assert widget.row.weight == 1
+    assert widget.proportion == {'height': 0, 'width': 0}
 
 
 def test_widget_instantiation_arguments():
@@ -542,3 +543,28 @@ def test_widget_blur(root):
     assert isinstance(widget, Widget)
     cursor_y, cursor_x = curses.getsyx()
     assert (cursor_y, cursor_x) == (0, 0)
+
+
+def test_widget_arrange_proportion(root):
+    parent = Widget(root)
+
+    child_a = Widget(parent, position='fixed').pin(y=5, x=5, height=5, width=5)
+    child_b = Widget(parent)
+    child_c = Widget(
+        parent, position='fixed', proportion={'height': 0.8, 'width': 0.8})
+
+    assert parent.arrange(parent.children) == []
+
+    parent.render()
+
+    arrangement = parent.arrange(parent.children)
+
+    assert len(arrangement) == 2
+
+    _, child_a_dimensions = arrangement[0]
+
+    assert child_a_dimensions == {'x': 5, 'y': 5, 'height': 5, 'width': 5}
+
+    _, child_c_dimensions = arrangement[1]
+
+    assert child_c_dimensions == {'x': 0, 'y': 0, 'height': 14, 'width': 72}

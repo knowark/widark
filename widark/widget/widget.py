@@ -47,6 +47,9 @@ class Widget(Target):
             self, 'row', SimpleNamespace(pos=0, span=1, weight=1)))
         self.col: SimpleNamespace = context.get('col', getattr(
             self, 'col', SimpleNamespace(pos=0, span=1, weight=1)))
+        self.proportion: Dict[str, float] = context.get(
+            'proportion', getattr(
+                self, 'proportion', {'height': 0, 'width': 0}))
 
         return self
 
@@ -116,10 +119,9 @@ class Widget(Target):
             for child, dimensions in self.layout(relative_children):
                 child.pin(**dimensions).render()
 
-            for child in fixed_children:
+            for child, dimensions in self.arrange(fixed_children):
                 if child.height and child.width:
-                    child.pin(child.y, child.x,
-                              child.height, child.width).render()
+                    child.pin(**dimensions).render()
 
             self.amend()
 
@@ -296,3 +298,28 @@ class Widget(Target):
                                    'height': height, 'width': width}))
 
         return layout
+
+    def arrange(self, children: List['Widget']) -> List[
+            Tuple['Widget', Dict[str, int]]]:
+        if not self.window or not children:
+            return []
+
+        total_height, total_width = self.window.getmaxyx()
+        arrangement: List[Tuple['Widget', Dict[str, int]]] = []
+        for child in children:
+            if child.position != 'fixed':
+                continue
+
+            y = child.y
+            x = child.y
+            height = child.height
+            width = child.width
+            if child.proportion.get('height'):
+                height = int(child.proportion['height'] * total_height)
+            if child.proportion.get('width'):
+                width = int(child.proportion['width'] * total_width)
+
+            arrangement.append((child, {
+                'y': y, 'x': x, 'height': height, 'width': width}))
+
+        return arrangement
