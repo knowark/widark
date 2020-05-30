@@ -35,33 +35,52 @@ async def test_modal_close(root):
         nonlocal close_modal_called
         close_modal_called = True
 
-    modal = Modal(root, close_command=close_modal)
+    modal = Modal(root, done_command=close_modal)
 
-    modal.render()
+    modal.build()
 
     await modal.close.dispatch(Event('Mouse', 'click'))
 
     assert close_modal_called is True
 
 
-async def test_modal_close_modal(root):
-    async def close_modal(event: Event):
+async def test_modal_done_modal(root):
+    async def done_modal(event: Event):
         pass
 
-    modal = Modal(root, close_command=close_modal).render()
+    modal = Modal(root, done_command=done_modal).render()
 
-    assert close_modal in modal.close._bubble_listeners['click']
+    assert done_modal is modal.done_command
+
+    event_details = None
+
+    async def new_done_modal(event: Event):
+        nonlocal event_details
+        event_details = event.details
+
+    modal.setup(done_command=new_done_modal).connect()
+
+    await asyncio.sleep(1 / 15)
+
+    await modal.close.dispatch(Event('Mouse', 'click'))
+
+    assert event_details == {'result': 'closed'}
+
+
+async def test_modal_done_external(root):
+    modal = Modal(root).render()
+
+    external_event_details = None
+
+    async def external_handler(event: Event):
+        nonlocal external_event_details
+        external_event_details = event.details
+
+    modal.setup(done_command=None).listen('done', external_handler).connect()
+
+    await modal.close.dispatch(Event('Mouse', 'click'))
+
+    await asyncio.sleep(1 / 15)
+
+    assert external_event_details == {'result': 'closed'}
     assert len(modal.close._bubble_listeners) == 1
-
-    original_close = modal.close
-
-    async def new_close_modal(event: Event):
-        pass
-
-    modal.setup(close_command=new_close_modal).connect()
-
-    await asyncio.sleep(1/15)
-
-    assert new_close_modal in modal.close._bubble_listeners['click']
-    assert len(modal.close._bubble_listeners) == 1
-    assert modal.close is not original_close
