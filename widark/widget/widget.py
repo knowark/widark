@@ -50,6 +50,8 @@ class Widget(Target):
         self.proportion: Dict[str, float] = context.get(
             'proportion', getattr(
                 self, 'proportion', {'height': 0, 'width': 0}))
+        self.align = str.upper(context.get(
+            'align', getattr(self, 'align', '')))
 
         return self
 
@@ -314,10 +316,26 @@ class Widget(Target):
             x = child.x
             height = child.height
             width = child.width
+
             if child.proportion.get('height'):
                 height = int(child.proportion['height'] * total_height)
             if child.proportion.get('width'):
                 width = int(child.proportion['width'] * total_width)
+
+            if child.align:
+                vertical, horizontal = (3 - len(child.align)) * child.align
+
+                y = 0
+                if vertical == 'C':
+                    y = int((total_height / 2) - (height / 2))
+                elif vertical == 'R':
+                    y = total_height - height
+
+                x = 0
+                if horizontal == 'C':
+                    x = int((total_width / 2) - (width / 2))
+                elif horizontal == 'R':
+                    x = total_width - width
 
             arrangement.append((child, {
                 'y': y, 'x': x, 'height': height, 'width': width}))

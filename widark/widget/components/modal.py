@@ -11,16 +11,15 @@ class Modal(Widget):
         self.margin: Dict[str, float] = context.get(
             'margin', getattr(self, 'margin', {
                 'left': None, 'top': None, 'right': None, 'bottom': None}))
-        self.align = str.upper(context.get(
-            'align', getattr(self, 'align', 'CC')))
 
         proportion = context.pop(
             'proportion', {'height': 0.8, 'width': 0.8})
+        align = context.pop('align', 'CC')
         style = context.pop('style', Style(
             background_color=Color.WARNING.reverse(), border=[0]))
         return super().setup(
             **context, style=style, position='fixed',
-            proportion=proportion) and self
+            proportion=proportion, align=align) and self
 
     def build(self) -> None:
         self.close = Widget(

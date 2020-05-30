@@ -28,6 +28,7 @@ def test_widget_instantiation_defaults():
     assert widget.col.weight == 1
     assert widget.row.weight == 1
     assert widget.proportion == {'height': 0, 'width': 0}
+    assert widget.align == ''
 
 
 def test_widget_instantiation_arguments():
@@ -563,8 +564,66 @@ def test_widget_arrange_proportion(root):
 
     _, child_a_dimensions = arrangement[0]
 
-    assert child_a_dimensions == {'x': 5, 'y': 5, 'height': 5, 'width': 5}
+    assert child_a_dimensions == {'y': 5, 'x': 5, 'height': 5, 'width': 5}
 
     _, child_c_dimensions = arrangement[1]
 
-    assert child_c_dimensions == {'x': 0, 'y': 0, 'height': 14, 'width': 72}
+    assert child_c_dimensions == {'y': 0, 'x': 0, 'height': 14, 'width': 72}
+
+
+def test_widget_arrange_align(root):
+    parent = Widget(root)
+
+    Widget(parent, name='child_a',
+           position='fixed', height=10, width=10, align='LL')
+    Widget(parent, name='child_b',
+           position='fixed', height=10, width=10, align='LC')
+    Widget(parent, name='child_c',
+           position='fixed', height=10, width=10, align='LR')
+
+    Widget(parent, name='child_d',
+           position='fixed', height=10, width=10, align='CL')
+    Widget(parent, name='child_e',
+           position='fixed', height=10, width=10, align='CC')
+    Widget(parent, name='child_f',
+           position='fixed', height=10, width=10, align='CR')
+
+    Widget(parent, name='child_g',
+           position='fixed', height=10, width=10, align='RL')
+    Widget(parent, name='child_h',
+           position='fixed', height=10, width=10, align='RC')
+    Widget(parent, name='child_i',
+           position='fixed', height=10, width=10, align='RR')
+
+    parent.render()
+
+    arrangement = parent.arrange(parent.children)
+
+    assert len(arrangement) == 9
+
+    _, child_a_dimensions = arrangement[0]
+    assert child_a_dimensions == {'y': 0, 'x': 0, 'height': 10, 'width': 10}
+
+    _, child_b_dimensions = arrangement[1]
+    assert child_b_dimensions == {'y': 0, 'x': 40, 'height': 10, 'width': 10}
+
+    _, child_c_dimensions = arrangement[2]
+    assert child_c_dimensions == {'y': 0, 'x': 80, 'height': 10, 'width': 10}
+
+    _, child_d_dimensions = arrangement[3]
+    assert child_d_dimensions == {'y': 4, 'x': 0, 'height': 10, 'width': 10}
+
+    _, child_e_dimensions = arrangement[4]
+    assert child_e_dimensions == {'y': 4, 'x': 40, 'height': 10, 'width': 10}
+
+    _, child_f_dimensions = arrangement[5]
+    assert child_f_dimensions == {'y': 4, 'x': 80, 'height': 10, 'width': 10}
+
+    _, child_g_dimensions = arrangement[6]
+    assert child_g_dimensions == {'y': 8, 'x': 0, 'height': 10, 'width': 10}
+
+    _, child_h_dimensions = arrangement[7]
+    assert child_h_dimensions == {'y': 8, 'x': 40, 'height': 10, 'width': 10}
+
+    _, child_i_dimensions = arrangement[8]
+    assert child_i_dimensions == {'y': 8, 'x': 80, 'height': 10, 'width': 10}
