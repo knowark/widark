@@ -24,7 +24,7 @@ class Modal(Widget):
 
     def build(self) -> None:
         self.close = Widget(
-            self, content='X', position='fixed',).pin(0, 1, 1, 2).style(
+            self, content='X', position='fixed',).pin(0, 1, 1, 1).style(
                 Color.DANGER()).listen('click', self.on_close)
 
     def launch(self) -> 'Modal':
