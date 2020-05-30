@@ -8,36 +8,30 @@ class Modal(Widget):
     def setup(self, **context) -> 'Modal':
         self.done_command: Optional[Handler] = context.pop(
             'done_command', getattr(self, 'done_command', None))
-        self.proportion: Dict[str, float] = context.get(
-            'proportion', getattr(
-                self, 'proportion', {'height': 0.8, 'width': 0.8}))
         self.margin: Dict[str, float] = context.get(
             'margin', getattr(self, 'margin', {
                 'left': None, 'top': None, 'right': None, 'bottom': None}))
         self.align = str.upper(context.get(
             'align', getattr(self, 'align', 'CC')))
 
+        proportion = context.pop(
+            'proportion', {'height': 0.8, 'width': 0.8})
         style = context.pop('style', Style(
             background_color=Color.WARNING.reverse(), border=[0]))
         return super().setup(
-            **context, style=style, position='fixed') and self
+            **context, style=style, position='fixed',
+            proportion=proportion) and self
 
     def build(self) -> None:
         self.close = Widget(
-            self, content='X', position='fixed').style(
+            self, content='X', position='fixed',).pin(0, 1, 1, 2).style(
                 Color.DANGER()).listen('click', self.on_close)
 
     def launch(self) -> 'Modal':
-        if not self.parent:
+        if not (self.parent and self.parent.window):
             return self
 
-        self.parent.add(self, 0)
-        height = int(self.proportion.get('height', 1) * self.parent.height)
-        width = int(self.proportion.get('width', 1) * self.parent.width)
-
-        self.pin(0, 0, height, width).render()
-
-        self.close.pin(0, self.width - 2, 1, 2).render()
+        self.parent.add(self, 0).render()
         return self
 
     async def on_close(self, event: Event) -> None:

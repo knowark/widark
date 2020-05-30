@@ -36,7 +36,7 @@ class Main(Application):
 
     async def launch_modal(self, event: Event) -> None:
         self.modal = Modal(
-            self, close_command=self.close_modal).launch(5, 5, 15, 50)
+            self, done_command=self.close_modal).launch()
 
     async def on_backdrop_click(self, event: Event) -> None:
         if self.modal and not self.modal.hit(event):

@@ -1,6 +1,6 @@
 import asyncio
 from pytest import mark
-from widark.widget import Modal, Event
+from widark.widget import Widget, Modal, Event
 
 
 pytestmark = mark.asyncio
@@ -24,10 +24,18 @@ def test_modal_render(root):
 
 
 def test_modal_launch(root):
-    modal = Modal(root)
+    parent = Widget(root)
+    modal = Modal(parent)
 
     modal.launch()
 
+    assert modal.window is None
+    assert modal.close.window is None
+
+    parent.render()
+    modal.launch()
+
+    assert parent.children[0] == modal
     assert modal.window is not None
     assert modal.close.window is not None
 

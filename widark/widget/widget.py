@@ -120,7 +120,7 @@ class Widget(Target):
                 child.pin(**dimensions).render()
 
             for child, dimensions in self.arrange(fixed_children):
-                if child.height and child.width:
+                if dimensions['height'] and dimensions['width']:
                     child.pin(**dimensions).render()
 
             self.amend()
@@ -311,7 +311,7 @@ class Widget(Target):
                 continue
 
             y = child.y
-            x = child.y
+            x = child.x
             height = child.height
             width = child.width
             if child.proportion.get('height'):
