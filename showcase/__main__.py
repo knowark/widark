@@ -36,7 +36,8 @@ class Main(Application):
 
     async def launch_modal(self, event: Event) -> None:
         self.modal = Modal(
-            self, done_command=self.close_modal).launch()
+            self, done_command=self.close_modal,
+            align='LC', margin={'top': 2}).launch()
 
     async def on_backdrop_click(self, event: Event) -> None:
         if self.modal and not self.modal.hit(event):
