@@ -8,9 +8,6 @@ class Modal(Widget):
     def setup(self, **context) -> 'Modal':
         self.done_command: Optional[Handler] = context.pop(
             'done_command', getattr(self, 'done_command', None))
-        self.margin: Dict[str, float] = context.get(
-            'margin', getattr(self, 'margin', {
-                'left': None, 'top': None, 'right': None, 'bottom': None}))
 
         proportion = context.pop(
             'proportion', {'height': 0.8, 'width': 0.8})

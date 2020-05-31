@@ -29,6 +29,7 @@ def test_widget_instantiation_defaults():
     assert widget.row.weight == 1
     assert widget.proportion == {'height': 0, 'width': 0}
     assert widget.align == ''
+    assert widget.margin == {'left': 0, 'top': 0, 'right': 0, 'bottom': 0}
 
 
 def test_widget_instantiation_arguments():
@@ -627,3 +628,34 @@ def test_widget_arrange_align(root):
 
     _, child_i_dimensions = arrangement[8]
     assert child_i_dimensions == {'y': 8, 'x': 80, 'height': 10, 'width': 10}
+
+
+def test_widget_arrange_margin(root):
+    parent = Widget(root)
+
+    Widget(parent, name='child_a', y=1, x=1,
+           position='fixed', height=10, width=10, margin={'top': 5})
+    Widget(parent, name='child_b', y=16, x=1,
+           position='fixed', height=10, width=10, margin={'bottom': 2})
+    Widget(parent, name='child_c', y=1, x=1,
+           position='fixed', height=10, width=10, margin={'left': 3})
+    Widget(parent, name='child_d', y=1, x=85,
+           position='fixed', height=10, width=10, margin={'right': 4})
+
+    parent.render()
+
+    arrangement = parent.arrange(parent.children)
+
+    assert len(arrangement) == 4
+
+    _, child_a_dimensions = arrangement[0]
+    assert child_a_dimensions == {'y': 5, 'x': 1, 'height': 10, 'width': 10}
+
+    _, child_b_dimensions = arrangement[1]
+    assert child_b_dimensions == {'y': 6, 'x': 1, 'height': 10, 'width': 10}
+
+    _, child_c_dimensions = arrangement[2]
+    assert child_c_dimensions == {'y': 1, 'x': 3, 'height': 10, 'width': 10}
+
+    _, child_d_dimensions = arrangement[3]
+    assert child_d_dimensions == {'y': 1, 'x': 76, 'height': 10, 'width': 10}

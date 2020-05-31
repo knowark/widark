@@ -52,6 +52,9 @@ class Widget(Target):
                 self, 'proportion', {'height': 0, 'width': 0}))
         self.align = str.upper(context.get(
             'align', getattr(self, 'align', '')))
+        self.margin: Dict[str, int] = context.get(
+            'margin', getattr(self, 'margin', {
+                'left': 0, 'top': 0, 'right': 0, 'bottom': 0}))
 
         return self
 
@@ -336,6 +339,11 @@ class Widget(Target):
                     x = int((total_width / 2) - (width / 2))
                 elif horizontal == 'R':
                     x = total_width - width
+
+            y = max(child.margin.get('top', 0), y)
+            y = min(total_height - child.margin.get('bottom', 0) - height, y)
+            x = max(child.margin.get('left', 0), x)
+            x = min(total_width - child.margin.get('right', 0) - width, x)
 
             arrangement.append((child, {
                 'y': y, 'x': x, 'height': height, 'width': width}))

@@ -10,8 +10,6 @@ def test_modal_instantiation_defaults(root):
     modal = Modal(root)
     assert modal.position == 'fixed'
     assert modal.proportion == {'height': 0.8, 'width': 0.8}
-    assert modal.margin == {
-        'left': None, 'top': None, 'right': None, 'bottom': None}
     assert modal.align == 'CC'
 
 
