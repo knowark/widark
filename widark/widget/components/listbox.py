@@ -48,5 +48,8 @@ class Listbox(Widget):
 
 class Listitem(Widget):
     def setup(self, **context) -> 'Listitem':
-        content = str(context.pop('item', ''))
-        return super().setup(**context, content=content) and self
+        self.item = context.get('item')
+        return super().setup(**context) and self
+
+    def build(self) -> None:
+        self.content = str(self.item)
