@@ -15,8 +15,12 @@ class Application(Widget):
         self._rate = 1 / 20
         signal(SIGINT, self._interrupt)
 
+    async def prepare(self) -> None:
+        """Custom asynchronous preparation"""
+
     async def run(self) -> None:
         try:
+            await self.prepare()
             await self._run()
         except Exception:
             self._stop_screen()
