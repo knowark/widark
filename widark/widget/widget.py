@@ -1,5 +1,6 @@
 import asyncio
 from math import ceil
+from aiocontextvars import copy_context  # type: ignore
 from types import SimpleNamespace
 from typing import List, Dict, Optional, Tuple, Any, TypeVar
 from curses import setsyx
@@ -140,7 +141,7 @@ class Widget(Target):
         if not self.autoload:
             return
         asyncio.get_event_loop().call_soon(
-            asyncio.ensure_future, self.load())
+            copy_context().run, lambda: asyncio.ensure_future(self.load()))
         for child in self.children:
             child.gather()
 
