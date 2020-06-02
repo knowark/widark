@@ -27,6 +27,7 @@ def test_widget_instantiation_defaults():
     assert widget.col.span == 1
     assert widget.col.weight == 1
     assert widget.row.weight == 1
+    assert widget.mode == 'loose'
     assert widget.proportion == {'height': 0, 'width': 0}
     assert widget.align == ''
     assert widget.margin == {'left': 0, 'top': 0, 'right': 0, 'bottom': 0}
@@ -515,6 +516,29 @@ def test_widget_layout_with_border(root):
     assert layout[1][1] == {'y': 5, 'x': 23, 'height': 12, 'width': 44}
     assert layout[2][0] == child_c
     assert layout[2][1] == {'y': 9, 'x': 67, 'height': 8, 'width': 22}
+
+
+def test_widget_layout_mode(root):
+    parent = Widget(root, mode='compact')
+
+    child_a = Widget(parent)
+    child_b = Widget(parent).grid(1)
+    child_c = Widget(parent).grid(2)
+    child_d = Widget(parent).grid(3)
+
+    parent.render()
+
+    layout = parent.layout(parent.children)
+
+    assert isinstance(layout, list)
+    assert layout[0][0] == child_a
+    assert layout[0][1] == {'y': 0, 'x': 0, 'height': 4, 'width': 90}
+    assert layout[1][0] == child_b
+    assert layout[1][1] == {'y': 4, 'x': 0, 'height': 4, 'width': 90}
+    assert layout[2][0] == child_c
+    assert layout[2][1] == {'y': 8, 'x': 0, 'height': 4, 'width': 90}
+    assert layout[3][0] == child_d
+    assert layout[3][1] == {'y': 12, 'x': 0, 'height': 4, 'width': 90}
 
 
 def test_widget_focus(root):

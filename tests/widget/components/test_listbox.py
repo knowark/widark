@@ -15,6 +15,7 @@ def test_frame_instantiation_defaults(root):
     assert listbox.limit is None
     assert listbox.offset is None
     assert listbox.orientation == 'vertical'
+    assert listbox.mode == 'compact'
 
 
 def test_listbox_build(root):

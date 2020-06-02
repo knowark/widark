@@ -21,9 +21,9 @@ class Content(Frame):
         self.right = Frame(self, title='Right').grid(0, 2)
         self.right.listen('click', self.on_content_click)
 
-        data = [{'name': 'first'}, {'name': 'second'}, {'name': 'third'}]
+        data = [{'name': 'first'}, {'name': 'second'}, {'name': 'third'}] * 3
         Listbox(self.right, data=data,
-                item_style=Style(border=[0], align='C'))
+                item_style=Style(border=[], align='C'))
 
     async def on_click(self, event: Event) -> None:
         button = cast(Button, event.target)

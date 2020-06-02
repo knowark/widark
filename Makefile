@@ -11,7 +11,7 @@ test:
 	
 coverage:
 	mypy widark && pytest --cov-branch --cov=$(PROJECT) tests/ \
-	--cov-report term-missing 
+	--cov-report term-missing -vv
 
 PART ?= patch
 

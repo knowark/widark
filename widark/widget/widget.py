@@ -1,5 +1,5 @@
 import asyncio
-from math import ceil
+from math import ceil, floor
 from curses import setsyx
 from types import SimpleNamespace
 from _curses import error as CursesError
@@ -48,6 +48,7 @@ class Widget(Target):
             self, 'row', SimpleNamespace(pos=0, span=1, weight=1)))
         self.col: SimpleNamespace = context.get('col', getattr(
             self, 'col', SimpleNamespace(pos=0, span=1, weight=1)))
+        self.mode: str = context.get('mode', getattr(self, 'mode', 'loose'))
         self.proportion: Dict[str, float] = context.get(
             'proportion', getattr(
                 self, 'proportion', {'height': 0, 'width': 0}))
@@ -279,23 +280,24 @@ class Widget(Target):
             col_weights[i] = col_weight
 
         layout = []
+        rounder = floor if self.mode == 'compact' else ceil
         for child in children:
             row_index = row_indexes[child.row.pos]
             row_span = row_index + child.row.span
             col_index = col_indexes[child.col.pos]
             col_span = col_index + child.col.span
 
-            y = sum(ceil(row_weights[j] * height_split) for j in
+            y = sum(rounder(row_weights[j] * height_split) for j in
                     range(row_index)) + row_origin
-            x = sum(ceil(col_weights[i] * width_split) for i in
+            x = sum(rounder(col_weights[i] * width_split) for i in
                     range(col_index)) + col_origin
 
-            height = ceil(
+            height = rounder(
                 sum(row_weights.get(j, 0) for j in
                     range(row_index, row_span)) * height_split)
             height = height - max(0, height + y - total_height - row_origin)
 
-            width = ceil(
+            width = rounder(
                 sum(col_weights.get(i, 0) for i in
                     range(col_index, col_span)) * width_split)
             width = width - max(0, width + x - total_width - col_origin)

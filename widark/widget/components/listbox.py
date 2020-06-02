@@ -33,7 +33,8 @@ class Listbox(Widget):
             self.ignore('click')
             self.listen('click', context['command'])
 
-        return super().setup(**context) and self
+        mode = context.pop('mode', 'compact')
+        return super().setup(**context, mode=mode) and self
 
     def build(self) -> None:
         item_constructor = self.template or Listitem
