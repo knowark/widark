@@ -1,6 +1,6 @@
 import asyncio
 from math import ceil, floor
-from curses import setsyx
+from curses import setsyx, getsyx
 from types import SimpleNamespace
 from _curses import error as CursesError
 from typing import List, Dict, Optional, Tuple, Any, TypeVar
@@ -173,10 +173,17 @@ class Widget(Target):
         self.children.insert(index, child)
         return self
 
-    def move(self: T, row=0, col=0) -> T:
+    def cursor(self) -> Tuple[int, int]:
+        cursor = (0, 0)
         if self.window:
+            cursor = self.window.getyx()
+        return cursor
+
+    def move(self: T, y=0, x=0) -> T:
+        if self.window:
+            y, x = max(y, 0), max(x, 0)
             height, width = self.window.getmaxyx()
-            self.window.move(min(row, height - 1), min(col, width - 1))
+            self.window.move(min(y, height - 1), min(x, width - 1))
             self.window.noutrefresh()
         return self
 

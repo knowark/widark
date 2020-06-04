@@ -16,7 +16,8 @@ class Content(Frame):
                command=self.on_click).style(
             Color.DANGER(), border=[0], align='C').grid(2)
 
-        Entry(self.left, content='abcdario').style(Color.LIGHT()).grid(3)
+        Entry(self.left, content='abcdario\nhello\nfriends').style(
+            Color.LIGHT()).grid(3)
 
         self.right = Frame(self, title='Right').grid(0, 2)
         self.right.listen('click', self.on_content_click)

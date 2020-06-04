@@ -69,3 +69,17 @@ async def test_entry_on_keydown_all(root):
     await entry.dispatch(event_2)
 
     assert given_content == 'QWERTYUI'
+
+
+async def test_entry_on_keydown_arrows(root):
+    entry = Entry(root, content='QWERTY')
+
+    root.render()
+
+    entry.focus()
+
+    assert entry.window.getyx() == (1, 7)
+
+    await entry.dispatch(Event('Custom', 'keydown', key=chr(curses.KEY_LEFT)))
+
+    assert entry.window.getyx() == (1, 6)
