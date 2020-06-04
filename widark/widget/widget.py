@@ -179,6 +179,12 @@ class Widget(Target):
             cursor = self.window.getyx()
         return cursor
 
+    def size(self) -> Tuple[int, int]:
+        size = (0, 0)
+        if self.window:
+            size = self.window.getmaxyx()
+        return size
+
     def move(self: T, y=0, x=0) -> T:
         if self.window:
             y, x = max(y, 0), max(x, 0)
@@ -225,7 +231,7 @@ class Widget(Target):
         if not self.window:
             return self
         origin = 1 if self.styling.border else 0
-        setsyx(self._y_min + origin, self._x_min + origin)
+        self.move(origin, origin)
         return self
 
     def blur(self: T) -> T:

@@ -1,5 +1,6 @@
 import curses
 from math import ceil, floor
+from typing import List
 from ..widget import Widget
 from ..event import Event
 from ..style import Style
@@ -7,71 +8,97 @@ from ..style import Style
 
 class Entry(Widget):
     def setup(self, **context) -> 'Entry':
-        self.canvas_content: str = context.pop(
-            'content', getattr(self, 'canvas_content', ''))
+        content = context.pop('content', '')
 
-        style: Style = context.pop('style', Style(border=[0]))
-        return super().setup(**context, style=style) and self
+        self.buffer: List[str] = content.splitlines()
+        self.base_y: int = 0
+        self.base_x: int = 0
 
-    def build(self) -> None:
-        self.canvas = Canvas(self, content=self.canvas_content)
-
-
-class Canvas(Widget):
-    def setup(self, **context) -> 'Canvas':
         self.listen('click', self.on_click)
         self.listen('keydown', self.on_keydown)
         return super().setup(**context) and self
+
+    @property
+    def text(self) -> str:
+        return '\n'.join(self.buffer)
 
     async def on_click(self, event: Event) -> None:
         event.stop = True
         self.focus()
 
-    def focus(self) -> 'Canvas':
+    def focus(self) -> 'Entry':
         super().focus()
-        matrix = (self.content or ' ').splitlines()
-        self.move(len(matrix) - 1, len(matrix[-1]))
         return self
 
+    def settle(self) -> None:
+        height, width = self.size()
+
+        content = ''
+        for line in self.buffer[self.base_y: height + self.base_y]:
+            sentence = line[self.base_x: width - 1 + self.base_x]
+            content += f'{sentence}\n'
+
+        self.content = content
+
     async def on_keydown(self, event: Event) -> None:
+        height, width = self.size()
         y, x = self.cursor()
-        matrix = (self.content or ' ').splitlines()
         if ord(event.key) == curses.KEY_LEFT:
-            self.move(y, x - 1)
+            if x == 0:
+                self.base_x = max(self.base_x - 1, 0)
+                self.render()
+            pillar = max(x - 1, 0)
+            self.move(y, pillar)
             return
         elif ord(event.key) == curses.KEY_RIGHT:
-            self.move(y, min(x + 1, len(matrix[y])))
+            if x == width - 1:
+                max_shift = max(len(self.buffer[self.base_y + y]) - width, 0)
+                self.base_x = min(self.base_x + 1, max_shift)
+                self.render()
+            pillar = min(x + 1, len(self.buffer[self.base_y + y]))
+            self.move(y, pillar)
             return
         elif ord(event.key) == curses.KEY_UP:
+            if y == 0:
+                self.base_y = max(self.base_y - 1, 0)
+                self.render()
             line = max(y - 1, 0)
-            self.move(line, min(x, len(matrix[line])))
+            self.move(line, min(x, len(self.buffer[line + self.base_y])))
             return
         elif ord(event.key) == curses.KEY_DOWN:
-            line = min(y + 1, len(matrix) - 1)
-            self.move(line, min(x, len(matrix[line])))
+            if y == height - 1:
+                max_shift = max(len(self.buffer) - height, 0)
+                self.base_y = min(self.base_y + 1, max_shift)
+                self.render()
+            line = min(y + 1, height - 1)
+            self.move(line, min(x, len(self.buffer[line + self.base_y])))
             return
         elif ord(event.key) == curses.KEY_BACKSPACE:
             if x == 0:
-                row = matrix.pop(y)
+                row = self.buffer.pop(y)
                 y = max(y - 1, 0)
-                x = len(matrix[y]) + 1
-                matrix[y] += row
-            matrix[y] = matrix[y][:max(x - 1, 0)] + matrix[y][x:]
-            self.content = "\n".join(matrix)
+                x = len(self.buffer[y]) + 1
+                self.buffer[y] += row
+            self.buffer[y] = (
+                self.buffer[y][:max(x - 1, 0)] + self.buffer[y][x:])
+            self.content = "\n".join(self.buffer)
             self.render().move(y, x - 1)
         elif ord(event.key) == curses.KEY_DC:
-            if x == len(matrix[y]) and y < len(matrix) - 1:
-                row = matrix.pop(y + 1)
-                matrix[y] += row
-            matrix[y] = matrix[y][:max(x, 0)] + matrix[y][x + 1:]
-            self.content = "\n".join(matrix)
+            if x == len(self.buffer[y]) and y < len(self.buffer) - 1:
+                row = self.buffer.pop(y + 1)
+                self.buffer[y] += row
+            self.buffer[y] = (
+                self.buffer[y][:max(x, 0)] + self.buffer[y][x + 1:])
+            self.content = "\n".join(self.buffer)
             self.render().move(y, x)
         else:
-            matrix[y] = matrix[y][:x] + event.key + matrix[y][x:]
+            self.buffer[self.base_y + y] = (
+                self.buffer[self.base_y + y][:x] + event.key +
+                self.buffer[self.base_y + y][x:])
             x += 1
             if event.key == '\n':
                 y, x = y + 1, 0
-                if y == len(matrix):
-                    matrix.append('')
-            self.content = "\n".join(matrix)
+                if y == len(self.buffer):
+                    self.buffer.append('')
+            self.content = "\n".join(self.buffer)
             self.render().move(y, x)

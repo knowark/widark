@@ -147,6 +147,13 @@ def test_widget_move(root):
     assert widget.window.getyx() == (5, 7)
 
 
+def test_widget_size(root):
+    widget = Widget(root)
+    assert widget.size() == (0, 0)
+    widget.render()
+    assert widget.size() == (18, 90)
+
+
 def test_widget_clear(root):
     widget = Widget(root, content='SUPER').render()
 

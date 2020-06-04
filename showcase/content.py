@@ -16,7 +16,11 @@ class Content(Frame):
                command=self.on_click).style(
             Color.DANGER(), border=[0], align='C').grid(2)
 
-        Entry(self.left, content='abcdario\nhello\nfriends').style(
+        Entry(self.left, content=(
+            'abcdarioxyzw1234567890123456789012345678901234567890'
+            '\nhello\nfriends'
+            '\nfamily\npets\neveryone'
+            '\nplanets\ntrees\ndeities\nmortals')).style(
             Color.LIGHT()).grid(3)
 
         self.right = Frame(self, title='Right').grid(0, 2)
