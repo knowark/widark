@@ -28,7 +28,7 @@ async def test_entry_on_click(root):
 
     root.render()
 
-    event = Event('Custom', 'click')
+    event = Event('Mouse', 'click')
 
     await entry.dispatch(event)
 
@@ -161,3 +161,16 @@ async def test_entry_down(entry):
     await entry.dispatch(event)
 
     assert entry.cursor() == (6, 4)
+
+
+async def test_entry_on_keydown_backspace(entry):
+    entry.move(4, 2)
+
+    assert len(entry.buffer[4]) == 67
+
+    event = Event('Keyboard', 'keydown', key=chr(curses.KEY_BACKSPACE))
+    await entry.dispatch(event)
+    await entry.dispatch(event)
+
+    assert entry.cursor() == (4, 0)
+    assert len(entry.buffer[4]) == 65

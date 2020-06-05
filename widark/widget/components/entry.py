@@ -37,8 +37,6 @@ class Entry(Widget):
         self.content = content
 
     async def on_keydown(self, event: Event) -> None:
-        y, x = self.cursor()
-
         if ord(event.key) == curses.KEY_LEFT:
             self._left()
         elif ord(event.key) == curses.KEY_RIGHT:
@@ -48,42 +46,13 @@ class Entry(Widget):
         elif ord(event.key) == curses.KEY_DOWN:
             self._down()
         elif ord(event.key) == curses.KEY_BACKSPACE:
-            line = y
-            pillar = max(x - 1, 0)
-            if x == 0:
-                row = self.buffer.pop(self.base_y + y)
-                line = max(line - 1, 0)
-                pillar = len(self.buffer[max(self.base_y + y - 1, 0)])
-                self.buffer[max(self.base_y + y - 1, 0)] += row
-
-            self.buffer[self.base_y + y] = (
-                self.buffer[self.base_y + y][:max(self.base_x + x - 1, 0)] +
-                self.buffer[self.base_y + y][self.base_x + x:])
-
-            self.render().move(line, pillar)
+            self._backspace()
         elif ord(event.key) == curses.KEY_DC:
-            if (x == len(self.buffer[self.base_y + y]) and
-                    self.base_y + y < len(self.buffer) - 1):
-                row = self.buffer.pop(self.base_y + y + 1)
-                self.buffer[self.base_y + y] += row
-            else:
-                self.buffer[self.base_y + y] = (
-                    self.buffer[self.base_y + y][:self.base_x + x] +
-                    self.buffer[self.base_y + y][self.base_x + x + 1:])
-            self.render().move(y, x)
+            self._delete()
         elif event.key == '\n':
-            head, tail = (
-                self.buffer[self.base_y + y][:self.base_x + x],
-                self.buffer[self.base_y + y][self.base_x + x:])
-            self.buffer[self.base_y + y] = head
-            self.buffer.insert(self.base_y + y + 1, tail)
-            self.render().move(y + 1)
+            self._enter()
         else:
-            self.buffer[self.base_y + y] = (
-                self.buffer[self.base_y + y][:x] +
-                event.key +
-                self.buffer[self.base_y + y][x:])
-            self.render().move(y, x + 1)
+            self._character(event.key)
 
     def _right(self) -> None:
         _, width = self.size()
@@ -126,3 +95,48 @@ class Entry(Widget):
             self.base_x = int(len(sentence) / width) * width
         pillar = min(x, max(len(sentence) - self.base_x, 0))
         self.render().move(line, pillar)
+
+    def _backspace(self) -> None:
+        y, x = self.cursor()
+        line = y
+        pillar = max(x - 1, 0)
+        if x == 0:
+            row = self.buffer.pop(self.base_y + y)
+            line = max(line - 1, 0)
+            pillar = len(self.buffer[max(self.base_y + y - 1, 0)])
+            self.buffer[max(self.base_y + y - 1, 0)] += row
+
+        self.buffer[self.base_y + y] = (
+            self.buffer[self.base_y + y][:max(self.base_x + x - 1, 0)] +
+            self.buffer[self.base_y + y][self.base_x + x:])
+
+        self.render().move(line, pillar)
+
+    def _delete(self) -> None:
+        y, x = self.cursor()
+        if (x == len(self.buffer[self.base_y + y]) and
+                self.base_y + y < len(self.buffer) - 1):
+            row = self.buffer.pop(self.base_y + y + 1)
+            self.buffer[self.base_y + y] += row
+        else:
+            self.buffer[self.base_y + y] = (
+                self.buffer[self.base_y + y][:self.base_x + x] +
+                self.buffer[self.base_y + y][self.base_x + x + 1:])
+        self.render().move(y, x)
+
+    def _enter(self) -> None:
+        y, x = self.cursor()
+        head, tail = (
+            self.buffer[self.base_y + y][:self.base_x + x],
+            self.buffer[self.base_y + y][self.base_x + x:])
+        self.buffer[self.base_y + y] = head
+        self.buffer.insert(self.base_y + y + 1, tail)
+        self.render().move(y + 1)
+
+    def _character(self, character: str) -> None:
+        y, x = self.cursor()
+        self.buffer[self.base_y + y] = (
+            self.buffer[self.base_y + y][:x] +
+            character +
+            self.buffer[self.base_y + y][x:])
+        self.render().move(y, x + 1)
