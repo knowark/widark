@@ -45,58 +45,6 @@ def test_entry_text(root):
     assert entry.text == content
 
 
-# async def test_entry_on_keydown_backspace(root):
-#     given_content = None
-
-#     def mock_render(self):
-#         nonlocal given_content
-#         given_content = self.content
-#         return self
-
-#     entry = Entry(root, content='QWERTY')
-#     entry.render = MethodType(mock_render, entry)
-
-#     event = Event('Custom', 'keydown', key=chr(curses.KEY_BACKSPACE))
-
-#     await entry.dispatch(event)
-
-#     assert given_content == 'QWERT'
-
-
-# async def test_entry_on_keydown_all(root):
-#     given_content = None
-
-#     def mock_render(self):
-#         nonlocal given_content
-#         given_content = self.content
-#         return self
-
-#     entry = Entry(root, content='QWERTY')
-#     entry.render = MethodType(mock_render, entry)
-
-#     event_1 = Event('Custom', 'keydown', key='U')
-#     await entry.dispatch(event_1)
-#     event_2 = Event('Custom', 'keydown', key='I')
-#     await entry.dispatch(event_2)
-
-#     assert given_content == 'QWERTYUI'
-
-
-# async def test_entry_on_keydown_arrows(root):
-#     entry = Entry(root, content='QWERTY')
-
-#     root.render()
-
-#     entry.focus()
-
-#     assert entry.window.getyx() == (1, 7)
-
-#     await entry.dispatch(Event('Custom', 'keydown',
-#       key=chr(curses.KEY_LEFT)))
-
-#     assert entry.window.getyx() == (1, 6)
-
-
 @fixture
 def entry(root):
     content = (
@@ -129,6 +77,37 @@ async def test_entry_right(entry):
 
     assert entry.cursor() == (0, 2)
 
+    assert entry.content == (
+        "Lorem ipsum dolor sit amet, c\n"
+        "ac felis enim. Praesent facil\n"
+        "et quis elit. Quisque nec mol\n"
+        "ut interdum vitae, hendrerit \n"
+        "eu auctor enim. Etiam a phare\n"
+        "at aliquam metus rhoncus in. \n"
+        "mollis orci. Cras quis mattis\n"
+        "tristique senectus et netus e\n"
+        "Donec scelerisque nec tellus \n"
+        "ut tincidunt. Morbi et libero\n"
+    )
+
+    entry.move(0, 29)
+
+    await entry.dispatch(event)
+    await entry.dispatch(event)
+
+    assert entry.content == (
+        "rem ipsum dolor sit amet, con\n"
+        " felis enim. Praesent facilis\n"
+        " quis elit. Quisque nec moles\n"
+        " interdum vitae, hendrerit so\n"
+        " auctor enim. Etiam a pharetr\n"
+        " aliquam metus rhoncus in. Nu\n"
+        "llis orci. Cras quis mattis e\n"
+        "istique senectus et netus et \n"
+        "nec scelerisque nec tellus se\n"
+        " tincidunt. Morbi et libero v\n"
+    )
+
 
 async def test_entry_left(entry):
     entry.move(2, 4)
@@ -139,6 +118,40 @@ async def test_entry_left(entry):
     await entry.dispatch(event)
 
     assert entry.cursor() == (2, 2)
+
+    entry.base_x = 2
+    entry.render()
+
+    assert entry.content == (
+        "rem ipsum dolor sit amet, con\n"
+        " felis enim. Praesent facilis\n"
+        " quis elit. Quisque nec moles\n"
+        " interdum vitae, hendrerit so\n"
+        " auctor enim. Etiam a pharetr\n"
+        " aliquam metus rhoncus in. Nu\n"
+        "llis orci. Cras quis mattis e\n"
+        "istique senectus et netus et \n"
+        "nec scelerisque nec tellus se\n"
+        " tincidunt. Morbi et libero v\n"
+    )
+
+    entry.move(0, 0)
+
+    await entry.dispatch(event)
+    await entry.dispatch(event)
+
+    assert entry.content == (
+        "Lorem ipsum dolor sit amet, c\n"
+        "ac felis enim. Praesent facil\n"
+        "et quis elit. Quisque nec mol\n"
+        "ut interdum vitae, hendrerit \n"
+        "eu auctor enim. Etiam a phare\n"
+        "at aliquam metus rhoncus in. \n"
+        "mollis orci. Cras quis mattis\n"
+        "tristique senectus et netus e\n"
+        "Donec scelerisque nec tellus \n"
+        "ut tincidunt. Morbi et libero\n"
+    )
 
 
 async def test_entry_up(entry):
