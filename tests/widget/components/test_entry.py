@@ -163,7 +163,7 @@ async def test_entry_down(entry):
     assert entry.cursor() == (6, 4)
 
 
-async def test_entry_on_keydown_backspace(entry):
+async def test_entry_backspace(entry):
     entry.move(4, 2)
 
     assert len(entry.buffer[4]) == 67
@@ -174,3 +174,46 @@ async def test_entry_on_keydown_backspace(entry):
 
     assert entry.cursor() == (4, 0)
     assert len(entry.buffer[4]) == 65
+
+
+async def test_entry_delete(entry):
+    entry.move(8, 2)
+
+    assert len(entry.buffer[8]) == 66
+
+    event = Event('Keyboard', 'keydown', key=chr(curses.KEY_DC))
+    await entry.dispatch(event)
+    await entry.dispatch(event)
+
+    assert entry.cursor() == (8, 2)
+    assert len(entry.buffer[8]) == 64
+
+
+async def test_entry_enter(entry):
+    entry.move(3, 0)
+
+    assert len(entry.buffer[3]) == 65
+    assert len(entry.buffer[4]) == 67
+    assert len(entry.buffer) == 11
+
+    event = Event('Keyboard', 'keydown', key='\n')
+    await entry.dispatch(event)
+    await entry.dispatch(event)
+
+    assert len(entry.buffer[3]) == 0
+    assert len(entry.buffer[4]) == 0
+    assert entry.cursor() == (5, 0)
+    assert len(entry.buffer) == 13
+
+
+async def test_entry_character(entry):
+    entry.move(6, 0)
+
+    assert len(entry.buffer[6]) == 61
+
+    event = Event('Keyboard', 'keydown', key='A')
+    await entry.dispatch(event)
+    await entry.dispatch(event)
+
+    assert entry.cursor() == (6, 2)
+    assert len(entry.buffer[6]) == 63

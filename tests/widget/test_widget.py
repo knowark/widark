@@ -147,6 +147,14 @@ def test_widget_move(root):
     assert widget.window.getyx() == (5, 7)
 
 
+def test_widget_cursor(root):
+    widget = Widget(root)
+    assert widget.cursor() == (0, 0)
+    root.render()
+    widget.window.move(5, 7)
+    assert widget.cursor() == (5, 7)
+
+
 def test_widget_size(root):
     widget = Widget(root)
     assert widget.size() == (0, 0)
