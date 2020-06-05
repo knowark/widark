@@ -97,14 +97,17 @@ class Entry(Widget):
         self.render().move(line, pillar)
 
     def _backspace(self) -> None:
+        _, width = self.size()
         y, x = self.cursor()
         line = y
         pillar = max(x - 1, 0)
-        if x == 0:
+        if x == 0 and y > 0:
             row = self.buffer.pop(self.base_y + y)
             line = max(line - 1, 0)
-            pillar = len(self.buffer[max(self.base_y + y - 1, 0)])
-            self.buffer[max(self.base_y + y - 1, 0)] += row
+            sentence = self.buffer[self.base_y + y - 1]
+            self.base_x = int(len(sentence) / width) * width
+            pillar = max(len(sentence) - self.base_x, 0)
+            self.buffer[self.base_y + y - 1] += row
 
         self.buffer[self.base_y + y] = (
             self.buffer[self.base_y + y][:max(self.base_x + x - 1, 0)] +

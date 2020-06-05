@@ -293,6 +293,38 @@ async def test_entry_backspace(entry):
 
     assert entry.cursor() == (4, 0)
     assert len(entry.buffer[4]) == 65
+    assert len(entry.buffer) == 11
+
+    assert entry.content == (
+        "Lorem ipsum dolor sit amet, c\n"
+        "ac felis enim. Praesent facil\n"
+        "et quis elit. Quisque nec mol\n"
+        "ut interdum vitae, hendrerit \n"
+        " auctor enim. Etiam a pharetr\n"
+        "at aliquam metus rhoncus in. \n"
+        "mollis orci. Cras quis mattis\n"
+        "tristique senectus et netus e\n"
+        "Donec scelerisque nec tellus \n"
+        "ut tincidunt. Morbi et libero\n"
+    )
+
+    entry.move(1, 0)
+    await entry.dispatch(event)
+    assert len(entry.buffer) == 10
+    assert entry.cursor() == (0, 5)
+
+    assert entry.content == (
+        "cenasac felis enim. Praesent \n"
+        "tate\n"
+        "acus,\n"
+        "magna\n"
+        " amet\n"
+        "i\n"
+        "stas.\n"
+        " justo\n"
+        "\n"
+        "\n"
+    )
 
 
 async def test_entry_delete(entry):
