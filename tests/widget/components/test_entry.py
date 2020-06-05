@@ -164,6 +164,59 @@ async def test_entry_up(entry):
 
     assert entry.cursor() == (2, 4)
 
+    entry.base_y = 1
+    entry.render()
+
+    assert entry.content == (
+        "ac felis enim. Praesent facil\n"
+        "et quis elit. Quisque nec mol\n"
+        "ut interdum vitae, hendrerit \n"
+        "eu auctor enim. Etiam a phare\n"
+        "at aliquam metus rhoncus in. \n"
+        "mollis orci. Cras quis mattis\n"
+        "tristique senectus et netus e\n"
+        "Donec scelerisque nec tellus \n"
+        "ut tincidunt. Morbi et libero\n"
+        "iaculis dui.\n"
+    )
+
+    entry.move(0, 0)
+    await entry.dispatch(event)
+
+    assert entry.content == (
+        "Lorem ipsum dolor sit amet, c\n"
+        "ac felis enim. Praesent facil\n"
+        "et quis elit. Quisque nec mol\n"
+        "ut interdum vitae, hendrerit \n"
+        "eu auctor enim. Etiam a phare\n"
+        "at aliquam metus rhoncus in. \n"
+        "mollis orci. Cras quis mattis\n"
+        "tristique senectus et netus e\n"
+        "Donec scelerisque nec tellus \n"
+        "ut tincidunt. Morbi et libero\n"
+    )
+
+    entry.base_x = 40
+    entry.render()
+    entry.move(7, 25)
+
+    assert entry.cursor() == (7, 25)
+    assert entry.content == (
+        "adipiscing elit. Maecenas\n"
+        "vitae nunc posuere volutpat\n"
+        ". Nunc sem est, vulputate\n"
+        "ue. In vel iaculis lacus,\n"
+        "Cras scelerisque erat magna\n"
+        " sodales mauris, sit amet\n"
+        "tesque habitant morbi\n"
+        " fames ac turpis egestas.\n"
+        ". Mauris eleifend et justo\n"
+        "efficitur odio eu,\n"
+    )
+
+    await entry.dispatch(event)
+    assert entry.cursor() == (6, 1)
+
 
 async def test_entry_down(entry):
     entry.move(4, 4)
@@ -174,6 +227,59 @@ async def test_entry_down(entry):
     await entry.dispatch(event)
 
     assert entry.cursor() == (6, 4)
+
+    assert entry.content == (
+        "Lorem ipsum dolor sit amet, c\n"
+        "ac felis enim. Praesent facil\n"
+        "et quis elit. Quisque nec mol\n"
+        "ut interdum vitae, hendrerit \n"
+        "eu auctor enim. Etiam a phare\n"
+        "at aliquam metus rhoncus in. \n"
+        "mollis orci. Cras quis mattis\n"
+        "tristique senectus et netus e\n"
+        "Donec scelerisque nec tellus \n"
+        "ut tincidunt. Morbi et libero\n"
+    )
+
+    entry.move(9, 0)
+    entry.base_y = 0
+    entry.base_x = 0
+    await entry.dispatch(event)
+
+    assert entry.content == (
+        "ac felis enim. Praesent facil\n"
+        "et quis elit. Quisque nec mol\n"
+        "ut interdum vitae, hendrerit \n"
+        "eu auctor enim. Etiam a phare\n"
+        "at aliquam metus rhoncus in. \n"
+        "mollis orci. Cras quis mattis\n"
+        "tristique senectus et netus e\n"
+        "Donec scelerisque nec tellus \n"
+        "ut tincidunt. Morbi et libero\n"
+        "iaculis dui.\n"
+    )
+
+    entry.base_y = 0
+    entry.base_x = 40
+    entry.render()
+    entry.move(8, 26)
+
+    assert entry.cursor() == (8, 26)
+    assert entry.content == (
+        "adipiscing elit. Maecenas\n"
+        "vitae nunc posuere volutpat\n"
+        ". Nunc sem est, vulputate\n"
+        "ue. In vel iaculis lacus,\n"
+        "Cras scelerisque erat magna\n"
+        " sodales mauris, sit amet\n"
+        "tesque habitant morbi\n"
+        " fames ac turpis egestas.\n"
+        ". Mauris eleifend et justo\n"
+        "efficitur odio eu,\n"
+    )
+
+    await entry.dispatch(event)
+    assert entry.cursor() == (9, 26)
 
 
 async def test_entry_backspace(entry):
