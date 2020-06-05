@@ -17,7 +17,8 @@ class Content(Frame):
             Color.DANGER(), border=[0], align='C').grid(2)
 
         Entry(self.left, content=(
-            'abcdarioxyzw1234567890123456789012345678901234567890'
+            'letterslongenoughforthesecondscr'
+            '\nabcdarioxyzw12345678901234567890123456789012345678901234567890'
             '\nhello\nfriends'
             '\nfamily\npets\neveryone'
             '\nplanets\ntrees\ndeities\nmortals')).style(
