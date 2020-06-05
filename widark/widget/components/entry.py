@@ -26,10 +26,6 @@ class Entry(Widget):
         event.stop = True
         self.focus()
 
-    def focus(self) -> 'Entry':
-        super().focus()
-        return self
-
     def settle(self) -> None:
         height, width = self.size()
 
@@ -41,17 +37,16 @@ class Entry(Widget):
         self.content = content
 
     async def on_keydown(self, event: Event) -> None:
-        height, width = self.size()
         y, x = self.cursor()
 
         if ord(event.key) == curses.KEY_LEFT:
-            self._left(y, x, height, width)
+            self._left()
         elif ord(event.key) == curses.KEY_RIGHT:
-            self._right(y, x, height, width)
+            self._right()
         elif ord(event.key) == curses.KEY_UP:
-            self._up(y, x, height, width)
+            self._up()
         elif ord(event.key) == curses.KEY_DOWN:
-            self._down(y, x, height, width)
+            self._down()
         elif ord(event.key) == curses.KEY_BACKSPACE:
             line = y
             pillar = max(x - 1, 0)
@@ -90,7 +85,9 @@ class Entry(Widget):
                 self.buffer[self.base_y + y][x:])
             self.render().move(y, x + 1)
 
-    def _right(self, y: int, x: int, height: int, width: int) -> None:
+    def _right(self) -> None:
+        _, width = self.size()
+        y, x = self.cursor()
         sentence = self.buffer[self.base_y + y]
         if x == width - 1:
             max_shift = max(len(sentence) - width + 1, 0)
@@ -98,13 +95,16 @@ class Entry(Widget):
             self.render()
         self.move(y, min(x + 1, max(len(sentence) - self.base_x, 0)))
 
-    def _left(self, y: int, x: int, height: int, width: int) -> None:
+    def _left(self) -> None:
+        y, x = self.cursor()
         if x == 0:
             self.base_x = max(self.base_x - 1, 0)
             self.render()
         self.move(y,  max(x - 1, 0))
 
-    def _up(self, y: int, x: int, height: int, width: int) -> None:
+    def _up(self) -> None:
+        _, width = self.size()
+        y, x = self.cursor()
         if y == 0:
             self.base_y = max(self.base_y - 1, 0)
         line = max(y - 1, 0)
@@ -114,7 +114,9 @@ class Entry(Widget):
         pillar = min(x, max(len(sentence) - self.base_x, 0))
         self.render().move(line, pillar)
 
-    def _down(self, y: int, x: int, height: int, width: int) -> None:
+    def _down(self) -> None:
+        height, width = self.size()
+        y, x = self.cursor()
         if y == height - 1:
             max_shift = max(len(self.buffer) - height, 0)
             self.base_y = min(self.base_y + 1, max_shift)
