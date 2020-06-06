@@ -423,3 +423,21 @@ async def test_entry_character(entry):
         "Donec scelerisque nec tellus \n"
         "ut tincidunt. Morbi et libero\n"
     )
+
+    entry.move(0, 27)
+
+    event = Event('Keyboard', 'keydown', key='W')
+    await entry.dispatch(event)
+
+    assert entry.content == (
+        "orem ipsum dolor sit amet, Wc\n"
+        "c felis enim. Praesent facili\n"
+        "t quis elit. Quisque nec mole\n"
+        "t interdum vitae, hendrerit s\n"
+        "u auctor enim. Etiam a pharet\n"
+        "t aliquam metus rhoncus in. N\n"
+        "Amollis orci. Cras quis matti\n"
+        "ristique senectus et netus et\n"
+        "onec scelerisque nec tellus s\n"
+        "t tincidunt. Morbi et libero \n"
+    )

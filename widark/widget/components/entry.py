@@ -148,12 +148,12 @@ class Entry(Widget):
     def _character(self, character: str) -> None:
         y, x = self.cursor()
         _, width = self.size()
-        # if self.x >= width - 1:
-        #     self.base_x += 1
-        #     self.move(y, x - 1)
-        #     self.render()
+        pillar = x + 1
+        if x >= width - 3:
+            pillar = x
+            self.base_x += 1
         self.buffer[self.base_y + y] = (
             self.buffer[self.base_y + y][:self.base_x + x] +
             character +
             self.buffer[self.base_y + y][self.base_x + x:])
-        self.render().move(y, x + 1)
+        self.render().move(y, pillar)
