@@ -58,11 +58,13 @@ class Entry(Widget):
         _, width = self.size()
         y, x = self.cursor()
         sentence = self.buffer[self.base_y + y]
-        if x == width - 1:
+        pillar = x + 1
+        if x >= width - 3 and len(sentence) - self.base_x - width > 1:
+            pillar = x
             max_shift = max(len(sentence) - width + 1, 0)
             self.base_x = min(self.base_x + 1, max_shift)
             self.render()
-        self.move(y, min(x + 1, max(len(sentence) - self.base_x, 0)))
+        self.move(y, min(pillar, max(len(sentence) - self.base_x, 0)))
 
     def _left(self) -> None:
         y, x = self.cursor()
@@ -141,6 +143,11 @@ class Entry(Widget):
 
     def _character(self, character: str) -> None:
         y, x = self.cursor()
+        _, width = self.size()
+        # if self.x >= width - 1:
+        #     self.base_x += 1
+        #     self.move(y, x - 1)
+        #     self.render()
         self.buffer[self.base_y + y] = (
             self.buffer[self.base_y + y][:self.base_x + x] +
             character +

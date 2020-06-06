@@ -90,7 +90,7 @@ async def test_entry_right(entry):
         "ut tincidunt. Morbi et libero\n"
     )
 
-    entry.move(0, 29)
+    entry.move(0, 27)
 
     await entry.dispatch(event)
     await entry.dispatch(event)
