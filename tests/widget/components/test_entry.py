@@ -241,7 +241,7 @@ async def test_entry_down(entry):
         "ut tincidunt. Morbi et libero\n"
     )
 
-    entry.move(9, 0)
+    entry.move(8, 0)
     entry.base_y = 0
     entry.base_x = 0
     await entry.dispatch(event)
@@ -279,7 +279,7 @@ async def test_entry_down(entry):
     )
 
     await entry.dispatch(event)
-    assert entry.cursor() == (9, 26)
+    assert entry.cursor() == (8, 26)
 
     entry.move(5, 0)
     entry.buffer = entry.buffer[:5]

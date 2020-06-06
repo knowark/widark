@@ -59,7 +59,7 @@ class Entry(Widget):
         y, x = self.cursor()
         sentence = self.buffer[self.base_y + y]
         pillar = x + 1
-        if x >= width - 3 and len(sentence) - self.base_x - width > 1:
+        if x >= width - 3 and len(sentence) - self.base_x - width >= 1:
             pillar = x
             max_shift = max(len(sentence) - width + 1, 0)
             self.base_x = min(self.base_x + 1, max_shift)
@@ -90,10 +90,11 @@ class Entry(Widget):
     def _down(self) -> None:
         height, width = self.size()
         y, x = self.cursor()
-        if y == height - 1:
+        line = y + 1
+        if y >= height - 2 and len(self.buffer) - self.base_y - height >= 1:
+            line = y
             max_shift = max(len(self.buffer) - height, 0)
             self.base_y = min(self.base_y + 1, max_shift)
-        line = min(y + 1, height - 1)
         if line + self.base_y >= len(self.buffer):
             return
         sentence = self.buffer[line + self.base_y]
