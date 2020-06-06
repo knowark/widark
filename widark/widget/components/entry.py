@@ -68,10 +68,12 @@ class Entry(Widget):
 
     def _left(self) -> None:
         y, x = self.cursor()
-        if x == 0:
+        pillar = x - 1
+        if x <= 1 and self.base_x != 0:
+            pillar = x
             self.base_x = max(self.base_x - 1, 0)
             self.render()
-        self.move(y,  max(x - 1, 0))
+        self.move(y,  max(pillar, 0))
 
     def _up(self) -> None:
         _, width = self.size()
