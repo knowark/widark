@@ -109,7 +109,11 @@ class Entry(Widget):
         y, x = self.cursor()
         line = y
         pillar = max(x - 1, 0)
-        if x == 0 and y > 0:
+        character = self.base_x + x
+        if x == 1 and self.base_x != 0:
+            pillar = x
+            self.base_x = max(self.base_x - 1, 0)
+        elif x == 0 and y > 0:
             row = self.buffer.pop(self.base_y + y)
             line = max(line - 1, 0)
             sentence = self.buffer[self.base_y + y - 1]
@@ -118,8 +122,8 @@ class Entry(Widget):
             self.buffer[self.base_y + y - 1] += row
 
         self.buffer[self.base_y + line] = (
-            self.buffer[self.base_y + line][:max(self.base_x + x - 1, 0)] +
-            self.buffer[self.base_y + line][self.base_x + x:])
+            self.buffer[self.base_y + line][:max(character - 1, 0)] +
+            self.buffer[self.base_y + line][character:])
 
         self.render().move(line, pillar)
 

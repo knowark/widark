@@ -320,7 +320,7 @@ async def test_entry_backspace(entry):
     assert entry.cursor() == (0, 5)
 
     assert entry.content == (
-        "enasac felis enim. Praesent f\n"
+        "cenasac felis enim. Praesent \n"
         "utate\n"
         "acus,\n"
         "magna\n"
@@ -330,6 +330,28 @@ async def test_entry_backspace(entry):
         " justo\n"
         "\n"
         "\n"
+    )
+
+    entry.base_y = 0
+    entry.base_x = 40
+    entry.render()
+
+    entry.move(1, 1)
+
+    await entry.dispatch(event)
+    assert entry.base_x == 39
+
+    assert entry.content == (
+        ' adipiscing elit. Maecenasac \n'
+        'm Nunc sem est, vulputate\n'
+        'gue. In vel iaculis lacus,\n'
+        'ras scelerisque erat magna\n'
+        'e sodales mauris, sit amet\n'
+        'ntesque habitant morbi\n'
+        'a fames ac turpis egestas.\n'
+        't. Mauris eleifend et justo\n'
+        ' efficitur odio eu,\n'
+        '\n'
     )
 
 
