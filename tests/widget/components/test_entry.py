@@ -281,6 +281,12 @@ async def test_entry_down(entry):
     await entry.dispatch(event)
     assert entry.cursor() == (9, 26)
 
+    entry.move(5, 0)
+    entry.buffer = entry.buffer[:5]
+
+    await entry.dispatch(event)
+    assert entry.cursor() == (5, 0)
+
 
 async def test_entry_backspace(entry):
     entry.move(4, 2)

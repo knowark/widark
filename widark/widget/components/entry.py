@@ -90,6 +90,8 @@ class Entry(Widget):
             max_shift = max(len(self.buffer) - height, 0)
             self.base_y = min(self.base_y + 1, max_shift)
         line = min(y + 1, height - 1)
+        if line + self.base_y >= len(self.buffer):
+            return
         sentence = self.buffer[line + self.base_y]
         if x > len(sentence) - self.base_x:
             self.base_x = int(len(sentence) / width) * width
@@ -140,7 +142,7 @@ class Entry(Widget):
     def _character(self, character: str) -> None:
         y, x = self.cursor()
         self.buffer[self.base_y + y] = (
-            self.buffer[self.base_y + y][:x] +
+            self.buffer[self.base_y + y][:self.base_x + x] +
             character +
-            self.buffer[self.base_y + y][x:])
+            self.buffer[self.base_y + y][self.base_x + x:])
         self.render().move(y, x + 1)
