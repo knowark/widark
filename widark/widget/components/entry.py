@@ -117,9 +117,9 @@ class Entry(Widget):
             pillar = max(len(sentence) - self.base_x, 0)
             self.buffer[self.base_y + y - 1] += row
 
-        self.buffer[self.base_y + y] = (
-            self.buffer[self.base_y + y][:max(self.base_x + x - 1, 0)] +
-            self.buffer[self.base_y + y][self.base_x + x:])
+        self.buffer[self.base_y + line] = (
+            self.buffer[self.base_y + line][:max(self.base_x + x - 1, 0)] +
+            self.buffer[self.base_y + line][self.base_x + x:])
 
         self.render().move(line, pillar)
 

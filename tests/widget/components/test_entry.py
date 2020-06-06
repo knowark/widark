@@ -320,8 +320,8 @@ async def test_entry_backspace(entry):
     assert entry.cursor() == (0, 5)
 
     assert entry.content == (
-        "cenasac felis enim. Praesent \n"
-        "tate\n"
+        "enasac felis enim. Praesent f\n"
+        "utate\n"
         "acus,\n"
         "magna\n"
         " amet\n"
