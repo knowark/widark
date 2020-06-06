@@ -78,9 +78,10 @@ class Entry(Widget):
     def _up(self) -> None:
         _, width = self.size()
         y, x = self.cursor()
-        if y == 0:
+        line = y - 1
+        if y <= 1 and self.base_y != 0:
+            line = y
             self.base_y = max(self.base_y - 1, 0)
-        line = max(y - 1, 0)
         sentence = self.buffer[line + self.base_y]
         if x > len(sentence) - self.base_x:
             self.base_x = int(len(sentence) / width) * width
