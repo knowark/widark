@@ -339,6 +339,42 @@ async def test_entry_delete(entry):
     assert entry.cursor() == (8, 2)
     assert len(entry.buffer[8]) == 64
 
+    entry.base_y = 0
+    entry.base_x = 50
+    entry.render()
+
+    assert len(entry.buffer) == 11
+    assert entry.content == (
+        " elit. Maecenas\n"
+        " posuere volutpat\n"
+        " est, vulputate\n"
+        " iaculis lacus,\n"
+        "risque erat magna\n"
+        "auris, sit amet\n"
+        "itant morbi\n"
+        "turpis egestas.\n"
+        "ifend et justo\n"
+        "odio eu,\n"
+    )
+
+    entry.move(3, 15)
+    await entry.dispatch(event)
+
+    assert len(entry.buffer) == 10
+    assert entry.cursor() == (3, 15)
+    assert entry.content == (
+        " elit. Maecenas\n"
+        " posuere volutpat\n"
+        " est, vulputate\n"
+        " iaculis lacus,eu auctor enim\n"
+        "auris, sit amet\n"
+        "itant morbi\n"
+        "turpis egestas.\n"
+        "ifend et justo\n"
+        "odio eu,\n"
+        "\n"
+    )
+
 
 async def test_entry_enter(entry):
     entry.move(3, 0)
@@ -368,3 +404,16 @@ async def test_entry_character(entry):
 
     assert entry.cursor() == (6, 2)
     assert len(entry.buffer[6]) == 63
+
+    assert entry.content == (
+        "Lorem ipsum dolor sit amet, c\n"
+        "ac felis enim. Praesent facil\n"
+        "et quis elit. Quisque nec mol\n"
+        "ut interdum vitae, hendrerit \n"
+        "eu auctor enim. Etiam a phare\n"
+        "at aliquam metus rhoncus in. \n"
+        "AAmollis orci. Cras quis matt\n"
+        "tristique senectus et netus e\n"
+        "Donec scelerisque nec tellus \n"
+        "ut tincidunt. Morbi et libero\n"
+    )

@@ -117,14 +117,15 @@ class Entry(Widget):
 
     def _delete(self) -> None:
         y, x = self.cursor()
-        if (x == len(self.buffer[self.base_y + y]) and
-                self.base_y + y < len(self.buffer) - 1):
+        sentence = self.buffer[self.base_y + y]
+        if (self.base_x + x == len(sentence) and
+                (self.base_y + y) < len(self.buffer) - 1):
             row = self.buffer.pop(self.base_y + y + 1)
             self.buffer[self.base_y + y] += row
         else:
             self.buffer[self.base_y + y] = (
-                self.buffer[self.base_y + y][:self.base_x + x] +
-                self.buffer[self.base_y + y][self.base_x + x + 1:])
+                sentence[:self.base_x + x] +
+                sentence[self.base_x + x + 1:])
         self.render().move(y, x)
 
     def _enter(self) -> None:
