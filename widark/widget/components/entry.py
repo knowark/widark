@@ -1,5 +1,4 @@
 import curses
-from math import ceil, floor
 from typing import List
 from ..widget import Widget
 from ..event import Event
@@ -8,6 +7,21 @@ from ..style import Style
 
 class Entry(Widget):
     def setup(self, **context) -> 'Entry':
+        self.canvas_content = context.pop('content', '')
+
+        style: Style = context.pop('style', Style(border=[0]))
+        return super().setup(**context, style=style) and self
+
+    def build(self) -> None:
+        self.canvas = Canvas(self, content=self.canvas_content)
+
+    @property
+    def text(self) -> str:
+        return '\n'.join(self.canvas.buffer)
+
+
+class Canvas(Widget):
+    def setup(self, **context) -> 'Canvas':
         content = context.pop('content', '')
 
         self.buffer: List[str] = content.splitlines()
@@ -18,16 +32,15 @@ class Entry(Widget):
         self.listen('keydown', self.on_keydown)
         return super().setup(**context) and self
 
-    @property
-    def text(self) -> str:
-        return '\n'.join(self.buffer)
-
     async def on_click(self, event: Event) -> None:
         event.stop = True
         self.focus()
 
     def settle(self) -> None:
+        origin = 1 if self.styling.border else 0
         height, width = self.size()
+        height -= 2 * origin
+        width -= 2 * origin
 
         content = ''
         for line in self.buffer[self.base_y: height + self.base_y]:

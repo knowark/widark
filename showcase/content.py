@@ -22,7 +22,7 @@ class Content(Frame):
             '\nhello\nfriends'
             '\nfamily\npets\neveryone'
             '\nplanets\ntrees\ndeities\nmortals')).style(
-            Color.LIGHT()).grid(3)
+            Color.LIGHT(), border=[0]).grid(3)
 
         self.right = Frame(self, title='Right').grid(0, 2)
         self.right.listen('click', self.on_content_click)
