@@ -17,12 +17,14 @@ class Content(Frame):
             Color.DANGER(), border=[0], align='C').grid(2)
 
         Entry(self.left, content=(
-            'letterslongenoughforthesecondscr'
-            '\nabcdarioxyzw12345678901234567890123456789012345678901234567890'
-            '\nhello\nfriends'
-            '\nfamily\npets\neveryone'
-            '\nplanets\ntrees\ndeities\nmortals')).style(
-            Color.LIGHT(), border=[0]).grid(3)
+            'Nulla mollis mollis ornare. Cras tempor, metus semper pulvinar '
+            '\nmattis, metus urna hendrerit orci, eget gravida tellus '
+            '\nipsum a ex. Donec hendrerit metus vitae hendrerit dictum. '
+            '\nSed varius venenatis ligula in scelerisque. Donec luctus sem '
+            '\nnon lorem venenatis, eget lobortis tortor tincidunt. Nunc '
+            '\nquis venenatis diam. Ut ac aliquam mi, a tempus nunc. Nunc '
+            '\nluctus vulputate dui malesuada cursus.'
+        )).style(Color.LIGHT(), border=[0]).grid(3)
 
         self.right = Frame(self, title='Right').grid(0, 2)
         self.right.listen('click', self.on_content_click)
