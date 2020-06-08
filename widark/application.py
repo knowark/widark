@@ -47,7 +47,7 @@ class Application(Widget):
             self.render()
         elif key == curses.KEY_MOUSE:
             _, x, y, _, state = curses.getmouse()
-            button, event_type = MOUSE_EVENTS.get(state, (1, 'click'))
+            button, event_type = MOUSE_EVENTS.get(state, (0, ''))
             event = Event(
                 'Mouse', event_type, y=y, x=x, key=chr(key), button=button)
             target = self._capture(event)
