@@ -24,7 +24,7 @@ class Canvas(Widget):
     def setup(self, **context) -> 'Canvas':
         content = context.pop('content', '')
 
-        self.buffer: List[str] = content.splitlines()
+        self.buffer: List[str] = content.splitlines() or ['']
         self.base_y: int = 0
         self.base_x: int = 0
 
@@ -170,8 +170,8 @@ class Canvas(Widget):
         if x >= width - 3:
             pillar = x
             self.base_x += 1
-        self.buffer[self.base_y + y] = (
-            self.buffer[self.base_y + y][:self.base_x + x] +
-            character +
-            self.buffer[self.base_y + y][self.base_x + x:])
+
+        head = self.buffer[self.base_y + y][:self.base_x + x]
+        tail = self.buffer[self.base_y + y][self.base_x + x:]
+        self.buffer[self.base_y + y] = head + character + tail
         self.render().move(y, pillar)

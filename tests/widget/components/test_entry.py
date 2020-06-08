@@ -470,3 +470,14 @@ async def test_entry_character(entry):
         "onec scelerisque nec tellus s\n"
         "t tincidunt. Morbi et libero \n"
     )
+
+    entry.canvas.setup(content='')
+    entry.render()
+    entry.canvas.base_x = 0
+    entry.canvas.base_y = 0
+    entry.canvas.move(0, 0)
+
+    event = Event('Keyboard', 'keydown', key='Z')
+    await entry.canvas.dispatch(event)
+
+    assert entry.canvas.buffer[0] == 'Z'
