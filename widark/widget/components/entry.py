@@ -72,7 +72,7 @@ class Canvas(Widget):
         y, x = self.cursor()
         sentence = self.buffer[self.base_y + y]
         pillar = x + 1
-        if x >= width - 3 and len(sentence) - self.base_x - width >= 1:
+        if x >= width - 3 and len(sentence) - self.base_x - width >= 0:
             pillar = x
             max_shift = max(len(sentence) - width + 1, 0)
             self.base_x = min(self.base_x + 1, max_shift)
@@ -158,6 +158,7 @@ class Canvas(Widget):
         head, tail = (
             self.buffer[self.base_y + y][:self.base_x + x],
             self.buffer[self.base_y + y][self.base_x + x:])
+        self.base_x = 0
         self.buffer[self.base_y + y] = head
         self.buffer.insert(self.base_y + y + 1, tail)
         self.render().move(y + 1)
