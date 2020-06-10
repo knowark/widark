@@ -13,6 +13,7 @@ class Event:
         self.y: int = attributes.get('y', 0)
         self.x: int = attributes.get('x', 0)
         self.key: str = attributes.get('key', '')
+        self.data: str = attributes.get('data', '')
         self.button: int = attributes.get('button', 0)
         self.bubbles: bool = attributes.get('bubbles', True)
         self.stop: bool = attributes.get('stop', False)

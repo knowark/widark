@@ -1,6 +1,6 @@
 import asyncio
 from widark import (
-    Application, Event, Button, Label, Frame, Modal, Color)
+    Application, Event, Button, Label, Frame, Modal, Entry, Color)
 from .content import Content
 
 
@@ -24,7 +24,8 @@ class Main(Application):
             Color.DANGER()).grid(1, 0).span(col=3).weight(3).style(
                 background_color=Color.LIGHT.reverse())
 
-        Frame(self, title='World').title_style(Color.WARNING()).grid(1)
+        world = Frame(self, title='World').title_style(Color.WARNING()).grid(1)
+        Entry(world)
 
         Content(self, title='Content').grid(0, 1).span(3).weight(col=3)
 

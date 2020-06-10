@@ -32,29 +32,39 @@ class Application(Widget):
 
         while self.active:
             await asyncio.sleep(self._rate)
+
             key = self.window.getch()
 
-            await self._process(key)
+            buffer = []
+            if key != -1:
+                character = key
+                while character != -1:
+                    buffer.append(character)
+                    character = self.window.getch()
+
+            await self._process(key, buffer)
 
             curses.doupdate()
             curses.flushinp()
 
         self._stop_screen()
 
-    async def _process(self, key: int) -> None:
+    async def _process(self, key: int, buffer: List[int]) -> None:
+        data = "".join(chr(character) for character in buffer)
         if key == curses.KEY_RESIZE:
             self._clear_screen()
             self.render()
         elif key == curses.KEY_MOUSE:
             _, x, y, _, state = curses.getmouse()
             button, event_type = MOUSE_EVENTS.get(state, (0, ''))
-            event = Event(
-                'Mouse', event_type, y=y, x=x, key=chr(key), button=button)
+            event = Event('Mouse', event_type, y=y, x=x,
+                          key=chr(key), button=button, data=data)
             target = self._capture(event)
             await target.dispatch(event)
         elif key >= 0:
             y, x = curses.getsyx()
-            event = Event('Keyboard', 'keydown', y=y, x=x, key=chr(key))
+            event = Event('Keyboard', 'keydown', y=y, x=x,
+                          key=chr(key), data=data)
             target = self._capture(event)
             await target.dispatch(event)
 

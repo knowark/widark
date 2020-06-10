@@ -1,5 +1,5 @@
 import curses
-from typing import List
+from typing import List, Tuple
 from ..widget import Widget
 from ..event import Event
 from ..style import Style
@@ -34,7 +34,15 @@ class Canvas(Widget):
 
     async def on_click(self, event: Event) -> None:
         event.stop = True
-        self.focus()
+        origin_y, origin_x = self.window.getbegyx()
+
+        y, x = event.y - origin_y,  event.x - origin_x
+        line = self.base_y + y + 1
+
+        _, _, end_y, end_x = self._end_coordinates(
+            len(self.buffer[:line]), len(self.buffer[:line][-1]))
+
+        self.move(min(y, end_y), min(x, end_x))
 
     def settle(self) -> None:
         origin = 1 if self.styling.border else 0
@@ -65,7 +73,7 @@ class Canvas(Widget):
         elif event.key == '\n':
             self._enter()
         else:
-            self._character(event.key)
+            self._character(event.data)
 
     def _right(self) -> None:
         _, width = self.size()
@@ -163,15 +171,36 @@ class Canvas(Widget):
         self.buffer.insert(self.base_y + y + 1, tail)
         self.render().move(y + 1)
 
-    def _character(self, character: str) -> None:
+    def _character(self, data: str) -> None:
         y, x = self.cursor()
         _, width = self.size()
-        pillar = x + 1
-        if x >= width - 3:
-            pillar = x
-            self.base_x += 1
 
-        head = self.buffer[self.base_y + y][:self.base_x + x]
+        insertion = data.splitlines()
+        first = insertion and insertion.pop(0)
+        head = self.buffer[self.base_y + y][:self.base_x + x] + first
         tail = self.buffer[self.base_y + y][self.base_x + x:]
-        self.buffer[self.base_y + y] = head + character + tail
-        self.render().move(y, pillar)
+
+        line = self.base_y + y + 1
+        self.buffer[self.base_y + y] = head + tail
+        self.buffer[line:line] = insertion
+
+        self.base_y, self.base_x, end_y, end_x = self._end_coordinates(
+            len(self.buffer[:line]), len(head))
+
+        if end_x >= width - 3:
+            self.base_x += 1
+            end_x -= 1
+
+        self.render().move(end_y, end_x)
+
+    def _end_coordinates(self, lines_number: int,
+                         last_word_length: int) -> Tuple[int, int, int, int]:
+        height, width = self.size()
+
+        base_y = int(lines_number / height) * height
+        base_x = int(last_word_length / width) * width
+
+        y = lines_number - base_y - 1
+        x = last_word_length - base_x
+
+        return base_y, base_x, y, x

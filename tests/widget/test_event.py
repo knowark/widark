@@ -12,6 +12,7 @@ def test_event_instantiation_defaults():
     assert event.y == 0
     assert event.x == 0
     assert event.key == ''
+    assert event.data == ''
     assert event.button == 0
     assert event.bubbles is True
     assert event.stop is False
