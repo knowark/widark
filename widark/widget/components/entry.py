@@ -176,16 +176,16 @@ class Canvas(Widget):
         _, width = self.size()
 
         insertion = data.splitlines()
-        first = insertion and insertion.pop(0)
+        first = insertion and insertion.pop(0) or ''
         head = self.buffer[self.base_y + y][:self.base_x + x] + first
         tail = self.buffer[self.base_y + y][self.base_x + x:]
 
-        line = self.base_y + y + 1
+        line = min(self.base_y + y, len(self.buffer) - 1)
         self.buffer[self.base_y + y] = head + tail
         self.buffer[line:line] = insertion
 
         self.base_y, self.base_x, end_y, end_x = self._end_coordinates(
-            len(self.buffer[:line]), len(head))
+            len(self.buffer[:line + 1]), len(head))
 
         if end_x >= width - 3:
             self.base_x += 1

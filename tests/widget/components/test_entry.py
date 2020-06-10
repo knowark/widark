@@ -22,23 +22,15 @@ def test_canvas_instantiation_defaults(root):
 
 
 async def test_entry_on_click(root):
-    focus_called = False
-
-    def mock_focus(self):
-        nonlocal focus_called
-        focus_called = True
-        return self
-
     entry = Entry(root, content='QWERTY')
-    entry.canvas.focus = MethodType(mock_focus, entry)
 
     root.render()
 
-    event = Event('Mouse', 'click')
+    event = Event('Mouse', 'click', y=10, x=10)
 
     await entry.canvas.dispatch(event)
 
-    assert focus_called is True
+    assert entry.canvas.cursor() == (0, 6)
 
 
 def test_entry_text(root):
@@ -433,7 +425,7 @@ async def test_entry_character(entry):
 
     assert len(entry.canvas.buffer[6]) == 61
 
-    event = Event('Keyboard', 'keydown', key='A')
+    event = Event('Keyboard', 'keydown', key='A', data='A')
     await entry.canvas.dispatch(event)
     await entry.canvas.dispatch(event)
 
@@ -455,7 +447,7 @@ async def test_entry_character(entry):
 
     entry.canvas.move(0, 27)
 
-    event = Event('Keyboard', 'keydown', key='W')
+    event = Event('Keyboard', 'keydown', key='W', data='W')
     await entry.canvas.dispatch(event)
 
     assert entry.canvas.content == (
@@ -471,13 +463,13 @@ async def test_entry_character(entry):
         "t tincidunt. Morbi et libero \n"
     )
 
-    entry.canvas.setup(content='')
-    entry.render()
-    entry.canvas.base_x = 0
-    entry.canvas.base_y = 0
-    entry.canvas.move(0, 0)
+    # entry.canvas.setup(content='')
+    # entry.render()
+    # entry.canvas.base_x = 0
+    # entry.canvas.base_y = 0
+    # entry.canvas.move(0, 0)
 
-    event = Event('Keyboard', 'keydown', key='Z')
-    await entry.canvas.dispatch(event)
+    # event = Event('Keyboard', 'keydown', key='Z', data='Z')
+    # await entry.canvas.dispatch(event)
 
-    assert entry.canvas.buffer[0] == 'Z'
+    # assert entry.canvas.buffer[0] == 'Z'

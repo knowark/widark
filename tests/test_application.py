@@ -134,7 +134,7 @@ async def test_application_process(application):
     application.render = MethodType(mock_render, application)
     application._clear_screen = MethodType(mock_clear_screen, application)
 
-    await application._process(curses.KEY_RESIZE)
+    await application._process(curses.KEY_RESIZE, [curses.KEY_RESIZE])
 
     assert render_called is True
     assert clear_screen_called is True
@@ -202,7 +202,7 @@ async def test_application_process_mouse_events(application, monkeypatch):
     application._capture = MethodType(mock_capture, application)
     application.dispatch = MethodType(mock_dispatch, application)
 
-    await application._process(curses.KEY_MOUSE)
+    await application._process(curses.KEY_MOUSE, [curses.KEY_MOUSE])
 
     assert getmouse_called is True
     assert getattr(capture_event, 'y') == 10
@@ -233,7 +233,7 @@ async def test_application_process_keyboard_events(application, monkeypatch):
     application._capture = MethodType(mock_capture, application)
     application.dispatch = MethodType(mock_dispatch, application)
 
-    await application._process(ord('W'))
+    await application._process(ord('W'), [ord('W')])
 
     assert getmouse_called is True
     assert getattr(capture_event, 'category') == 'Keyboard'
