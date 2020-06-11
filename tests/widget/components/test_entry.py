@@ -445,7 +445,7 @@ async def test_entry_character(entry):
         "ut tincidunt. Morbi et libero\n"
     )
 
-    entry.canvas.move(0, 27)
+    entry.canvas.move(0, 28)
 
     event = Event('Keyboard', 'keydown', key='W', data='W')
     await entry.canvas.dispatch(event)
@@ -463,13 +463,13 @@ async def test_entry_character(entry):
         "t tincidunt. Morbi et libero \n"
     )
 
-    # entry.canvas.setup(content='')
-    # entry.render()
-    # entry.canvas.base_x = 0
-    # entry.canvas.base_y = 0
-    # entry.canvas.move(0, 0)
+    entry.canvas.setup(content='')
+    entry.render()
+    entry.canvas.base_x = 0
+    entry.canvas.base_y = 0
+    entry.canvas.move(0, 0)
 
-    # event = Event('Keyboard', 'keydown', key='Z', data='Z')
-    # await entry.canvas.dispatch(event)
+    event = Event('Keyboard', 'keydown', key='Z', data='Z')
+    await entry.canvas.dispatch(event)
 
-    # assert entry.canvas.buffer[0] == 'Z'
+    assert entry.canvas.buffer[0] == 'Z'

@@ -48,11 +48,11 @@ def test_application_instantiation(application):
     assert application.active is True
 
 
-# def test_application_build(application):
-#     application.build()
+def test_application_build(application):
+    application.build()
 
-#     assert application.window is None
-#     assert len(application.children) == 2
+    assert application.window is None
+    assert len(application.children) == 2
 
 
 async def test_application_run(application, monkeypatch):
@@ -92,6 +92,24 @@ async def test_application_run(application, monkeypatch):
     assert connect_called is True
     assert doupdate_called is True
     assert stop_screen_called is True
+
+
+def test_application_read(application):
+    class MockWindow:
+        def __init__(self) -> None:
+            self.index = -1
+            self.values = [ord('A'), ord('B'), -1]
+
+        def getch(self):
+            self.index += 1
+            return self.values[self.index]
+
+    application.window = MockWindow()
+
+    key, buffer = application._read()
+
+    assert key == ord('A')
+    assert buffer == [ord('A'), ord('B')]
 
 
 async def test_application_not_active(application):

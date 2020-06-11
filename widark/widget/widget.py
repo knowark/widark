@@ -1,10 +1,10 @@
 import asyncio
 from math import ceil, floor
-from curses import setsyx, getsyx
+from curses import setsyx
 from types import SimpleNamespace
 from _curses import error as CursesError
 from typing import List, Dict, Optional, Tuple, Any, TypeVar
-from aiocontextvars import copy_context  # type: ignore
+from contextvars import copy_context
 from .event import Target
 from .style import Style
 

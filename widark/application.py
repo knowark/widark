@@ -2,7 +2,7 @@ import sys
 import curses
 import asyncio
 from signal import signal, SIGINT
-from typing import List, Any
+from typing import Tuple, List, Any
 from .widget import Widget, Event, MOUSE_EVENTS, Target
 from .palette import DefaultPalette, Palette
 
@@ -33,14 +33,7 @@ class Application(Widget):
         while self.active:
             await asyncio.sleep(self._rate)
 
-            key = self.window.getch()
-
-            buffer = []
-            if key != -1:
-                character = key
-                while character != -1:
-                    buffer.append(character)
-                    character = self.window.getch()
+            key, buffer = self._read()
 
             await self._process(key, buffer)
 
@@ -48,6 +41,17 @@ class Application(Widget):
             curses.flushinp()
 
         self._stop_screen()
+
+    def _read(self) -> Tuple[int, List[int]]:
+        key = self.window.getch()
+        buffer = []
+        if key != -1:
+            character = key
+            while character != -1:
+                buffer.append(character)
+                character = self.window.getch()
+
+        return key, buffer
 
     async def _process(self, key: int, buffer: List[int]) -> None:
         data = "".join(chr(character) for character in buffer)

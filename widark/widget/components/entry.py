@@ -33,16 +33,11 @@ class Canvas(Widget):
         return super().setup(**context) and self
 
     async def on_click(self, event: Event) -> None:
-        event.stop = True
         origin_y, origin_x = self.window.getbegyx()
-
         y, x = event.y - origin_y,  event.x - origin_x
         line = self.base_y + y + 1
-
-        _, _, end_y, end_x = self._end_coordinates(
-            len(self.buffer[:line]), len(self.buffer[:line][-1]))
-
-        self.move(min(y, end_y), min(x, end_x))
+        self.move(min(y, len(self.buffer[:line]) - 1),
+                  min(x, len(self.buffer[:line][-1])))
 
     def settle(self) -> None:
         origin = 1 if self.styling.border else 0
@@ -182,25 +177,11 @@ class Canvas(Widget):
 
         line = min(self.base_y + y, len(self.buffer) - 1)
         self.buffer[self.base_y + y] = head + tail
-        self.buffer[line:line] = insertion
+        self.buffer[line + 1:line + 1] = insertion
 
-        self.base_y, self.base_x, end_y, end_x = self._end_coordinates(
-            len(self.buffer[:line + 1]), len(head))
-
-        if end_x >= width - 3:
+        x += 1
+        if x >= width - 2:
             self.base_x += 1
-            end_x -= 1
+            x -= 1
 
-        self.render().move(end_y, end_x)
-
-    def _end_coordinates(self, lines_number: int,
-                         last_word_length: int) -> Tuple[int, int, int, int]:
-        height, width = self.size()
-
-        base_y = int(lines_number / height) * height
-        base_x = int(last_word_length / width) * width
-
-        y = lines_number - base_y - 1
-        x = last_word_length - base_x
-
-        return base_y, base_x, y, x
+        self.render().move(y, x)
