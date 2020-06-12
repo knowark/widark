@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "widark"
-version = "0.3.0"
+version = "0.3.1"
 description = "Widgets for console user interfaces"
 authors = ["Knowark"]
 
