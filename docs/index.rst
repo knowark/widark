@@ -8,5 +8,5 @@ Widark
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
+   issues/index.rst
