@@ -11,3 +11,11 @@ Validation Criteria
   its data list contents. The minimum offset is of course zero.
 - When a full listbox receives a mousewheel down event, it will offset down
   its data list contents. The maximum offset must be: len(data) - limit.
+
+
+Negotiation
+-----------
+
+Considering that the Python implementation of curses doesn't handle mouse
+scrolling properly, it was decided to instead use the **Page Up** and 
+**Page Down** keys for pagination.
