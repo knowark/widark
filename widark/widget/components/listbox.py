@@ -1,6 +1,7 @@
 from typing import Sequence, Type, List, Dict, Union
 from ..widget import Widget
 from ..style import Style
+from ..event import Event
 
 
 ItemType = Union[List[str], List[Dict[str, str]], List[Sequence[str]]]
@@ -55,6 +56,19 @@ class Listbox(Widget):
                 style=self.item_styling,
                 field_template=self.field_template,
                 field_style=self.field_styling).grid(*coordinates)
+
+        self.listen('click', self.on_click)
+        self.listen('keydown', self.on_keydown)
+
+    async def on_click(self, event: Event) -> None:
+        self.focus()
+
+    async def on_keydown(self, event: Event) -> None:
+        if ord(event.key) == 338 and self.limit:  # Pagedown
+            self.offset = (self.offset or 0)
+            delta = (self.limit if len(self.data)
+                     - self.offset > self.limit else 0)
+            self.offset += delta
 
 
 class Listitem(Widget):

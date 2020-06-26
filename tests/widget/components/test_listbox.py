@@ -1,3 +1,5 @@
+import asyncio
+from types import MethodType
 from pytest import mark, raises
 from widark.widget.components.listbox import Listitem
 from widark.widget import Listbox, Widget, Event
@@ -193,3 +195,55 @@ async def test_listbox_fields_wrong_item_type(root):
 
     with raises(ValueError):
         Listbox(root, data=data, fields=['name', 'email']).render()
+
+
+async def test_listbox_page_down(root):
+    data = [
+        ['001', 'Hugo', 'hugo@mail.com'],
+        ['002', 'Paco', 'paco@mail.com'],
+        ['003', 'Luis', 'luis@mail.com'],
+        ['004', 'Juan', 'juan@mail.com'],
+        ['005', 'Nico', 'nico@mail.com'],
+        ['006', 'Luka', 'luka@mail.com'],
+        ['007', 'Mark', 'mark@mail.com'],
+        ['008', 'Paul', 'paul@mail.com'],
+        ['009', 'Mike', 'mike@mail.com'],
+        ['010', 'Fran', 'fran@mail.com'],
+        ['011', 'Karl', 'karl@mail.com'],
+        ['012', 'Marx', 'marx@mail.com'],
+        ['013', 'Anne', 'anne@mail.com'],
+        ['014', 'Luke', 'luke@mail.com']
+    ]
+
+    listbox = Listbox(root, data=data, limit=4)
+
+    assert listbox.offset is None
+
+    await listbox.dispatch(Event('Keyboard', 'keydown', key='A'))
+    await listbox.dispatch(Event('Keyboard', 'keydown', key=chr(338)))
+    assert listbox.offset == 4
+
+    await listbox.dispatch(Event('Keyboard', 'keydown', key=chr(338)))
+    assert listbox.offset == 8
+
+    await listbox.dispatch(Event('Keyboard', 'keydown', key=chr(338)))
+    assert listbox.offset == 12
+
+    await listbox.dispatch(Event('Keyboard', 'keydown', key=chr(338)))
+    assert listbox.offset == 12
+
+
+async def test_listbox_focus_on_click(root):
+    listbox = Listbox(root)
+    focus_called = False
+
+    def mock_focus(self):
+        nonlocal focus_called
+        focus_called = True
+        return self
+
+    listbox.focus = MethodType(mock_focus, listbox)
+
+    await listbox.dispatch(Event('Mouse', 'click'))
+    await asyncio.sleep(0)
+    assert focus_called is True
