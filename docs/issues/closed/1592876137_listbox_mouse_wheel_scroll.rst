@@ -1,6 +1,9 @@
 Listbox Mouse Wheel Scroll
 ==========================
 
+:estimark:
+    state=closed
+
 Listbox scrolling should be available by default using the mouse
 wheel.
 
