@@ -1,11 +1,9 @@
 Closed
 ======
 
+.. toctree::
+   :glob:
 
-
-.. .. toctree::
-..    :glob:
-
-..    *
+   *
 
 
