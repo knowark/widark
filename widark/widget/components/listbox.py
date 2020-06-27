@@ -64,11 +64,15 @@ class Listbox(Widget):
         self.focus()
 
     async def on_keydown(self, event: Event) -> None:
-        if ord(event.key) == 338 and self.limit:  # Pagedown
+        if ord(event.key) == 338 and self.limit:  # Page Down
             self.offset = (self.offset or 0)
             delta = (self.limit if len(self.data)
                      - self.offset > self.limit else 0)
             self.offset += delta
+            self.connect()
+        elif ord(event.key) == 339 and self.limit:  # Page Up
+            self.offset = max((self.offset or 0) - self.limit, 0)
+            self.connect()
 
 
 class Listitem(Widget):

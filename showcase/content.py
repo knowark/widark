@@ -27,10 +27,9 @@ class Content(Frame):
         )).style(Color.LIGHT(), border=[0]).grid(3)
 
         self.right = Frame(self, title='Right').grid(0, 2)
-        self.right.listen('click', self.on_content_click)
 
         data = [{'name': 'first'}, {'name': 'second'}, {'name': 'third'}] * 3
-        Listbox(self.right, data=data,
+        Listbox(self.right, data=data, limit=4,
                 item_style=Style(border=[], align='C'))
 
     async def on_click(self, event: Event) -> None:

@@ -215,13 +215,22 @@ async def test_listbox_page_down(root):
         ['014', 'Luke', 'luke@mail.com']
     ]
 
+    connect_called = False
+
+    def mock_connect(self):
+        nonlocal connect_called
+        connect_called = True
+        return self
+
     listbox = Listbox(root, data=data, limit=4)
+    listbox.connect = MethodType(mock_connect, listbox)
 
     assert listbox.offset is None
 
     await listbox.dispatch(Event('Keyboard', 'keydown', key='A'))
     await listbox.dispatch(Event('Keyboard', 'keydown', key=chr(338)))
     assert listbox.offset == 4
+    assert connect_called is True
 
     await listbox.dispatch(Event('Keyboard', 'keydown', key=chr(338)))
     assert listbox.offset == 8
@@ -231,6 +240,48 @@ async def test_listbox_page_down(root):
 
     await listbox.dispatch(Event('Keyboard', 'keydown', key=chr(338)))
     assert listbox.offset == 12
+
+
+async def test_listbox_page_up(root):
+    data = [
+        ['001', 'Hugo', 'hugo@mail.com'],
+        ['002', 'Paco', 'paco@mail.com'],
+        ['003', 'Luis', 'luis@mail.com'],
+        ['004', 'Juan', 'juan@mail.com'],
+        ['005', 'Nico', 'nico@mail.com'],
+        ['006', 'Luka', 'luka@mail.com'],
+        ['007', 'Mark', 'mark@mail.com'],
+        ['008', 'Paul', 'paul@mail.com'],
+        ['009', 'Mike', 'mike@mail.com'],
+        ['010', 'Fran', 'fran@mail.com'],
+        ['011', 'Karl', 'karl@mail.com'],
+        ['012', 'Marx', 'marx@mail.com'],
+        ['013', 'Anne', 'anne@mail.com'],
+        ['014', 'Luke', 'luke@mail.com']
+    ]
+
+    connect_called = False
+
+    def mock_connect(self):
+        nonlocal connect_called
+        connect_called = True
+        return self
+
+    listbox = Listbox(root, data=data, limit=4, offset=8)
+    listbox.connect = MethodType(mock_connect, listbox)
+
+    assert listbox.offset == 8
+
+    await listbox.dispatch(Event('Keyboard', 'keydown', key='A'))
+    await listbox.dispatch(Event('Keyboard', 'keydown', key=chr(339)))
+    assert listbox.offset == 4
+    assert connect_called is True
+
+    await listbox.dispatch(Event('Keyboard', 'keydown', key=chr(339)))
+    assert listbox.offset == 0
+
+    await listbox.dispatch(Event('Keyboard', 'keydown', key=chr(339)))
+    assert listbox.offset == 0
 
 
 async def test_listbox_focus_on_click(root):
