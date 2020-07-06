@@ -8,7 +8,6 @@ loading methods are scheduled as well.
 Validation Criteria
 -------------------
 
-- [ ] Modals should be closed by pressing the middle mouse button
+- [x] Modals should be closed by pressing the middle mouse button
   (i.e. wheel button)
-- [ ] Modals shouldn't autobuild. Instead they should 'build' on launch. 
-
+- [ ] Modals should 'connect' when launched.

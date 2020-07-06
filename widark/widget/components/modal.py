@@ -22,6 +22,7 @@ class Modal(Widget):
         self.close = Widget(
             self, content='X', position='fixed',).pin(0, 1, 1, 1).style(
                 Color.DANGER()).listen('click', self.on_close)
+        self.listen('click', self.on_click)
 
     def launch(self) -> 'Modal':
         if not (self.parent and self.parent.window):
@@ -29,6 +30,10 @@ class Modal(Widget):
 
         self.parent.add(self, 0).render()
         return self
+
+    async def on_click(self, event: Event) -> None:
+        if event.button == 2:
+            await self.done({'result': 'closed'})
 
     async def on_close(self, event: Event) -> None:
         await self.done({'result': 'closed'})

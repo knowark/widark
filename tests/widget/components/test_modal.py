@@ -54,6 +54,21 @@ async def test_modal_close(root):
     assert close_modal_called is True
 
 
+async def test_modal_middle_button_close(root):
+    close_modal_called = False
+
+    async def close_modal(event: Event):
+        nonlocal close_modal_called
+        close_modal_called = True
+
+    modal = Modal(root, done_command=close_modal)
+
+    await modal.close.dispatch(Event('Mouse', 'click', button=1))
+    await modal.close.dispatch(Event('Mouse', 'click', button=2))
+
+    assert close_modal_called is True
+
+
 async def test_modal_done_modal(root):
     async def done_modal(event: Event):
         pass
@@ -94,10 +109,3 @@ async def test_modal_done_external(root):
 
     assert external_event_details == {'result': 'closed'}
     assert len(modal.close._bubble_listeners) == 1
-
-
-# async def test_modal_proportion(root):
-#     modal = Modal(root).launch()
-
-#     assert modal.height == 80
-#     assert modal.width == 80
