@@ -61,7 +61,8 @@ class Listbox(Widget):
         self.listen('keydown', self.on_keydown)
 
     async def on_click(self, event: Event) -> None:
-        self.focus()
+        if isinstance(event.target, Widget):
+            event.target.focus()
 
     async def on_keydown(self, event: Event) -> None:
         if ord(event.key) == 338 and self.limit:  # Page Down

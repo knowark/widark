@@ -3,6 +3,7 @@ from types import MethodType
 from pytest import mark, raises
 from widark.widget.components.listbox import Listitem
 from widark.widget import Listbox, Widget, Event
+from widark.widget.event import Target
 
 pytestmark = mark.asyncio
 
@@ -295,6 +296,13 @@ async def test_listbox_focus_on_click(root):
 
     listbox.focus = MethodType(mock_focus, listbox)
 
-    await listbox.dispatch(Event('Mouse', 'click'))
-    await asyncio.sleep(0)
+    event = Event('Mouse', 'click')
+
+    await listbox.dispatch(event)
     assert focus_called is True
+
+    event.target = Target()
+    await listbox.on_click(event)
+    await asyncio.sleep(0)
+
+    await listbox.dispatch(event)
