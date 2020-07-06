@@ -15,7 +15,7 @@ class Modal(Widget):
         style = context.pop('style', Style(
             background_color=Color.WARNING.reverse(), border=[0]))
         return super().setup(
-            **context, style=style, position='fixed',
+            **context, style=style, position='fixed', autobuild=False,
             proportion=proportion, align=align) and self
 
     def build(self) -> None:
@@ -28,6 +28,7 @@ class Modal(Widget):
         if not (self.parent and self.parent.window):
             return self
 
+        self.connect()
         self.parent.add(self, 0).render()
         return self
 

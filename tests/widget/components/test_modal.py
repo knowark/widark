@@ -11,6 +11,7 @@ def test_modal_instantiation_defaults(root):
     assert modal.position == 'fixed'
     assert modal.proportion == {'height': 0.8, 'width': 0.8}
     assert modal.align == 'CC'
+    assert modal.autobuild is False
 
 
 def test_modal_render(root):
@@ -28,7 +29,6 @@ def test_modal_launch(root):
     modal.launch()
 
     assert modal.window is None
-    assert modal.close.window is None
 
     parent.render()
     modal.launch()
@@ -62,6 +62,7 @@ async def test_modal_middle_button_close(root):
         close_modal_called = True
 
     modal = Modal(root, done_command=close_modal)
+    modal.build()
 
     await modal.close.dispatch(Event('Mouse', 'click', button=1))
     await modal.close.dispatch(Event('Mouse', 'click', button=2))
